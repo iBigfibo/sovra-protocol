@@ -48,12 +48,6 @@ Users deposit USDCx into a vault. Capital is allocated off-chain into short-dura
 - Proof-of-reserve reporting
 
 ---
-
-## Roadmap
-
-See roadmap.md for milestone breakdown.
-
----
 # Technical Specification
 
 ## Overview
@@ -120,10 +114,6 @@ Primary risks include:
 - Capital controls
 
 Risk transparency is prioritized in reporting and documentation.
-## Status
-
-Design and technical specification phase. Preparing MVP implementation on Stacks.
----
 
 ## 12 Week Roadmap
 
