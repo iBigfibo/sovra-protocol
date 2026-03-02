@@ -1,5 +1,6 @@
 # Sovra Protocol
 Status: Pre-MVP | Getting Started Grant Application Phase
+
 Sovra is an emerging market sovereign yield vault protocol built on Stacks.
 
 The protocol enables stablecoin holders to access diversified emerging market Treasury Bill yields through structured on-chain vaults with transparent FX exposure.
