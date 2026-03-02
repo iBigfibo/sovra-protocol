@@ -1,7 +1,7 @@
 # Sovra Protocol
 Status: Pre-MVP | Getting Started Grant Application Phase
 
-Sovra is an emerging market sovereign yield vault protocol built on Stacks.
+Sovra is a sovereign yield vault protocol built on Stacks, providing structured access to emerging market Treasury Bill exposure.
 
 The protocol enables stablecoin holders to access diversified emerging market Treasury Bill yields through structured on-chain vaults with transparent FX exposure.
 
@@ -12,12 +12,12 @@ The protocol enables stablecoin holders to access diversified emerging market Tr
 The Stacks ecosystem currently lacks diversified real-world sovereign yield primitives. Most yield opportunities are limited to DeFi pools or U.S. Treasury-based RWAs.
 
 There is no structured access to emerging market sovereign yield.
+This limits capital efficiency and yield diversity within the Stacks ecosystem.
 
 ---
 
 ## Solution
-
-Sovra introduces country-specific sovereign yield vaults starting with Nigeria Treasury Bills.
+Sovra introduces country-specific sovereign yield vaults, starting with Nigeria Treasury Bills, with a roadmap toward multi-country diversification.
 
 Users deposit USDCx into a vault. Capital is allocated off-chain into short-duration Treasury Bills via licensed partners. Yield performance and FX exposure are transparently reflected in vault share value.
 
@@ -114,6 +114,7 @@ Primary risks include:
 - Capital controls
 
 Risk transparency is prioritized in reporting and documentation.
+Vault performance will transparently reflect both yield accrual and FX impact.
 
 ## 12 Week Roadmap
 
