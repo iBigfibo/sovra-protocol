@@ -401,14 +401,12 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <span class="ticker-item">svEG <strong>25%</strong> APR</span><span class="ticker-sep">·</span>
       <span class="ticker-item">svPK <strong>20%</strong> APR</span><span class="ticker-sep">·</span>
       <span class="ticker-item">svKE <strong>17%</strong> APR</span><span class="ticker-sep">·</span>
-      <span class="ticker-item">Early exit penalty: <strong id="ticker-penalty">5–25%</strong> of yield</span><span class="ticker-sep">·</span>
       <span class="ticker-item">svNG <strong>20%</strong> APR</span><span class="ticker-sep">·</span>
       <span class="ticker-item">svTR <strong>27%</strong> APR</span><span class="ticker-sep">·</span>
       <span class="ticker-item">svAR <strong>40%</strong> APR</span><span class="ticker-sep">·</span>
       <span class="ticker-item">svEG <strong>25%</strong> APR</span><span class="ticker-sep">·</span>
       <span class="ticker-item">svPK <strong>20%</strong> APR</span><span class="ticker-sep">·</span>
       <span class="ticker-item">svKE <strong>17%</strong> APR</span><span class="ticker-sep">·</span>
-      <span class="ticker-item">Early exit penalty: <strong>5–25%</strong> of yield</span>
     </div>
   </div>
 
@@ -932,7 +930,6 @@ async function doDeposit(){
   var v      = state.selectedVault;
   var lock   = state.selectedLock;
   var apr    = effectiveApr(v, lock);
-  var penPct = ((LOCKS[lock]?.penalty||0.10)*100).toFixed(0);
   var amtRaw = ethers.parseUnits(amt.toString(), 6);
 
   showModal(buildProcessing('Confirming with ' + fmtAddr(wallet.address), [
@@ -971,7 +968,7 @@ async function doDeposit(){
     var hash = receipt.hash;
     logTx('deposit', v, '+'+fmt(amt,2)+' USDC', hash);
     await loadChainData();
-    showModal(buildDepositSuccess(v, amt, amt, lock, apr, penPct, hash));
+    showModal(buildDepositSuccess(v, amt, amt, lock, apr, hash));
 
   } catch(e){
     closeModal();
@@ -1069,7 +1066,7 @@ function buildProcessing(title, steps, txCost){
     '</div></div>';
 }
 
-function buildDepositSuccess(v,amt,svR,lock,apr,penPct,hash){
+function buildDepositSuccess(v,amt,svR,lock,apr,hash){
   return '<div class="success-modal fade-in">' +
     '<div class="success-icon">✦</div>' +
     '<div class="success-title">Deposit Confirmed</div>' +
@@ -1080,7 +1077,6 @@ function buildDepositSuccess(v,amt,svR,lock,apr,penPct,hash){
     '<div class="srow"><span class="sk">Effective APR</span><span class="sv green">'+(apr*100).toFixed(0)+'%</span></div>' +
     '<div class="srow"><span class="sk">Lock Period</span><span class="sv">'+lock+' days</span></div>' +
     '<div class="srow"><span class="sk">Unlock Date</span><span class="sv">'+addDays(lock)+'</span></div>' +
-    '<div class="srow"><span class="sk">Early Exit Penalty</span><span class="sv orange">'+penPct+'% of yield earned</span></div>' +
     '</div>' +
     '<div class="tx-hash-display">TX: '+maskHash(hash)+' · Testnet</div>' +
     '<button class="btn btn-outline" style="margin-top:16px;width:100%;" onclick="closeModal()">Close</button>' +
