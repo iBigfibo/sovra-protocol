@@ -517,13 +517,12 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
           <div class="preview" id="redeem-preview">
             <div class="preview-row"><span class="pk">Principal</span><span class="pv" id="rp-principal">—</span></div>
             <div class="preview-row"><span class="pk">FX Equivalent</span><span class="pv gold" id="rp-fx">—</span></div>
-            <div class="preview-row"><span class="pk">Gross Yield</span><span class="pv green" id="rp-gross">—</span></div>
-            <div class="preview-row"><span class="pk">Protocol Fee (10%)</span><span class="pv" id="rp-yield-fee">—</span></div>
-            <div class="preview-row"><span class="pk">Principal Penalty</span><span class="pv orange" id="rp-penalty">—</span></div>
+            <div class="preview-row"><span class="pk">Net Yield</span><span class="pv green" id="rp-gross">—</span></div>
+            <div class="preview-row" id="rp-penalty-row" style="display:none;"><span class="pk">Early Exit Fee</span><span class="pv orange" id="rp-penalty">—</span></div>
             <hr class="preview-divider"/>
             <div class="preview-row"><span class="pk">You Receive</span><span class="pv gold" id="rp-net">—</span></div>
             <div class="preview-row"><span class="pk">Lock Remaining</span><span class="pv" id="rp-remaining">—</span></div>
-            <div class="preview-row"><span class="pk">Exit Type</span><span class="pv" id="rp-exit-type">—</span></div>
+            <div class="preview-row" id="rp-exit-type-row" style="display:none;"><span class="pk">Exit Type</span><span class="pv" id="rp-exit-type">—</span></div>
           </div>
           <div id="notice-status" style="display:none;background:rgba(232,146,74,.08);border:1px solid rgba(232,146,74,.25);border-radius:3px;padding:10px 14px;margin-bottom:12px;font-family:var(--ff-mono);font-size:.56rem;color:var(--orange);"></div>
           <div style="display:flex;flex-direction:column;gap:6px;">
@@ -936,16 +935,27 @@ function updateRedeemPreview(){
     exitLabel = 'Immediate exit (5% principal)'; exitColor = 'var(--orange)';
   }
 
+  var netYield = yld - yieldFee;
+
   document.getElementById('rp-principal').textContent  = '$' + fmt(dep,2) + ' USDC';
   document.getElementById('rp-fx').textContent         = fmt(Number(fxAmt),0) + ' ' + vault.fxSymbol;
-  document.getElementById('rp-gross').textContent      = '+$' + fmt(yld,6) + ' USDC';
-  document.getElementById('rp-yield-fee').textContent  = '-$' + fmt(yieldFee,6) + ' USDC';
-  document.getElementById('rp-penalty').textContent    = penAmt > 0 ? '-$' + fmt(penAmt,4) + ' USDC' : 'None';
-  document.getElementById('rp-penalty').style.color    = penAmt > 0 ? 'var(--orange)' : 'var(--green)';
+  document.getElementById('rp-gross').innerHTML        = '+$' + fmt(netYield,6) + ' USDC <span style="font-size:.48rem;color:var(--muted);font-family:var(--ff-mono);">after applicable taxes</span>';
   document.getElementById('rp-net').textContent        = '$' + fmt(netOut,4) + ' USDC';
   document.getElementById('rp-remaining').textContent  = rem > 0.01 ? fmt(rem,1) + ' days remaining' : 'Matured ✓';
-  document.getElementById('rp-exit-type').textContent  = exitLabel;
-  document.getElementById('rp-exit-type').style.color  = exitColor;
+
+  // Only show penalty row if there is actually a penalty
+  var penaltyRow = document.getElementById('rp-penalty-row');
+  var exitTypeRow = document.getElementById('rp-exit-type-row');
+  if(penAmt > 0){
+    penaltyRow.style.display = 'flex';
+    document.getElementById('rp-penalty').textContent = '-$' + fmt(penAmt,4) + ' USDC';
+    exitTypeRow.style.display = 'flex';
+    document.getElementById('rp-exit-type').textContent = exitLabel;
+    document.getElementById('rp-exit-type').style.color = exitColor;
+  } else {
+    penaltyRow.style.display = 'none';
+    exitTypeRow.style.display = 'none';
+  }
 
   // Notice status bar
   var ns = document.getElementById('notice-status');
@@ -1201,10 +1211,9 @@ function buildRedeemSuccess(v,svAmt,uOut,grossYld,yieldFee,penAmt,netOut,hadPena
     '<div class="success-sub">USDC returned to your wallet</div>' +
     '<div class="success-data">' +
     '<div class="srow"><span class="sk">Principal</span><span class="sv">$'+fmt(uOut,2)+' USDC</span></div>' +
-    '<div class="srow"><span class="sk">Gross Yield</span><span class="sv green">+$'+fmt(grossYld,6)+' USDC</span></div>' +
-    '<div class="srow"><span class="sk">Protocol Fee (10%)</span><span class="sv orange">-$'+fmt(yieldFee,6)+' USDC</span></div>' +
-    (hadPenalty&&penAmt>0?'<div class="srow"><span class="sk">Principal Penalty</span><span class="sv orange">-$'+fmt(penAmt,4)+' USDC</span></div>':'') +
-    '<div class="srow"><span class="sk">Net Received</span><span class="sv gold">$'+fmt(netOut,4)+' USDC</span></div>' +
+    '<div class="srow"><span class="sk">Net Yield</span><span class="sv green">+$'+fmt(grossYld-yieldFee,6)+' USDC <span style=\'font-size:.48rem;color:var(--muted);\'>after taxes</span></span></div>' +
+    (hadPenalty&&penAmt>0?'<div class="srow"><span class="sk">Early Exit Fee</span><span class="sv orange">-$'+fmt(penAmt,4)+' USDC</span></div>':'') +
+    '<div class="srow"><span class="sk">You Received</span><span class="sv gold">$'+fmt(netOut,4)+' USDC</span></div>' +
     '</div>' +
     '<div class="tx-hash-display">TX: '+maskHash(hash)+' · Testnet</div>' +
     '<button class="btn btn-outline" style="margin-top:16px;width:100%;" onclick="closeModal()">Close</button>' +
