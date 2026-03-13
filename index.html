@@ -438,6 +438,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
           <div class="vc-name">Nigeria T-Bill</div>
           <div class="vc-apr">20%<span class="vc-apr-unit">APR</span></div>
           <div class="vc-tvl" id="tvl-svNG">TVL: $0</div>
+          <div class="vc-tvl" style="color:var(--muted2);margin-top:2px;">1 USDC = 1,350 NGN</div>
         </div>
         <div class="vault-card" data-vault="svTR" onclick="selectVault('svTR')">
           <div class="vc-flag">🇹🇷</div>
@@ -445,6 +446,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
           <div class="vc-name">Turkey T-Bill</div>
           <div class="vc-apr">27%<span class="vc-apr-unit">APR</span></div>
           <div class="vc-tvl" id="tvl-svTR">TVL: $0</div>
+          <div class="vc-tvl" style="color:var(--muted2);margin-top:2px;">1 USDC = 45 TRY</div>
         </div>
         <div class="vault-card" data-vault="svAR" onclick="selectVault('svAR')">
           <div class="vc-flag">🇦🇷</div>
@@ -452,6 +454,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
           <div class="vc-name">Argentina T-Bill</div>
           <div class="vc-apr">40%<span class="vc-apr-unit">APR</span></div>
           <div class="vc-tvl" id="tvl-svAR">TVL: $0</div>
+          <div class="vc-tvl" style="color:var(--muted2);margin-top:2px;">1 USDC = 1,400 ARS</div>
         </div>
       </div>
 
@@ -511,23 +514,22 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
         <div class="panel">
           <!-- Overlay when not connected -->
           <div class="panel-title">Redeem svToken</div>
-          <div class="field">
-            <div class="field-label">svToken Amount</div>
-            <div class="input-wrap">
-              <input type="number" id="redeem-input" placeholder="0.00" oninput="updateRedeemPreview()" min="0"/>
-              <span class="input-suffix" id="redeem-token-label">svNG</span>
-              <span class="input-max" onclick="setRedeemMax()">MAX</span>
-            </div>
-          </div>
           <div class="preview" id="redeem-preview">
-            <div class="preview-row"><span class="pk">You Return</span><span class="pv" id="rp-burn">0.00 svNG</span></div>
-            <div class="preview-row"><span class="pk">Principal</span><span class="pv" id="rp-principal">0.00 USDC</span></div>
-            <div class="preview-row"><span class="pk">Gross Yield</span><span class="pv green" id="rp-gross">+0.000 USDC</span></div>
+            <div class="preview-row"><span class="pk">Principal</span><span class="pv" id="rp-principal">—</span></div>
+            <div class="preview-row"><span class="pk">FX Equivalent</span><span class="pv gold" id="rp-fx">—</span></div>
+            <div class="preview-row"><span class="pk">Gross Yield</span><span class="pv green" id="rp-gross">—</span></div>
+            <div class="preview-row"><span class="pk">Protocol Fee (10%)</span><span class="pv" id="rp-yield-fee">—</span></div>
+            <div class="preview-row"><span class="pk">Principal Penalty</span><span class="pv orange" id="rp-penalty">—</span></div>
             <hr class="preview-divider"/>
-            <div class="preview-row"><span class="pk">Net Received</span><span class="pv gold" id="rp-net">0.00 USDC</span></div>
+            <div class="preview-row"><span class="pk">You Receive</span><span class="pv gold" id="rp-net">—</span></div>
             <div class="preview-row"><span class="pk">Lock Remaining</span><span class="pv" id="rp-remaining">—</span></div>
+            <div class="preview-row"><span class="pk">Exit Type</span><span class="pv" id="rp-exit-type">—</span></div>
           </div>
-          <button class="btn btn-outline" id="btn-redeem" onclick="doRedeem()" disabled>Redeem for USDC</button>
+          <div id="notice-status" style="display:none;background:rgba(232,146,74,.08);border:1px solid rgba(232,146,74,.25);border-radius:3px;padding:10px 14px;margin-bottom:12px;font-family:var(--ff-mono);font-size:.56rem;color:var(--orange);"></div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <button class="btn btn-outline" id="btn-give-notice" onclick="doGiveNotice()" disabled>Give 10-Day Notice (2.5% penalty)</button>
+            <button class="btn btn-outline" id="btn-redeem" onclick="doRedeem()" disabled>Redeem for USDC</button>
+          </div>
         </div>
       </div>
 
@@ -594,9 +596,9 @@ var TESTNET_PARAMS = {
 // ── Contract Addresses (Sepolia) ──
 var CONTRACTS = {
   USDC:  '0xe8c4aeAaB9a0BB1f061Df827D18d464C332423C1',
-  svNG:  '0x995926a923881FeC8621b2f4e92B426135426236',
-  svTR:  '0x06942C0e7eB69516ea9d5231fd4BB52ba19Cd67f',
-  svAR:  '0x3c7E9BE0b6DA202b3d941e85CEADC85396a97455',
+  svNG:  '0x6577ad58256E1008677c63E7a9A92dff6C15E56F',
+  svTR:  '0x226E99Ba6452460F8c9899F6d0Fa8e85Df0159D7',
+  svAR:  '0x46dB7a05dD66aafA75Df4068Eba23603d2bb30aA',
 };
 
 // ── ABIs ──
@@ -608,17 +610,21 @@ var USDC_ABI = [
 var VAULT_ABI = [
   {"inputs":[{"name":"usdcAmount","type":"uint256"},{"name":"lockDays","type":"uint256"}],"name":"deposit","outputs":[],"stateMutability":"nonpayable","type":"function"},
   {"inputs":[],"name":"redeem","outputs":[],"stateMutability":"nonpayable","type":"function"},
-  {"inputs":[{"name":"user","type":"address"}],"name":"getPosition","outputs":[{"name":"principal","type":"uint256"},{"name":"depositTime","type":"uint256"},{"name":"lockDays","type":"uint256"},{"name":"effectiveAprBps","type":"uint256"},{"name":"yieldEarned","type":"uint256"},{"name":"locked","type":"bool"},{"name":"daysLeft","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"giveNotice","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"name":"user","type":"address"}],"name":"getPosition","outputs":[{"name":"principal","type":"uint256"},{"name":"depositTime","type":"uint256"},{"name":"lockDays","type":"uint256"},{"name":"effectiveAprBps","type":"uint256"},{"name":"yieldEarned","type":"uint256"},{"name":"locked","type":"bool"},{"name":"daysLeft","type":"uint256"},{"name":"noticeGiven","type":"bool"},{"name":"noticeReadyAt","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"name":"user","type":"address"}],"name":"getRedemptionPreview","outputs":[{"name":"grossYield","type":"uint256"},{"name":"yieldFee","type":"uint256"},{"name":"principalPenalty","type":"uint256"},{"name":"netReceived","type":"uint256"},{"name":"exitType","type":"uint8"},{"name":"canRedeem","type":"bool"}],"stateMutability":"view","type":"function"},
   {"inputs":[{"name":"user","type":"address"}],"name":"getYieldEarned","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
   {"inputs":[],"name":"totalDeposited","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[{"name":"account","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+  {"inputs":[{"name":"account","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"fxRate","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"fxSymbol","outputs":[{"name":"","type":"string"}],"stateMutability":"view","type":"function"}
 ];
 
 // ── Vault Config ──
 var VAULTS = {
-  svNG: { name:'Nigeria T-Bill',   flag:'🇳🇬', baseApr:0.20, balKey:'svng' },
-  svTR: { name:'Turkey T-Bill',    flag:'🇹🇷', baseApr:0.27, balKey:'svtr' },
-  svAR: { name:'Argentina T-Bill', flag:'🇦🇷', baseApr:0.40, balKey:'svar' },
+  svNG: { name:'Nigeria T-Bill',   flag:'🇳🇬', baseApr:0.20, balKey:'svng', fxSymbol:'NGN', fxRate:135000 },
+  svTR: { name:'Turkey T-Bill',    flag:'🇹🇷', baseApr:0.27, balKey:'svtr', fxSymbol:'TRY', fxRate:4500   },
+  svAR: { name:'Argentina T-Bill', flag:'🇦🇷', baseApr:0.40, balKey:'svar', fxSymbol:'ARS', fxRate:140000 },
 };
 
 // ── Lock Period Config ──
@@ -643,6 +649,8 @@ var state = {
   yieldEarned: { svNG:0, svTR:0, svAR:0 },
   lockDays:    { svNG:0, svTR:0, svAR:0 },
   lockStart:   { svNG:null, svTR:null, svAR:null },
+  noticeGiven: { svNG:false, svTR:false, svAR:false },
+  noticeReadyAt:{ svNG:0, svTR:0, svAR:0 },
   tvl:         { svNG:0, svTR:0, svAR:0 },
   effectiveApr:{ svNG:0.20, svTR:0.27, svAR:0.40 },
   selectedVault: 'svNG',
@@ -740,23 +748,26 @@ async function loadChainData(){
     // Per-vault positions
     for(var v of ['svNG','svTR','svAR']){
       var pos = await wallet.vaults[v].getPosition(wallet.address);
-      var principal   = Number(ethers.formatUnits(pos[0], 6));
-      var lockDays    = Number(pos[2]);
-      var aprBps      = Number(pos[3]);
-      var yieldEarned = Number(ethers.formatUnits(pos[4], 6));
-      var locked      = pos[5];
-      var daysLeft    = Number(pos[6]);
-      var svBal       = Number(ethers.formatUnits(await wallet.vaults[v].balanceOf(wallet.address), 6));
-      var tvlRaw      = await wallet.vaults[v].totalDeposited();
+      var principal    = Number(ethers.formatUnits(pos[0], 6));
+      var lockDays     = Number(pos[2]);
+      var aprBps       = Number(pos[3]);
+      var yieldEarned  = Number(ethers.formatUnits(pos[4], 6));
+      var locked       = pos[5];
+      var daysLeft     = Number(pos[6]);
+      var noticeGiven  = pos[7];
+      var noticeReadyAt= Number(pos[8]);
+      var svBal        = Number(ethers.formatUnits(await wallet.vaults[v].balanceOf(wallet.address), 6));
+      var tvlRaw       = await wallet.vaults[v].totalDeposited();
 
-      state.balances[v]    = svBal;
-      state.deposited[v]   = principal;
-      state.yieldEarned[v] = yieldEarned;
-      state.lockDays[v]    = lockDays;
-      state.effectiveApr[v]= aprBps / 10000;
-      state.tvl[v]         = Number(ethers.formatUnits(tvlRaw, 6));
+      state.balances[v]      = svBal;
+      state.deposited[v]     = principal;
+      state.yieldEarned[v]   = yieldEarned;
+      state.lockDays[v]      = lockDays;
+      state.effectiveApr[v]  = aprBps / 10000;
+      state.tvl[v]           = Number(ethers.formatUnits(tvlRaw, 6));
+      state.noticeGiven[v]   = noticeGiven;
+      state.noticeReadyAt[v] = noticeReadyAt * 1000; // to ms
 
-      // Reconstruct lockStart from daysLeft
       if(locked && lockDays > 0){
         var unlockMs = Date.now() + daysLeft * 86400 * 1000;
         state.lockStart[v] = unlockMs - lockDays * 86400 * 1000;
@@ -795,7 +806,7 @@ function disconnectWallet(){
   state = Object.assign(state, {
     usdc:0, balances:{svNG:0,svTR:0,svAR:0}, deposited:{svNG:0,svTR:0,svAR:0},
     yieldEarned:{svNG:0,svTR:0,svAR:0}, lockDays:{svNG:0,svTR:0,svAR:0},
-    lockStart:{svNG:null,svTR:null,svAR:null}, tvl:{svNG:0,svTR:0,svAR:0},
+    lockStart:{svNG:null,svTR:null,svAR:null}, noticeGiven:{svNG:false,svTR:false,svAR:false}, noticeReadyAt:{svNG:0,svTR:0,svAR:0}, tvl:{svNG:0,svTR:0,svAR:0},
   });
   document.getElementById('bal-usdc').textContent     = '—';
   document.getElementById('bal-usdc-usd').textContent = 'Connect wallet';
@@ -888,30 +899,90 @@ function updateDepositPreview(){
 }
 
 function updateRedeemPreview(){
-  var amt   = parseFloat(document.getElementById('redeem-input').value)||0;
-  var v     = state.selectedVault;
-  var vault = VAULTS[v];
-  var uOut  = amt / vault.rate;
-  var yld   = state.yieldEarned[v];
-  var bal   = state.balances[v];
-  var ratio = bal > 0 ? amt/bal : 0;
-  var grossYld = yld * ratio;
-  var locked   = isLocked(v);
-  var penFrac  = locked ? (LOCKS[state.lockDays[v]]?.penalty||0.10) : 0;
-  var penAmt   = grossYld * penFrac;
-  var netOut   = uOut + grossYld - penAmt;
-  var rem      = daysRemaining(state.lockStart[v], state.lockDays[v]);
+  var v      = state.selectedVault;
+  var vault  = VAULTS[v];
+  var dep    = state.deposited[v];
+  var yld    = state.yieldEarned[v];
+  var locked = isLocked(v);
+  var rem    = daysRemaining(state.lockStart[v], state.lockDays[v]);
+  var noticeGiven   = state.noticeGiven[v];
+  var noticeReadyAt = state.noticeReadyAt[v];
+  var noticeReady   = noticeGiven && Date.now() >= noticeReadyAt;
 
-  document.getElementById('rp-burn').textContent      = fmt(amt,2) + ' ' + v;
-  document.getElementById('rp-principal').textContent = fmt(uOut,4) + ' USDC';
-  document.getElementById('rp-gross').textContent     = '+' + fmt(grossYld,6) + ' USDC';
-  document.getElementById('rp-net').textContent       = fmt(netOut,4) + ' USDC';
-  document.getElementById('rp-remaining').textContent = rem > 0.01 ? fmt(rem,1) + ' days remaining' : 'Unlocked ✓';
+  if(dep <= 0){
+    ['rp-principal','rp-fx','rp-gross','rp-yield-fee','rp-penalty','rp-net','rp-remaining','rp-exit-type']
+      .forEach(function(id){ document.getElementById(id).textContent = '—'; });
+    document.getElementById('btn-give-notice').disabled = true;
+    document.getElementById('btn-redeem').disabled = true;
+    document.getElementById('notice-status').style.display = 'none';
+    return;
+  }
+
+  var yieldFee  = yld * 0.10;
+  var penFrac   = locked ? (noticeReady ? 0.025 : 0.05) : 0;
+  var penAmt    = dep * penFrac;
+  var netOut    = (dep - penAmt) + (yld - yieldFee);
+  var fxAmt     = (dep * vault.fxRate / 100).toFixed(0);
+
+  var exitLabel, exitColor;
+  if(!locked){
+    exitLabel = 'Matured — no penalty'; exitColor = 'var(--green)';
+  } else if(noticeReady){
+    exitLabel = '10-day notice served'; exitColor = 'var(--gold)';
+  } else if(noticeGiven){
+    var daysLeft = Math.ceil((noticeReadyAt - Date.now()) / 86400000);
+    exitLabel = 'Notice given — ' + daysLeft + 'd remaining'; exitColor = 'var(--orange)';
+  } else {
+    exitLabel = 'Immediate exit (5% principal)'; exitColor = 'var(--orange)';
+  }
+
+  document.getElementById('rp-principal').textContent  = '$' + fmt(dep,2) + ' USDC';
+  document.getElementById('rp-fx').textContent         = fmt(Number(fxAmt),0) + ' ' + vault.fxSymbol;
+  document.getElementById('rp-gross').textContent      = '+$' + fmt(yld,6) + ' USDC';
+  document.getElementById('rp-yield-fee').textContent  = '-$' + fmt(yieldFee,6) + ' USDC';
+  document.getElementById('rp-penalty').textContent    = penAmt > 0 ? '-$' + fmt(penAmt,4) + ' USDC' : 'None';
+  document.getElementById('rp-penalty').style.color    = penAmt > 0 ? 'var(--orange)' : 'var(--green)';
+  document.getElementById('rp-net').textContent        = '$' + fmt(netOut,4) + ' USDC';
+  document.getElementById('rp-remaining').textContent  = rem > 0.01 ? fmt(rem,1) + ' days remaining' : 'Matured ✓';
+  document.getElementById('rp-exit-type').textContent  = exitLabel;
+  document.getElementById('rp-exit-type').style.color  = exitColor;
+
+  // Notice status bar
+  var ns = document.getElementById('notice-status');
+  if(noticeGiven && !noticeReady){
+    var dLeft = Math.ceil((noticeReadyAt - Date.now()) / 86400000);
+    ns.style.display = 'block';
+    ns.textContent   = '⏳ Notice period active — ' + dLeft + ' day(s) until you can withdraw at 2.5% penalty';
+  } else if(noticeReady){
+    ns.style.display = 'block';
+    ns.style.color   = 'var(--green)';
+    ns.textContent   = '✓ Notice period complete — you can now redeem at 2.5% penalty';
+  } else {
+    ns.style.display = 'none';
+  }
+
+  // Button states
+  var canGiveNotice = locked && !noticeGiven;
+  var canRedeem     = !locked || noticeReady || true; // immediate always allowed
+  document.getElementById('btn-give-notice').disabled = !canGiveNotice;
+  document.getElementById('btn-redeem').disabled      = dep <= 0;
+
+  // Update redeem button label
+  var redeemBtn = document.getElementById('btn-redeem');
+  if(!locked){
+    redeemBtn.textContent = 'Redeem for USDC — No Penalty';
+    redeemBtn.className   = 'btn btn-gold';
+  } else if(noticeReady){
+    redeemBtn.textContent = 'Redeem for USDC — 2.5% Penalty';
+    redeemBtn.className   = 'btn btn-outline';
+  } else {
+    redeemBtn.textContent = 'Immediate Exit — 5% Penalty';
+    redeemBtn.className   = 'btn btn-orange';
+  }
 }
 
 function updateRedeemBtn(){
-  var v = state.selectedVault;
-  document.getElementById('btn-redeem').disabled = state.balances[v] <= 0;
+  updateRedeemPreview();
 }
 
 function setDepositMax(){ document.getElementById('deposit-input').value=Math.floor(state.usdc); updateDepositPreview(); }
@@ -977,46 +1048,86 @@ async function doDeposit(){
   }
 }
 
-// ══ REDEEM ═══════════════════════════════════
-async function doRedeem(){
+// ══ GIVE NOTICE ══════════════════════════════
+async function doGiveNotice(){
   if(!wallet.connected) return;
-  var v      = state.selectedVault;
-  var locked = isLocked(v);
-  var penFrac= locked ? (LOCKS[state.lockDays[v]]?.penalty||0.10) : 0;
-  var grossYld = state.yieldEarned[v];
-  var penAmt   = grossYld * penFrac;
-  var principal= state.deposited[v];
+  var v = state.selectedVault;
+  if(state.deposited[v] <= 0){ alert('No active position.'); return; }
+  if(state.noticeGiven[v]){ alert('Notice already given.'); return; }
 
-  if(principal <= 0){ alert('No active position to redeem.'); return; }
-
-  var steps = locked
-    ? ['Signing transaction','Burning ' + v + ' tokens','Applying early exit penalty','Releasing USDC','Settlement complete']
-    : ['Signing transaction','Burning ' + v + ' tokens','Calculating yield','Releasing USDC + yield','Settlement complete'];
-
-  showModal(buildProcessing('Redeeming ' + v, steps, locked ? { penFrac:penFrac, penAmt:penAmt, grossYld:grossYld } : null));
+  showModal(buildProcessing('Giving 10-Day Notice', [
+    'Signing transaction',
+    'Recording notice on-chain',
+    'Notice period started',
+  ]));
 
   try {
     var stepEls = document.querySelectorAll('#modal-body .proc-step');
     stepEls[0].classList.add('active');
+    var tx = await wallet.vaults[v].giveNotice();
+    stepEls[0].classList.remove('active'); stepEls[0].classList.add('done');
+    stepEls[1].classList.add('active');
+    await tx.wait();
+    stepEls[1].classList.remove('active'); stepEls[1].classList.add('done');
+    stepEls[2].classList.add('active'); stepEls[2].classList.remove('active'); stepEls[2].classList.add('done');
 
+    await loadChainData();
+    showModal('<div class="success-modal fade-in">' +
+      '<div class="success-icon">⏳</div>' +
+      '<div class="success-title">Notice Recorded</div>' +
+      '<div class="success-sub">10-day notice period has started</div>' +
+      '<div class="success-data">' +
+      '<div class="srow"><span class="sk">Notice Given</span><span class="sv">Now</span></div>' +
+      '<div class="srow"><span class="sk">Can Withdraw From</span><span class="sv gold">' + new Date(Date.now() + 10*86400*1000).toLocaleDateString('en-US',{month:"short",day:"numeric",year:"numeric"}) + '</span></div>' +
+      '<div class="srow"><span class="sk">Penalty on Withdrawal</span><span class="sv orange">2.5% of principal</span></div>' +
+      '</div>' +
+      '<button class="btn btn-outline" style="margin-top:16px;width:100%;" onclick="closeModal()">Close</button>' +
+      '</div>');
+  } catch(e){
+    closeModal();
+    if(e.code === 4001) alert('Transaction cancelled.');
+    else alert('Transaction failed: ' + (e.reason || e.message));
+  }
+}
+
+async function doRedeem(){
+  if(!wallet.connected) return;
+  var v         = state.selectedVault;
+  var locked    = isLocked(v);
+  var principal = state.deposited[v];
+  var grossYld  = state.yieldEarned[v];
+  var noticeGiven  = state.noticeGiven[v];
+  var noticeReady  = noticeGiven && Date.now() >= state.noticeReadyAt[v];
+  var yieldFee     = grossYld * 0.10;
+  var penFrac      = locked ? (noticeReady ? 0.025 : 0.05) : 0;
+  var penAmt       = principal * penFrac;
+  var netOut       = (principal - penAmt) + (grossYld - yieldFee);
+
+  if(principal <= 0){ alert('No active position to redeem.'); return; }
+
+  var exitLabel = !locked ? 'Matured' : noticeReady ? '10-Day Notice' : 'Immediate Exit';
+  var steps = ['Signing transaction', 'Burning ' + v + ' tokens', 'Calculating fees', 'Releasing USDC', 'Settlement complete'];
+  var txCost = locked ? { penFrac:penFrac, penAmt:penAmt, grossYld:grossYld } : null;
+
+  showModal(buildProcessing('Redeeming ' + v + ' — ' + exitLabel, steps, txCost));
+
+  try {
+    var stepEls = document.querySelectorAll('#modal-body .proc-step');
+    stepEls[0].classList.add('active');
     var tx = await wallet.vaults[v].redeem();
     stepEls[0].classList.remove('active'); stepEls[0].classList.add('done');
     stepEls[1].classList.add('active');
-
     var receipt = await tx.wait();
     for(var i=1;i<steps.length;i++){
       stepEls[i].classList.remove('active'); stepEls[i].classList.add('done');
       if(i+1<steps.length) stepEls[i+1].classList.add('active');
-      await new Promise(r=>setTimeout(r,400));
+      await new Promise(r=>setTimeout(r,350));
     }
-
     var hash   = receipt.hash;
-    var netOut = principal + grossYld - penAmt;
     var txType = locked ? 'penalty' : 'redeem';
-    logTx(txType, v, '+'+fmt(netOut,4)+' USDC', hash);
+    logTx(txType, v, '+$'+fmt(netOut,4)+' USDC', hash);
     await loadChainData();
-    showModal(buildRedeemSuccess(v, principal, principal, grossYld, penAmt, netOut, locked, hash));
-
+    showModal(buildRedeemSuccess(v, principal, principal, grossYld, yieldFee, penAmt, netOut, locked, hash));
   } catch(e){
     closeModal();
     if(e.code === 4001) alert('Transaction cancelled.');
@@ -1083,17 +1194,17 @@ function buildDepositSuccess(v,amt,svR,lock,apr,hash){
     '</div>';
 }
 
-function buildRedeemSuccess(v,svAmt,uOut,grossYld,penAmt,netOut,hadPenalty,hash){
+function buildRedeemSuccess(v,svAmt,uOut,grossYld,yieldFee,penAmt,netOut,hadPenalty,hash){
   return '<div class="success-modal fade-in">' +
     '<div class="success-icon">'+(hadPenalty?'⚠':'◎')+'</div>' +
     '<div class="success-title">Redemption Complete</div>' +
     '<div class="success-sub">USDC returned to your wallet</div>' +
     '<div class="success-data">' +
-    '<div class="srow"><span class="sk">Burned</span><span class="sv">'+fmt(svAmt,2)+' '+v+'</span></div>' +
-    '<div class="srow"><span class="sk">Principal</span><span class="sv">'+fmt(uOut,4)+' USDC</span></div>' +
-    '<div class="srow"><span class="sk">Gross Yield</span><span class="sv green">+'+fmt(grossYld,6)+' USDC</span></div>' +
-    (hadPenalty?'<div class="srow"><span class="sk">Early Exit Penalty</span><span class="sv orange">-'+fmt(penAmt,6)+' USDC</span></div>':'') +
-    '<div class="srow"><span class="sk">Net Received</span><span class="sv gold">'+fmt(netOut,4)+' USDC</span></div>' +
+    '<div class="srow"><span class="sk">Principal</span><span class="sv">$'+fmt(uOut,2)+' USDC</span></div>' +
+    '<div class="srow"><span class="sk">Gross Yield</span><span class="sv green">+$'+fmt(grossYld,6)+' USDC</span></div>' +
+    '<div class="srow"><span class="sk">Protocol Fee (10%)</span><span class="sv orange">-$'+fmt(yieldFee,6)+' USDC</span></div>' +
+    (hadPenalty&&penAmt>0?'<div class="srow"><span class="sk">Principal Penalty</span><span class="sv orange">-$'+fmt(penAmt,4)+' USDC</span></div>':'') +
+    '<div class="srow"><span class="sk">Net Received</span><span class="sv gold">$'+fmt(netOut,4)+' USDC</span></div>' +
     '</div>' +
     '<div class="tx-hash-display">TX: '+maskHash(hash)+' · Testnet</div>' +
     '<button class="btn btn-outline" style="margin-top:16px;width:100%;" onclick="closeModal()">Close</button>' +
