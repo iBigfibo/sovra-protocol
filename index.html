@@ -325,6 +325,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
         <div class="bal-usd" id="bal-usdc-usd">Connect wallet</div>
       </div>
     </div>
+    <button onclick="claimFaucet()" style="width:100%;margin-top:10px;padding:7px;background:rgba(200,168,75,.08);border:1px solid var(--gold-dim);color:var(--gold);font-family:var(--ff-mono);font-size:.5rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:var(--radius);">+ Claim 10,000 USDC Faucet</button>
     <div class="bal-row" id="bal-svng-row" style="display:none;">
       <div class="bal-left">
         <div class="bal-icon bi-sv">svNG</div>
@@ -592,11 +593,34 @@ var TESTNET_PARAMS = {
   blockExplorerUrls: ['https://sepolia.etherscan.io'],
 };
 
+// ── Contract Addresses (Sepolia) ──
+var CONTRACTS = {
+  USDC:  '0xe8c4aeAaB9a0BB1f061Df827D18d464C332423C1',
+  svNG:  '0x995926a923881FeC8621b2f4e92B426135426236',
+  svTR:  '0x06942C0e7eB69516ea9d5231fd4BB52ba19Cd67f',
+  svAR:  '0x3c7E9BE0b6DA202b3d941e85CEADC85396a97455',
+};
+
+// ── ABIs ──
+var USDC_ABI = [
+  {"inputs":[],"name":"faucet","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"name":"spender","type":"address"},{"name":"amount","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"name":"account","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+];
+var VAULT_ABI = [
+  {"inputs":[{"name":"usdcAmount","type":"uint256"},{"name":"lockDays","type":"uint256"}],"name":"deposit","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[],"name":"redeem","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"name":"user","type":"address"}],"name":"getPosition","outputs":[{"name":"principal","type":"uint256"},{"name":"depositTime","type":"uint256"},{"name":"lockDays","type":"uint256"},{"name":"effectiveAprBps","type":"uint256"},{"name":"yieldEarned","type":"uint256"},{"name":"locked","type":"bool"},{"name":"daysLeft","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"name":"user","type":"address"}],"name":"getYieldEarned","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"totalDeposited","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"name":"account","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+];
+
 // ── Vault Config ──
 var VAULTS = {
-  svNG: { name:'Nigeria T-Bill',   flag:'🇳🇬', baseApr:0.20, rate:1400, balKey:'svng' },
-  svTR: { name:'Turkey T-Bill',    flag:'🇹🇷', baseApr:0.27, rate:43,   balKey:'svtr' },
-  svAR: { name:'Argentina T-Bill', flag:'🇦🇷', baseApr:0.40, rate:1450, balKey:'svar' },
+  svNG: { name:'Nigeria T-Bill',   flag:'🇳🇬', baseApr:0.20, balKey:'svng' },
+  svTR: { name:'Turkey T-Bill',    flag:'🇹🇷', baseApr:0.27, balKey:'svtr' },
+  svAR: { name:'Argentina T-Bill', flag:'🇦🇷', baseApr:0.40, balKey:'svar' },
 };
 
 // ── Lock Period Config ──
@@ -648,6 +672,7 @@ function lockProgress(startMs, lockDays){
   return Math.min(1, elapsed/lockDays);
 }
 function isLocked(v){
+  if(!state.lockStart[v] || !state.lockDays[v]) return false;
   var rem = daysRemaining(state.lockStart[v], state.lockDays[v]);
   return rem > 0.001;
 }
@@ -674,17 +699,23 @@ async function connectWallet(){
     var chainId = await window.ethereum.request({ method:'eth_chainId' });
     wallet.chainOk = (chainId.toLowerCase() === TESTNET_CHAIN_ID.toLowerCase());
 
+    // Load contracts
+    wallet.usdc  = new ethers.Contract(CONTRACTS.USDC, USDC_ABI,  wallet.signer);
+    wallet.vaults = {
+      svNG: new ethers.Contract(CONTRACTS.svNG, VAULT_ABI, wallet.signer),
+      svTR: new ethers.Contract(CONTRACTS.svTR, VAULT_ABI, wallet.signer),
+      svAR: new ethers.Contract(CONTRACTS.svAR, VAULT_ABI, wallet.signer),
+    };
+
     updateWalletUI();
     hideOverlays();
-
-    // Simulate testnet USDC airdrop
-    state.usdc = 10000;
-    updateAll();
+    await loadChainData();
 
     window.ethereum.on('accountsChanged', function(accs){
       if(!accs.length){ disconnectWallet(); return; }
       wallet.address = accs[0];
       updateWalletUI();
+      loadChainData();
     });
     window.ethereum.on('chainChanged', function(cid){
       wallet.chainOk = (cid.toLowerCase() === TESTNET_CHAIN_ID.toLowerCase());
@@ -692,10 +723,67 @@ async function connectWallet(){
     });
 
     setInterval(tickBlock, 3000);
+    setInterval(loadChainData, 15000); // refresh every 15s
 
   } catch(e){
     if(e.code === 4001) console.log('User rejected connection');
     else console.error(e);
+  }
+}
+
+// Load real on-chain data
+async function loadChainData(){
+  if(!wallet.connected || !wallet.chainOk) return;
+  try {
+    // USDC balance (6 decimals)
+    var usdcRaw = await wallet.usdc.balanceOf(wallet.address);
+    state.usdc = Number(ethers.formatUnits(usdcRaw, 6));
+
+    // Per-vault positions
+    for(var v of ['svNG','svTR','svAR']){
+      var pos = await wallet.vaults[v].getPosition(wallet.address);
+      var principal   = Number(ethers.formatUnits(pos[0], 6));
+      var lockDays    = Number(pos[2]);
+      var aprBps      = Number(pos[3]);
+      var yieldEarned = Number(ethers.formatUnits(pos[4], 6));
+      var locked      = pos[5];
+      var daysLeft    = Number(pos[6]);
+      var svBal       = Number(ethers.formatUnits(await wallet.vaults[v].balanceOf(wallet.address), 6));
+      var tvlRaw      = await wallet.vaults[v].totalDeposited();
+
+      state.balances[v]    = svBal;
+      state.deposited[v]   = principal;
+      state.yieldEarned[v] = yieldEarned;
+      state.lockDays[v]    = lockDays;
+      state.effectiveApr[v]= aprBps / 10000;
+      state.tvl[v]         = Number(ethers.formatUnits(tvlRaw, 6));
+
+      // Reconstruct lockStart from daysLeft
+      if(locked && lockDays > 0){
+        var unlockMs = Date.now() + daysLeft * 86400 * 1000;
+        state.lockStart[v] = unlockMs - lockDays * 86400 * 1000;
+      } else if(!locked && lockDays > 0){
+        state.lockStart[v] = Date.now() - lockDays * 86400 * 1000;
+      } else {
+        state.lockStart[v] = null;
+      }
+    }
+    updateAll();
+  } catch(e){
+    console.error('loadChainData error:', e);
+  }
+}
+
+// Claim free testnet USDC
+async function claimFaucet(){
+  if(!wallet.connected){ alert('Connect wallet first.'); return; }
+  try {
+    var tx = await wallet.usdc.faucet();
+    await tx.wait();
+    await loadChainData();
+    alert('10,000 testnet USDC added to your wallet!');
+  } catch(e){
+    alert('Faucet failed: ' + (e.reason || e.message));
   }
 }
 
@@ -841,77 +929,106 @@ async function doDeposit(){
   var amt = parseFloat(document.getElementById('deposit-input').value);
   if(!amt||amt<=0){ alert('Enter an amount to deposit.'); return; }
   if(amt>state.usdc){ alert('Insufficient USDC balance.'); return; }
-  var v     = state.selectedVault;
-  var vault = VAULTS[v];
-  var lock  = state.selectedLock;
-  var apr   = effectiveApr(v, lock);
-  var svR   = amt * vault.rate;
+  var v      = state.selectedVault;
+  var lock   = state.selectedLock;
+  var apr    = effectiveApr(v, lock);
   var penPct = ((LOCKS[lock]?.penalty||0.10)*100).toFixed(0);
+  var amtRaw = ethers.parseUnits(amt.toString(), 6);
 
   showModal(buildProcessing('Confirming with ' + fmtAddr(wallet.address), [
-    'Simulating USDC approval',
-    'Signing deposit transaction',
-    'Locking funds — ' + lock + ' day lock',
+    'Approving USDC spend',
+    'Approval confirmed',
+    'Depositing to vault',
     'Minting ' + v + ' tokens',
-    'Updating vault state',
+    'Position opened',
   ]));
 
-  await runSteps('modal-body', 5, 550, async function(){
-    var hash = randHash();
-    state.usdc          -= amt;
-    state.balances[v]   += svR;
-    state.deposited[v]  += amt;
-    state.lockDays[v]    = lock;
-    state.lockStart[v]   = Date.now();
-    state.effectiveApr[v] = apr;
-    state.tvl[v]         += amt;
-    logTx('deposit', v, '+'+fmt(svR,2)+' '+v, hash);
-    showModal(buildDepositSuccess(v, amt, svR, lock, apr, penPct, hash));
-    updateAll();
-  });
+  try {
+    var steps = document.querySelectorAll('#modal-body .proc-step');
+
+    // Step 1: Approve
+    steps[0].classList.add('active');
+    var approveTx = await wallet.usdc.approve(CONTRACTS[v], amtRaw);
+    await approveTx.wait();
+    steps[0].classList.remove('active'); steps[0].classList.add('done');
+
+    // Step 2: Approval confirmed
+    steps[1].classList.add('active');
+    steps[1].classList.remove('active'); steps[1].classList.add('done');
+
+    // Step 3: Deposit
+    steps[2].classList.add('active');
+    var depositTx = await wallet.vaults[v].deposit(amtRaw, lock);
+    var receipt = await depositTx.wait();
+    steps[2].classList.remove('active'); steps[2].classList.add('done');
+
+    // Step 4-5: Done
+    steps[3].classList.add('active');
+    steps[3].classList.remove('active'); steps[3].classList.add('done');
+    steps[4].classList.add('active');
+    steps[4].classList.remove('active'); steps[4].classList.add('done');
+
+    var hash = receipt.hash;
+    logTx('deposit', v, '+'+fmt(amt,2)+' USDC', hash);
+    await loadChainData();
+    showModal(buildDepositSuccess(v, amt, amt, lock, apr, penPct, hash));
+
+  } catch(e){
+    closeModal();
+    if(e.code === 4001) alert('Transaction cancelled.');
+    else alert('Transaction failed: ' + (e.reason || e.message));
+  }
 }
 
 // ══ REDEEM ═══════════════════════════════════
 async function doRedeem(){
   if(!wallet.connected) return;
-  var amt  = parseFloat(document.getElementById('redeem-input').value);
-  var v    = state.selectedVault;
-  var vault= VAULTS[v];
-  if(!amt||amt<=0){ alert('Enter an amount to redeem.'); return; }
-  if(amt>state.balances[v]){ alert('Insufficient '+v+' balance.'); return; }
+  var v      = state.selectedVault;
+  var locked = isLocked(v);
+  var penFrac= locked ? (LOCKS[state.lockDays[v]]?.penalty||0.10) : 0;
+  var grossYld = state.yieldEarned[v];
+  var penAmt   = grossYld * penFrac;
+  var principal= state.deposited[v];
 
-  var locked  = isLocked(v);
-  var penFrac = locked ? (LOCKS[state.lockDays[v]]?.penalty||0.10) : 0;
-  var uOut    = amt / vault.rate;
-  var ratio   = state.balances[v] > 0 ? amt/state.balances[v] : 0;
-  var grossYld= state.yieldEarned[v] * ratio;
-  var penAmt  = grossYld * penFrac;
-  var netOut  = uOut + grossYld - penAmt;
+  if(principal <= 0){ alert('No active position to redeem.'); return; }
 
   var steps = locked
-    ? ['Burning ' + v + ' tokens','Calculating yield','Applying early exit penalty','Releasing USDC','Settlement complete']
-    : ['Burning ' + v + ' tokens','Calculating yield','Releasing USDC + yield','Settlement complete'];
+    ? ['Signing transaction','Burning ' + v + ' tokens','Applying early exit penalty','Releasing USDC','Settlement complete']
+    : ['Signing transaction','Burning ' + v + ' tokens','Calculating yield','Releasing USDC + yield','Settlement complete'];
 
   showModal(buildProcessing('Redeeming ' + v, steps, locked ? { penFrac:penFrac, penAmt:penAmt, grossYld:grossYld } : null));
 
-  await runSteps('modal-body', steps.length, 600, async function(){
-    var hash = randHash();
-    state.balances[v]   -= amt;
-    state.yieldEarned[v]-= grossYld;
-    if(state.balances[v]<0.001){ state.balances[v]=0; state.deposited[v]=0; state.yieldEarned[v]=0; state.lockStart[v]=null; }
-    state.usdc += netOut;
-    state.tvl[v] = Math.max(0, state.tvl[v] - uOut);
+  try {
+    var stepEls = document.querySelectorAll('#modal-body .proc-step');
+    stepEls[0].classList.add('active');
+
+    var tx = await wallet.vaults[v].redeem();
+    stepEls[0].classList.remove('active'); stepEls[0].classList.add('done');
+    stepEls[1].classList.add('active');
+
+    var receipt = await tx.wait();
+    for(var i=1;i<steps.length;i++){
+      stepEls[i].classList.remove('active'); stepEls[i].classList.add('done');
+      if(i+1<steps.length) stepEls[i+1].classList.add('active');
+      await new Promise(r=>setTimeout(r,400));
+    }
+
+    var hash   = receipt.hash;
+    var netOut = principal + grossYld - penAmt;
     var txType = locked ? 'penalty' : 'redeem';
     logTx(txType, v, '+'+fmt(netOut,4)+' USDC', hash);
-    showModal(buildRedeemSuccess(v, amt, uOut, grossYld, penAmt, netOut, locked, hash));
-    updateAll();
-  });
+    await loadChainData();
+    showModal(buildRedeemSuccess(v, principal, principal, grossYld, penAmt, netOut, locked, hash));
+
+  } catch(e){
+    closeModal();
+    if(e.code === 4001) alert('Transaction cancelled.');
+    else alert('Transaction failed: ' + (e.reason || e.message));
+  }
 }
 
 function quickRedeem(v){
   selectVault(v);
-  document.getElementById('redeem-input').value = fmt(state.balances[v],2).replace(/,/g,'');
-  updateRedeemPreview();
   doRedeem();
 }
 
@@ -997,7 +1114,7 @@ function renderPositions(){
     var svBal  = state.balances[v];
     var dep    = state.deposited[v];
     var yld    = state.yieldEarned[v];
-    var curVal = svBal/vault.rate + yld;
+    var curVal = dep + yld;
     var apr    = state.effectiveApr[v]||vault.baseApr;
     var locked = isLocked(v);
     var prog   = lockProgress(state.lockStart[v], state.lockDays[v]);
@@ -1085,18 +1202,6 @@ function tickBlock(){
   document.getElementById('block-num').textContent = state.blockNum.toLocaleString();
 }
 
-// ── Yield Accrual (real-time sim) ──
-function accrueYield(){
-  if(!wallet.connected) return;
-  Object.keys(state.balances).forEach(function(v){
-    if(state.balances[v]<=0) return;
-    var apr   = state.effectiveApr[v] || VAULTS[v].baseApr;
-    var perMs = (state.deposited[v]*apr)/(365*24*3600*1000);
-    state.yieldEarned[v]  += perMs*100;
-    state.balances[v]     += perMs*100*VAULTS[v].rate;
-  });
-}
-
 function updateAll(){
   renderBalances();
   renderStats();
@@ -1109,7 +1214,6 @@ function updateAll(){
 // ── Init ──
 updateDepositPreview();
 updateLockGrid();
-setInterval(function(){ accrueYield(); updateAll(); }, 100);
 </script>
 </body>
 </html>
