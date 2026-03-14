@@ -293,7 +293,8 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   <div class="sb-logo">
     <div class="logo-mark">S<em>o</em>vra</div>
     <div class="logo-sub">Protocol Interface</div>
-    <div class="net-badge">Testnet</div>
+    <div style="font-family:var(--ff-serif);font-size:.68rem;color:var(--muted2);font-style:italic;margin-top:4px;line-height:1.4;">Synthetic sovereign yield vault protocol</div>
+    <div class="net-badge">Sepolia Testnet</div>
   </div>
 
   <div class="wallet-section">
@@ -310,6 +311,11 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
         <button class="btn-switch-net" onclick="switchNetwork()">Switch Network</button>
       </div>
       <button class="btn-disconnect" style="margin-top:10px;" onclick="disconnectWallet()">Disconnect</button>
+    </div>
+    <div id="gas-banner" style="display:none;margin-top:10px;background:rgba(224,92,92,.08);border:1px solid rgba(224,92,92,.25);border-radius:3px;padding:8px 10px;">
+      <div style="font-family:var(--ff-mono);font-size:.5rem;color:var(--red);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">⚠ Low Sepolia ETH</div>
+      <div style="font-family:var(--ff-mono);font-size:.52rem;color:var(--muted2);margin-bottom:7px;">You need ETH for gas. Get free Sepolia ETH to interact with the protocol.</div>
+      <button onclick="showGasFaucet()" style="width:100%;padding:7px;background:rgba(224,92,92,.12);border:1px solid rgba(224,92,92,.3);color:var(--red);font-family:var(--ff-mono);font-size:.5rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:3px;">Get Free Sepolia ETH</button>
     </div>
   </div>
 
@@ -518,7 +524,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
             <div class="preview-row"><span class="pk">Principal</span><span class="pv" id="rp-principal">—</span></div>
             <div class="preview-row"><span class="pk">FX Equivalent</span><span class="pv gold" id="rp-fx">—</span></div>
             <div class="preview-row"><span class="pk">Net Yield</span><span class="pv green" id="rp-gross">—</span></div>
-            <div class="preview-row" id="rp-penalty-row" style="display:none;"><span class="pk">Early Exit Fee</span><span class="pv orange" id="rp-penalty">—</span></div>
+            
             <hr class="preview-divider"/>
             <div class="preview-row"><span class="pk">You Receive</span><span class="pv gold" id="rp-net">—</span></div>
             <div class="preview-row"><span class="pk">Lock Remaining</span><span class="pv" id="rp-remaining">—</span></div>
@@ -556,6 +562,31 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
             <tr><td colspan="9" class="pos-empty">Connect wallet &amp; deposit USDC to see your positions here.</td></tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- Leaderboard -->
+      <div class="section-head">
+        <div class="section-title">Testnet Leaderboard</div>
+        <button onclick="refreshLeaderboard()" style="font-family:var(--ff-mono);font-size:.5rem;color:var(--muted2);background:none;border:1px solid var(--border);padding:3px 10px;cursor:pointer;border-radius:2px;letter-spacing:1px;">Refresh</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-bottom:32px;">
+        <div style="background:var(--ink2);border:1px solid var(--border);padding:0;">
+          <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-family:var(--ff-mono);font-size:.5rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);">Top Depositors</span>
+            <button id="btn-daily-faucet" onclick="claimDailyFaucet()" style="font-family:var(--ff-mono);font-size:.48rem;color:var(--gold);background:rgba(200,168,75,.08);border:1px solid var(--gold-dim);padding:3px 10px;cursor:pointer;border-radius:2px;letter-spacing:1px;">Claim Daily USDC</button>
+          </div>
+          <div id="leaderboard-depositors" style="padding:8px 0;min-height:80px;">
+            <div style="text-align:center;padding:20px;font-family:var(--ff-mono);font-size:.58rem;color:var(--muted);">Connect wallet to load</div>
+          </div>
+        </div>
+        <div style="background:var(--ink2);border:1px solid var(--border);padding:0;">
+          <div style="padding:12px 16px;border-bottom:1px solid var(--border);">
+            <span style="font-family:var(--ff-mono);font-size:.5rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);">Top Yield Earners</span>
+          </div>
+          <div id="leaderboard-yield" style="padding:8px 0;min-height:80px;">
+            <div style="text-align:center;padding:20px;font-family:var(--ff-mono);font-size:.58rem;color:var(--muted);">Connect wallet to load</div>
+          </div>
+        </div>
       </div>
 
       <!-- TX Log -->
@@ -715,6 +746,8 @@ async function connectWallet(){
     updateWalletUI();
     hideOverlays();
     await loadChainData();
+    await checkGasBalance();
+    setTimeout(refreshLeaderboard, 2000);
 
     window.ethereum.on('accountsChanged', function(accs){
       if(!accs.length){ disconnectWallet(); return; }
@@ -835,7 +868,7 @@ function updateWalletUI(){
   var warn = document.getElementById('wrong-net-warn');
   if(wallet.chainOk){
     dot.className  = 'chain-dot ok';
-    name.textContent = 'EVM Testnet';
+    name.textContent = 'Sepolia Testnet';
     warn.classList.remove('show');
   } else {
     dot.className  = 'chain-dot wrong';
@@ -886,7 +919,7 @@ function updateDepositPreview(){
   var lock   = state.selectedLock;
   var vault  = VAULTS[v];
   var apr    = effectiveApr(v, lock);
-  var svR    = amt * vault.rate;
+  var svR    = amt; // 1:1 with USDC on-chain
   var daily  = amt * apr / 365;
   document.getElementById('dp-vault').textContent   = v;
   document.getElementById('dp-lock').textContent    = lock + ' days';
@@ -900,107 +933,73 @@ function updateDepositPreview(){
 function updateRedeemPreview(){
   var v      = state.selectedVault;
   var vault  = VAULTS[v];
-  var dep    = state.deposited[v];
-  var yld    = state.yieldEarned[v];
+  var dep    = Number(state.deposited[v]) || 0;
+  var yld    = Number(state.yieldEarned[v]) || 0;
   var locked = isLocked(v);
   var rem    = daysRemaining(state.lockStart[v], state.lockDays[v]);
   var noticeGiven   = state.noticeGiven[v];
   var noticeReadyAt = state.noticeReadyAt[v];
-  var noticeReady   = noticeGiven && Date.now() >= noticeReadyAt;
+  var noticeReady   = noticeGiven && noticeReadyAt > 0 && Date.now() >= noticeReadyAt;
+
+  var noPos  = document.getElementById('rp-no-position');
+  var hasPos = document.getElementById('rp-has-position');
+  var btn    = document.getElementById('btn-redeem');
 
   if(dep <= 0){
-    ['rp-principal','rp-fx','rp-gross','rp-yield-fee','rp-penalty','rp-net','rp-remaining','rp-exit-type']
-      .forEach(function(id){ document.getElementById(id).textContent = '—'; });
-    document.getElementById('btn-give-notice').disabled = true;
-    document.getElementById('btn-redeem').disabled = true;
-    document.getElementById('notice-status').style.display = 'none';
+    noPos.style.display  = 'block';
+    hasPos.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Redeem';
+    btn.className = 'btn btn-gold';
     return;
   }
 
-  var yieldFee  = yld * 0.10;
-  var penFrac   = locked ? (noticeReady ? 0.025 : 0.05) : 0;
-  var penAmt    = dep * penFrac;
-  var netOut    = (dep - penAmt) + (yld - yieldFee);
-  var fxAmt     = (dep * vault.fxRate / 100).toFixed(0);
+  noPos.style.display  = 'none';
+  hasPos.style.display = 'block';
+  btn.disabled = false;
 
-  var exitLabel, exitColor;
-  if(!locked){
-    exitLabel = 'Matured — no penalty'; exitColor = 'var(--green)';
-  } else if(noticeReady){
-    exitLabel = '10-day notice served'; exitColor = 'var(--gold)';
-  } else if(noticeGiven){
-    var daysLeft = Math.ceil((noticeReadyAt - Date.now()) / 86400000);
-    exitLabel = 'Notice given — ' + daysLeft + 'd remaining'; exitColor = 'var(--orange)';
-  } else {
-    exitLabel = 'Immediate exit (5% principal)'; exitColor = 'var(--orange)';
-  }
-
+  var yieldFee = yld * 0.10;
   var netYield = yld - yieldFee;
+  var fxAmt    = Math.round(dep * vault.fxRate / 100);
 
-  document.getElementById('rp-principal').textContent  = '$' + fmt(dep,2) + ' USDC';
-  document.getElementById('rp-fx').textContent         = fmt(Number(fxAmt),0) + ' ' + vault.fxSymbol;
-  document.getElementById('rp-gross').innerHTML        = '+$' + fmt(netYield,6) + ' USDC <span style="font-size:.48rem;color:var(--muted);font-family:var(--ff-mono);">after applicable taxes</span>';
-  document.getElementById('rp-net').textContent        = '$' + fmt(netOut,4) + ' USDC';
-  document.getElementById('rp-remaining').textContent  = rem > 0.01 ? fmt(rem,1) + ' days remaining' : 'Matured ✓';
+  document.getElementById('rp-principal').textContent = '$' + fmt(dep,2) + ' USDC';
+  document.getElementById('rp-fx').textContent        = fxAmt.toLocaleString() + ' ' + vault.fxSymbol;
+  document.getElementById('rp-gross').innerHTML       = '+$' + fmt(netYield,6) + ' USDC <span style="font-size:.46rem;color:var(--muted);">after taxes</span>';
+  document.getElementById('rp-remaining').textContent = !locked ? 'Matured ✓' : fmt(rem,1) + ' days';
 
-  // Only show penalty row if there is actually a penalty
-  var penaltyRow = document.getElementById('rp-penalty-row');
-  var exitTypeRow = document.getElementById('rp-exit-type-row');
-  if(penAmt > 0){
-    penaltyRow.style.display = 'flex';
-    document.getElementById('rp-penalty').textContent = '-$' + fmt(penAmt,4) + ' USDC';
-    exitTypeRow.style.display = 'flex';
-    document.getElementById('rp-exit-type').textContent = exitLabel;
-    document.getElementById('rp-exit-type').style.color = exitColor;
-  } else {
-    penaltyRow.style.display = 'none';
-    exitTypeRow.style.display = 'none';
-  }
-
-  // Notice status bar
+  // Notice status
   var ns = document.getElementById('notice-status');
-  if(noticeGiven && !noticeReady){
-    var dLeft = Math.ceil((noticeReadyAt - Date.now()) / 86400000);
+  if(noticeGiven && !noticeReady && noticeReadyAt > 0){
+    var dLeft = Math.max(1, Math.ceil((noticeReadyAt - Date.now()) / 86400000));
     ns.style.display = 'block';
-    ns.textContent   = '⏳ Notice period active — ' + dLeft + ' day(s) until you can withdraw at 2.5% penalty';
+    ns.textContent   = '⏳ Notice active — ' + dLeft + ' day(s) until 2.5% exit available';
   } else if(noticeReady){
-    ns.style.display = 'block';
-    ns.style.color   = 'var(--green)';
-    ns.textContent   = '✓ Notice period complete — you can now redeem at 2.5% penalty';
+    ns.style.display   = 'block';
+    ns.style.color     = 'var(--green)';
+    ns.style.borderColor = 'rgba(46,203,143,.25)';
+    ns.style.background  = 'rgba(46,203,143,.06)';
+    ns.textContent     = '✓ Notice served — redeem now at 2.5% fee';
   } else {
     ns.style.display = 'none';
   }
 
-  // Button states
-  var canGiveNotice = locked && !noticeGiven;
-  var canRedeem     = !locked || noticeReady || true; // immediate always allowed
-  document.getElementById('btn-give-notice').disabled = !canGiveNotice;
-  document.getElementById('btn-redeem').disabled      = dep <= 0;
-
-  // Update redeem button label
-  var redeemBtn = document.getElementById('btn-redeem');
+  // Button label
   if(!locked){
-    redeemBtn.textContent = 'Redeem for USDC — No Penalty';
-    redeemBtn.className   = 'btn btn-gold';
+    btn.textContent = 'Redeem — No Penalty';
+    btn.className   = 'btn btn-gold';
   } else if(noticeReady){
-    redeemBtn.textContent = 'Redeem for USDC — 2.5% Penalty';
-    redeemBtn.className   = 'btn btn-outline';
+    btn.textContent = 'Redeem — 2.5% Fee';
+    btn.className   = 'btn btn-outline';
   } else {
-    redeemBtn.textContent = 'Immediate Exit — 5% Penalty';
-    redeemBtn.className   = 'btn btn-orange';
+    btn.textContent = 'Redeem';
+    btn.className   = 'btn btn-gold';
   }
 }
 
-function updateRedeemBtn(){
-  updateRedeemPreview();
-}
+function updateRedeemBtn(){ updateRedeemPreview(); }
 
 function setDepositMax(){ document.getElementById('deposit-input').value=Math.floor(state.usdc); updateDepositPreview(); }
-function setRedeemMax(){
-  var v=state.selectedVault;
-  document.getElementById('redeem-input').value=fmt(state.balances[v],2).replace(/,/g,'');
-  updateRedeemPreview();
-}
+
 
 // ══ DEPOSIT ══════════════════════════════════
 async function doDeposit(){
@@ -1056,6 +1055,80 @@ async function doDeposit(){
     if(e.code === 4001) alert('Transaction cancelled.');
     else alert('Transaction failed: ' + (e.reason || e.message));
   }
+}
+
+// ══ HANDLE REDEEM CLICK ══════════════════════
+function handleRedeemClick(){
+  if(!wallet.connected){ connectWallet(); return; }
+  var v      = state.selectedVault;
+  var dep    = Number(state.deposited[v]) || 0;
+  var locked = isLocked(v);
+  var noticeGiven  = state.noticeGiven[v];
+  var noticeReady  = noticeGiven && Date.now() >= state.noticeReadyAt[v];
+
+  if(dep <= 0){ alert('No active position to redeem.'); return; }
+
+  if(!locked || noticeReady){
+    // Matured or notice served — go straight to redeem
+    doRedeem();
+    return;
+  }
+
+  // Locked — show exit options modal
+  showExitOptionsModal(v, dep);
+}
+
+function showExitOptionsModal(v, dep){
+  var yld      = Number(state.yieldEarned[v]) || 0;
+  var yieldFee = yld * 0.10;
+  var netYield = yld - yieldFee;
+  var rem      = daysRemaining(state.lockStart[v], state.lockDays[v]);
+  var vault    = VAULTS[v];
+
+  var immedPenalty = dep * 0.05;
+  var immedNet     = (dep - immedPenalty) + netYield;
+  var noticePenalty= dep * 0.025;
+  var noticeNet    = (dep - noticePenalty) + netYield;
+
+  var html = '<div style="padding:28px;">' +
+    '<div style="text-align:center;margin-bottom:20px;">' +
+      '<div style="font-size:1.6rem;margin-bottom:8px;">⚠</div>' +
+      '<div style="font-family:var(--ff-serif);font-size:1.3rem;color:var(--white);margin-bottom:4px;">Vault Not Matured</div>' +
+      '<div style="font-family:var(--ff-mono);font-size:.56rem;color:var(--muted);">Your ' + v + ' vault matures in <strong style="color:var(--orange);">' + fmt(rem,0) + ' days</strong>. Exiting early will incur a fee on your principal.</div>' +
+    '</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:20px;">' +
+
+    // Option 1 — Immediate
+    '<div style="background:var(--ink3);border:1px solid rgba(224,92,92,.3);border-radius:3px;padding:14px;cursor:pointer;transition:all .2s;" onclick="doRedeem();closeModal();" onmouseover="this.style.borderColor='var(--red)'" onmouseout="this.style.borderColor='rgba(224,92,92,.3)'">' +
+      '<div style="font-family:var(--ff-mono);font-size:.5rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);margin-bottom:8px;">Immediate Exit</div>' +
+      '<div style="font-family:var(--ff-serif);font-size:1.2rem;color:var(--white);line-height:1;margin-bottom:4px;">5%</div>' +
+      '<div style="font-family:var(--ff-mono);font-size:.5rem;color:var(--muted);margin-bottom:10px;">fee on principal</div>' +
+      '<div style="font-family:var(--ff-mono);font-size:.56rem;color:var(--muted);">You receive</div>' +
+      '<div style="font-family:var(--ff-mono);font-size:.62rem;color:var(--white);">$' + fmt(immedNet,2) + ' USDC</div>' +
+    '</div>' +
+
+    // Option 2 — 10-Day Notice
+    '<div style="background:var(--ink3);border:1px solid var(--gold-dim);border-radius:3px;padding:14px;cursor:pointer;transition:all .2s;" onclick="doGiveNotice();closeModal();" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--gold-dim)'">' +
+      '<div style="font-family:var(--ff-mono);font-size:.5rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;">10-Day Notice</div>' +
+      '<div style="font-family:var(--ff-serif);font-size:1.2rem;color:var(--white);line-height:1;margin-bottom:4px;">2.5%</div>' +
+      '<div style="font-family:var(--ff-mono);font-size:.5rem;color:var(--muted);margin-bottom:10px;">fee on principal</div>' +
+      '<div style="font-family:var(--ff-mono);font-size:.56rem;color:var(--muted);">You receive</div>' +
+      '<div style="font-family:var(--ff-mono);font-size:.62rem;color:var(--white);">$' + fmt(noticeNet,2) + ' USDC</div>' +
+    '</div>' +
+
+    // Option 3 — OTC
+    '<div style="background:var(--ink3);border:1px solid var(--border);border-radius:3px;padding:14px;opacity:.45;cursor:not-allowed;">' +
+      '<div style="font-family:var(--ff-mono);font-size:.5rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:8px;">OTC Exit</div>' +
+      '<div style="font-family:var(--ff-serif);font-size:1.2rem;color:var(--muted);line-height:1;margin-bottom:4px;">0%</div>' +
+      '<div style="font-family:var(--ff-mono);font-size:.5rem;color:var(--muted);margin-bottom:10px;">no penalty</div>' +
+      '<div style="display:inline-block;font-family:var(--ff-mono);font-size:.46rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);background:var(--border);padding:2px 8px;border-radius:2px;margin-top:4px;">Coming Soon</div>' +
+    '</div>' +
+
+    '</div>' +
+    '<button class="btn btn-outline" style="width:100%;" onclick="closeModal()">Cancel</button>' +
+  '</div>';
+
+  showModal(html);
 }
 
 // ══ GIVE NOTICE ══════════════════════════════
@@ -1147,7 +1220,7 @@ async function doRedeem(){
 
 function quickRedeem(v){
   selectVault(v);
-  doRedeem();
+  handleRedeemClick();
 }
 
 // ══ STEP RUNNER ══════════════════════════════
@@ -1227,11 +1300,11 @@ function renderPositions(){
   Object.keys(state.balances).forEach(function(v){
     if(state.balances[v]<=0) return;
     var vault  = VAULTS[v];
-    var svBal  = state.balances[v];
-    var dep    = state.deposited[v];
-    var yld    = state.yieldEarned[v];
+    var svBal  = Number(state.balances[v]) || 0;
+    var dep    = Number(state.deposited[v]) || 0;
+    var yld    = Number(state.yieldEarned[v]) || 0;
     var curVal = dep + yld;
-    var apr    = state.effectiveApr[v]||vault.baseApr;
+    var apr    = Number(state.effectiveApr[v]) || vault.baseApr;
     var locked = isLocked(v);
     var prog   = lockProgress(state.lockStart[v], state.lockDays[v]);
     var rem    = daysRemaining(state.lockStart[v], state.lockDays[v]);
@@ -1279,9 +1352,9 @@ function renderStats(){
   var tp=0, ty=0, tvl=0;
   Object.keys(state.balances).forEach(function(v){
     var vault=VAULTS[v];
-    tp += state.balances[v]/vault.rate + state.yieldEarned[v];
-    ty += state.yieldEarned[v];
-    tvl+= state.tvl[v];
+    tp += (Number(state.deposited[v])||0) + (Number(state.yieldEarned[v])||0);
+    ty += Number(state.yieldEarned[v])||0;
+    tvl+= Number(state.tvl[v])||0;
   });
   document.getElementById('stat-total').textContent      = fmtShort(tp);
   document.getElementById('stat-total-sub').textContent  = tp>0?'Active positions':'No active positions';
@@ -1325,6 +1398,133 @@ function updateAll(){
   renderTxLog();
   updateRedeemBtn();
   updateRedeemPreview();
+}
+
+// ══ GAS FAUCET ═══════════════════════════════
+async function checkGasBalance(){
+  if(!wallet.connected) return;
+  try {
+    var bal = await wallet.provider.getBalance(wallet.address);
+    var eth = parseFloat(ethers.formatEther(bal));
+    var banner = document.getElementById('gas-banner');
+    if(eth < 0.01){
+      banner.style.display = 'block';
+    } else {
+      banner.style.display = 'none';
+    }
+  } catch(e){ console.error('Gas check failed', e); }
+}
+
+function showGasFaucet(){
+  var html = '<div style="padding:28px;text-align:center;">' +
+    '<div style="font-size:1.8rem;margin-bottom:12px;">⛽</div>' +
+    '<div style="font-family:var(--ff-serif);font-size:1.3rem;color:var(--white);margin-bottom:6px;">Get Free Sepolia ETH</div>' +
+    '<div style="font-family:var(--ff-mono);font-size:.56rem;color:var(--muted);margin-bottom:20px;line-height:1.8;">You need Sepolia ETH for gas to interact with the contracts. Use any faucet below — they're free.</div>' +
+    '<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;">' +
+    '<a href="https://sepoliafaucet.com" target="_blank" style="display:block;padding:12px;background:var(--ink3);border:1px solid var(--border2);border-radius:3px;font-family:var(--ff-mono);font-size:.6rem;color:var(--gold);text-decoration:none;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border2)'">sepoliafaucet.com → 0.5 ETH/day</a>' +
+    '<a href="https://faucet.quicknode.com/ethereum/sepolia" target="_blank" style="display:block;padding:12px;background:var(--ink3);border:1px solid var(--border2);border-radius:3px;font-family:var(--ff-mono);font-size:.6rem;color:var(--gold);text-decoration:none;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border2)'">QuickNode Faucet → 0.1 ETH/day</a>' +
+    '<a href="https://faucets.chain.link/sepolia" target="_blank" style="display:block;padding:12px;background:var(--ink3);border:1px solid var(--border2);border-radius:3px;font-family:var(--ff-mono);font-size:.6rem;color:var(--gold);text-decoration:none;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border2)'">Chainlink Faucet → 0.1 ETH/day</a>' +
+    '</div>' +
+    '<div style="font-family:var(--ff-mono);font-size:.5rem;color:var(--muted);margin-bottom:16px;">Paste your address: <span style="color:var(--gold);" id="gas-addr-display"></span></div>' +
+    '<button class="btn btn-outline" onclick="closeModal()">Close</button>' +
+  '</div>';
+  showModal(html);
+  setTimeout(function(){
+    var el = document.getElementById('gas-addr-display');
+    if(el && wallet.address) el.textContent = wallet.address;
+  }, 100);
+}
+
+// ══ LEADERBOARD ═══════════════════════════════
+async function refreshLeaderboard(){
+  if(!wallet.connected){ return; }
+  var depEl   = document.getElementById('leaderboard-depositors');
+  var yldEl   = document.getElementById('leaderboard-yield');
+  depEl.innerHTML = '<div style="text-align:center;padding:16px;font-family:var(--ff-mono);font-size:.58rem;color:var(--muted);">Loading...</div>';
+  yldEl.innerHTML = depEl.innerHTML;
+
+  try {
+    var depositors = {}; // address -> total principal
+    var yielders   = {}; // address -> total yield
+
+    for(var v of ['svNG','svTR','svAR']){
+      // Query Deposited events
+      var filter = wallet.vaults[v].filters.Deposited();
+      var events = await wallet.vaults[v].queryFilter(filter, -50000);
+      events.forEach(function(e){
+        var addr = e.args[0].toLowerCase();
+        var amt  = Number(ethers.formatUnits(e.args[1], 6));
+        depositors[addr] = (depositors[addr]||0) + amt;
+      });
+
+      // Query yield for known depositors
+      for(var addr of Object.keys(depositors)){
+        try {
+          var y = await wallet.vaults[v].getYieldEarned(addr);
+          var yAmt = Number(ethers.formatUnits(y, 6));
+          if(yAmt > 0) yielders[addr] = (yielders[addr]||0) + yAmt;
+        } catch(e){}
+      }
+    }
+
+    // Sort and render
+    var topDep = Object.entries(depositors).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    var topYld = Object.entries(yielders).sort((a,b)=>b[1]-a[1]).slice(0,5);
+
+    function lbRow(addr, amt, unit, rank){
+      var medal = rank===0?'🥇':rank===1?'🥈':rank===2?'🥉':'  ';
+      var isMe  = wallet.address && addr === wallet.address.toLowerCase();
+      return '<div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-bottom:1px solid var(--border);'+(isMe?'background:rgba(200,168,75,.04);':'')+'">' +
+        '<span style="font-size:.7rem;">' + medal + '</span>' +
+        '<span style="font-family:var(--ff-mono);font-size:.52rem;color:'+(isMe?'var(--gold)':'var(--muted2)')+';">' + addr.slice(0,6)+'...'+addr.slice(-4) + (isMe?' (you)':'') + '</span>' +
+        '<span style="font-family:var(--ff-mono);font-size:.6rem;color:var(--white);margin-left:auto;">$' + fmt(amt,2) + '</span>' +
+      '</div>';
+    }
+
+    depEl.innerHTML = topDep.length
+      ? topDep.map(function(e,i){ return lbRow(e[0],e[1],'USDC',i); }).join('')
+      : '<div style="text-align:center;padding:16px;font-family:var(--ff-mono);font-size:.58rem;color:var(--muted);">No deposits yet</div>';
+
+    yldEl.innerHTML = topYld.length
+      ? topYld.map(function(e,i){ return lbRow(e[0],e[1],'USDC',i); }).join('')
+      : '<div style="text-align:center;padding:16px;font-family:var(--ff-mono);font-size:.58rem;color:var(--muted);">No yield earned yet</div>';
+
+  } catch(e){
+    depEl.innerHTML = '<div style="text-align:center;padding:16px;font-family:var(--ff-mono);font-size:.58rem;color:var(--muted);">Failed to load</div>';
+    yldEl.innerHTML = depEl.innerHTML;
+    console.error('Leaderboard error:', e);
+  }
+}
+
+// ══ DAILY FAUCET CLAIM ════════════════════════
+async function claimDailyFaucet(){
+  if(!wallet.connected){ connectWallet(); return; }
+  var key      = 'sovra_faucet_' + wallet.address.toLowerCase();
+  var lastClaim= parseInt(localStorage.getItem(key)||'0');
+  var now      = Date.now();
+  var cooldown = 24 * 3600 * 1000;
+
+  if(now - lastClaim < cooldown){
+    var hoursLeft = Math.ceil((cooldown - (now - lastClaim)) / 3600000);
+    alert('You already claimed today. Come back in ' + hoursLeft + ' hour(s).');
+    return;
+  }
+
+  var btn = document.getElementById('btn-daily-faucet');
+  if(btn) btn.textContent = 'Claiming...';
+
+  try {
+    var tx = await wallet.usdc.faucet();
+    await tx.wait();
+    localStorage.setItem(key, now.toString());
+    await loadChainData();
+    if(btn) btn.textContent = 'Claimed ✓';
+    setTimeout(function(){ if(btn) btn.textContent = 'Claim Daily USDC'; }, 3000);
+    alert('10,000 USDC added to your wallet!');
+  } catch(e){
+    if(btn) btn.textContent = 'Claim Daily USDC';
+    if(e.code !== 4001) alert('Claim failed: ' + (e.reason || e.message));
+  }
 }
 
 // ── Init ──
