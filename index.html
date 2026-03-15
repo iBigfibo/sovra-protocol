@@ -604,9 +604,9 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 // ── Contracts ──
 var CONTRACTS = {
   USDC: '0x27E8dB2a2BFb704d80c74893DaB2DdEab198d72B',
-  svNG: '0xCc387F3107ebDFC467Cc075f67302182F5686a74',
-  svTR: '0x037a004CE55247DF8CDD4C16C1c65431aE29b6e3',
-  svAR: '0xd18cE9C2AFdf0D1F8E9E2bB443D96E669f6448D8',
+  svNG: '0xCDCe154FE4cC5E3EE1F87978DCf284e085131519',
+  svTR: '0x7472d36Ed3644Dee2e8e07844b890dfBF05691F5',
+  svAR: '0xB8B9e990aaFD34526eE633097adB76D64631Ee15',
 };
 
 var CHAIN_ID = '0xaa36a7'; // Sepolia
@@ -838,18 +838,69 @@ async function checkGasBalance(){
   } catch(e){}
 }
 
-function showGasFaucet(){
-  var addr=wallet.address||'';
-  showModal('<div class="success-modal"><div class="success-icon">⛽</div>'+
+async function showGasFaucet(){
+  if(!wallet.connected){ connectWallet(); return; }
+  showModal('<div class="success-modal">'+
+    '<div class="success-icon">⛽</div>'+
     '<div class="success-title">Get Free Sepolia ETH</div>'+
-    '<div class="success-sub">You need ETH for gas. Use any faucet below.</div>'+
-    '<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">'+
-    '<a href="https://sepoliafaucet.com" target="_blank" style="display:block;padding:11px 14px;background:var(--ink3);border:1px solid var(--border2);border-radius:3px;font-family:var(--ff-mono);font-size:.58rem;color:var(--gold);text-decoration:none;">sepoliafaucet.com — 0.5 ETH/day</a>'+
-    '<a href="https://faucet.quicknode.com/ethereum/sepolia" target="_blank" style="display:block;padding:11px 14px;background:var(--ink3);border:1px solid var(--border2);border-radius:3px;font-family:var(--ff-mono);font-size:.58rem;color:var(--gold);text-decoration:none;">QuickNode Faucet — 0.1 ETH/day</a>'+
-    '<a href="https://faucets.chain.link/sepolia" target="_blank" style="display:block;padding:11px 14px;background:var(--ink3);border:1px solid var(--border2);border-radius:3px;font-family:var(--ff-mono);font-size:.58rem;color:var(--gold);text-decoration:none;">Chainlink Faucet — 0.1 ETH/day</a>'+
+    '<div class="success-sub">0.02 ETH sent directly to your wallet</div>'+
+    '<div style="background:var(--ink3);border:1px solid var(--border);border-radius:3px;padding:14px;margin-bottom:16px;text-align:left;">'+
+    '<div style="font-family:var(--ff-mono);font-size:.58rem;color:var(--muted);margin-bottom:4px;">Your wallet</div>'+
+    '<div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--gold);word-break:break-all;">'+wallet.address+'</div>'+
     '</div>'+
-    (addr?'<div style="font-family:var(--ff-mono);font-size:.5rem;color:var(--muted);margin-bottom:14px;">Your address: <span style="color:var(--gold);">'+addr+'</span></div>':'')+
-    '<button class="btn btn-outline" onclick="closeModal()">Close</button></div>');
+    '<button class="btn btn-gold" id="btn-claim-gas" onclick="claimGasFromFaucet()">Send Me 0.02 ETH</button>'+
+    '<div style="font-family:var(--ff-mono);font-size:.48rem;color:var(--muted);margin-top:10px;">One claim per wallet per 24 hours</div>'+
+    '<button class="btn btn-outline" style="margin-top:8px;" onclick="closeModal()">Cancel</button>'+
+  '</div>');
+}
+
+async function claimGasFromFaucet(){
+  var btn = document.getElementById('btn-claim-gas');
+  if(btn){ btn.disabled=true; btn.textContent='Sending...'; }
+
+  try {
+    var res = await fetch('/api/faucet', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ address: wallet.address })
+    });
+    var data = await res.json();
+
+    if(data.success){
+      showModal('<div class="success-modal fade-in">'+
+        '<div class="success-icon">⛽</div>'+
+        '<div class="success-title">ETH Sent!</div>'+
+        '<div class="success-sub">Gas is on its way to your wallet</div>'+
+        '<div class="success-data">'+
+        '<div class="srow"><span class="sk">Amount</span><span class="sv green">0.02 Sepolia ETH</span></div>'+
+        '<div class="srow"><span class="sk">To</span><span class="sv">'+fmtAddr(wallet.address)+'</span></div>'+
+        '</div>'+
+        '<div class="tx-hash-display">TX: <a href="https://sepolia.etherscan.io/tx/'+data.txHash+'" target="_blank" style="color:var(--gold);">'+maskHash(data.txHash)+'</a></div>'+
+        '<button class="btn btn-outline" style="margin-top:14px;" onclick="closeModal();checkGasBalance();">Close</button>'+
+      '</div>');
+    } else {
+      showModal('<div class="success-modal">'+
+        '<div class="success-icon">⚠</div>'+
+        '<div class="success-title">Not Sent</div>'+
+        '<div class="success-sub" style="color:var(--orange);">'+data.error+'</div>'+
+        '<div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;">'+
+        '<a href="https://faucets.chain.link/sepolia" target="_blank" class="btn btn-outline" style="text-decoration:none;text-align:center;">Try Chainlink Faucet Instead</a>'+
+        '<button class="btn btn-outline" onclick="closeModal()">Close</button>'+
+        '</div>'+
+      '</div>');
+    }
+  } catch(e){
+    showModal('<div class="success-modal">'+
+      '<div class="success-icon">⚠</div>'+
+      '<div class="success-title">Request Failed</div>'+
+      '<div class="success-sub">Please try an external faucet</div>'+
+      '<div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;">'+
+      '<a href="https://faucets.chain.link/sepolia" target="_blank" class="btn btn-outline" style="text-decoration:none;text-align:center;">Chainlink Faucet</a>'+
+      '<a href="https://sepoliafaucet.com" target="_blank" class="btn btn-outline" style="text-decoration:none;text-align:center;">Sepolia Faucet</a>'+
+      '<button class="btn btn-outline" onclick="closeModal()">Close</button>'+
+      '</div>'+
+    '</div>');
+  }
 }
 
 // ── Vault & Lock Selection ──
