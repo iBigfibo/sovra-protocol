@@ -384,10 +384,10 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   </div>
 
   <!-- Tab Navigation -->
-  <div style="background:var(--ink2);border-bottom:1px solid var(--border);display:flex;gap:0;padding:0 32px;">
-    <button onclick="showTab('trade')" id="tab-trade" style="font-family:var(--ff-mono);font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;padding:14px 20px;background:none;border:none;border-bottom:2px solid var(--gold);color:var(--gold);cursor:pointer;">Trade</button>
-    <button onclick="showTab('portfolio')" id="tab-portfolio" style="font-family:var(--ff-mono);font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;padding:14px 20px;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted2);cursor:pointer;">Portfolio</button>
-    <button onclick="showTab('community')" id="tab-community" style="font-family:var(--ff-mono);font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;padding:14px 20px;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted2);cursor:pointer;">Community</button>
+  <div style="background:var(--ink2);border-bottom:1px solid var(--border);display:flex;gap:0;padding:0 24px;overflow-x:auto;">
+    <button onclick="showTab('vaults')" id="tab-vaults" style="font-family:var(--ff-sans);font-size:.95rem;font-weight:500;padding:16px 24px;background:none;border:none;border-bottom:2px solid var(--gold);color:var(--white);cursor:pointer;white-space:nowrap;">Vaults</button>
+    <button onclick="showTab('portfolio')" id="tab-portfolio" style="font-family:var(--ff-sans);font-size:.95rem;font-weight:400;padding:16px 24px;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted2);cursor:pointer;white-space:nowrap;">Portfolio</button>
+    <button onclick="showTab('analytics')" id="tab-analytics" style="font-family:var(--ff-sans);font-size:.95rem;font-weight:400;padding:16px 24px;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted2);cursor:pointer;white-space:nowrap;">Analytics</button>
   </div>
 
   <div class="ticker-bar">
@@ -409,8 +409,8 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 
   <div class="content">
 
-    <!-- TRADE TAB -->
-    <div id="tab-trade-content">
+    <!-- VAULTS TAB -->
+    <div id="tab-vaults-content">
     <!-- Wallet banner -->
     <div class="wallet-banner" id="wallet-banner">
       <div class="wb-text">
@@ -520,7 +520,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       </div>
     </div>
 
-    </div><!-- /trade tab -->
+    </div><!-- /vaults tab -->
 
     <!-- PORTFOLIO TAB -->
     <div id="tab-portfolio-content" style="display:none;">
@@ -554,8 +554,8 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 
     </div><!-- /portfolio tab -->
 
-    <!-- COMMUNITY TAB -->
-    <div id="tab-community-content" style="display:none;">
+    <!-- ANALYTICS TAB -->
+    <div id="tab-analytics-content" style="display:none;">
 
     <!-- Protocol Stats -->
     <div class="section-head">
@@ -646,7 +646,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       </div>
     </div>
 
-    </div><!-- /community tab -->
+    </div><!-- /analytics tab -->
   </div>
 </main>
 </div>
@@ -787,6 +787,7 @@ async function connectWallet(){
     document.getElementById('wallet-banner').classList.add('hidden');
     await loadChainData();
     await checkGasBalance();
+    loadOnChainTxHistory();
     setTimeout(refreshLeaderboard, 1500);
     setInterval(tickBlock, 3000);
     setInterval(loadChainData, 20000);
@@ -1537,7 +1538,7 @@ function updateAll(){
 
 // ── Tab Navigation ──
 function showTab(tab){
-  ['trade','portfolio','community'].forEach(function(t){
+  ['vaults','portfolio','analytics'].forEach(function(t){
     var content = document.getElementById('tab-'+t+'-content');
     var btn     = document.getElementById('tab-'+t);
     if(content) content.style.display = t===tab ? 'block' : 'none';
