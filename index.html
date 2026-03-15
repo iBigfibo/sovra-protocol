@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Sovra Protocol — Testnet</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.1/ethers.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
@@ -13,16 +13,16 @@ html{scroll-behavior:smooth;}
   --ink:#080a0f;--ink2:#0e1118;--ink3:#161c28;--ink4:#1e2437;
   --border:#1f2639;--border2:#2b3350;
   --gold:#c8a84b;--gold2:#e4cc7e;--gold-dim:#6e5a28;--gold-bg:rgba(200,168,75,.06);
-  --text:#cdd3e8;--muted:#505876;--muted2:#818daf;--white:#eef1f8;
+  --text:#dde3f5;--muted:#636b8a;--muted2:#9aa3c2;--white:#f0f3fc;
   --green:#2ecb8f;--green-dim:rgba(46,203,143,.12);
   --red:#e05c5c;--red-dim:rgba(224,92,92,.12);
   --orange:#e8924a;--orange-dim:rgba(232,146,74,.12);
   --ff-serif:'Cormorant Garamond',Georgia,serif;
-  --ff-sans:'Outfit',sans-serif;
+  --ff-sans:'Inter',system-ui,-apple-system,sans-serif;
   --ff-mono:'DM Mono',monospace;
   --radius:3px;
 }
-body{background:var(--ink);color:var(--text);font-family:var(--ff-sans);font-weight:300;line-height:1.6;min-height:100vh;overflow-x:hidden;}
+body{background:var(--ink);color:var(--text);font-family:var(--ff-sans);font-weight:400;line-height:1.6;min-height:100vh;overflow-x:hidden;}
 body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.022'/%3E%3C/svg%3E");pointer-events:none;z-index:0;}
 .app{display:grid;grid-template-columns:270px 1fr;min-height:100vh;position:relative;z-index:1;}
 
@@ -32,84 +32,84 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .logo-mark{font-family:var(--ff-serif);font-size:1.5rem;font-weight:300;color:var(--white);letter-spacing:5px;text-transform:uppercase;}
 .logo-mark em{font-style:normal;color:var(--gold);}
 .logo-tagline{font-family:var(--ff-serif);font-size:.72rem;color:var(--muted2);font-style:italic;margin-top:4px;line-height:1.4;}
-.logo-sub{font-family:var(--ff-mono);font-size:.48rem;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-top:3px;}
-.net-badge{display:inline-flex;align-items:center;gap:5px;margin-top:8px;background:rgba(200,168,75,.08);border:1px solid var(--gold-dim);padding:3px 10px;border-radius:2px;font-family:var(--ff-mono);font-size:.46rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);}
+.logo-sub{font-family:var(--ff-mono);font-size:.62rem;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-top:3px;}
+.net-badge{display:inline-flex;align-items:center;gap:5px;margin-top:8px;background:rgba(200,168,75,.08);border:1px solid var(--gold-dim);padding:3px 10px;border-radius:2px;font-family:var(--ff-mono);font-size:.60rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);}
 .net-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--gold);animation:pulse-gold 2s infinite;}
 
 /* WALLET */
 .wallet-section{padding:16px 24px;border-bottom:1px solid var(--border);}
-.wallet-label{font-family:var(--ff-mono);font-size:.48rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.wallet-label{font-family:var(--ff-mono);font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
 .btn-connect{width:100%;padding:11px;background:linear-gradient(135deg,var(--gold-dim),var(--gold));color:var(--ink);font-family:var(--ff-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;font-weight:500;transition:all .2s;border-radius:var(--radius);}
 .btn-connect:hover{background:linear-gradient(135deg,var(--gold),var(--gold2));}
-.btn-disconnect{width:100%;padding:9px;background:none;border:1px solid var(--border2);color:var(--muted2);font-family:var(--ff-mono);font-size:.56rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;border-radius:var(--radius);margin-top:8px;}
+.btn-disconnect{width:100%;padding:9px;background:none;border:1px solid var(--border2);color:var(--muted2);font-family:var(--ff-mono);font-size:.70rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;border-radius:var(--radius);margin-top:8px;}
 .btn-disconnect:hover{border-color:var(--red);color:var(--red);}
 .wallet-info{display:none;}
 .wallet-info.show{display:block;}
-.wallet-addr-box{background:var(--ink3);border:1px solid var(--border);padding:9px 12px;border-radius:var(--radius);font-family:var(--ff-mono);font-size:.58rem;color:var(--text);word-break:break-all;margin-bottom:6px;}
-.chain-row{display:flex;align-items:center;gap:6px;font-family:var(--ff-mono);font-size:.5rem;}
+.wallet-addr-box{background:var(--ink3);border:1px solid var(--border);padding:9px 12px;border-radius:var(--radius);font-family:var(--ff-mono);font-size:.72rem;color:var(--text);word-break:break-all;margin-bottom:6px;}
+.chain-row{display:flex;align-items:center;gap:6px;font-family:var(--ff-mono);font-size:.65rem;}
 .chain-dot{width:6px;height:6px;border-radius:50%;}
 .chain-dot.ok{background:var(--green);animation:pulse 2s infinite;}
 .chain-dot.wrong{background:var(--red);}
-.wrong-net-warn{background:var(--red-dim);border:1px solid rgba(224,92,92,.3);padding:8px 10px;border-radius:var(--radius);font-family:var(--ff-mono);font-size:.5rem;color:var(--red);margin-top:6px;display:none;}
+.wrong-net-warn{background:var(--red-dim);border:1px solid rgba(224,92,92,.3);padding:8px 10px;border-radius:var(--radius);font-family:var(--ff-mono);font-size:.65rem;color:var(--red);margin-top:6px;display:none;}
 .wrong-net-warn.show{display:block;}
-.btn-switch{width:100%;padding:7px;margin-top:5px;background:rgba(224,92,92,.12);border:1px solid rgba(224,92,92,.3);color:var(--red);font-family:var(--ff-mono);font-size:.52rem;cursor:pointer;border-radius:var(--radius);}
+.btn-switch{width:100%;padding:7px;margin-top:5px;background:rgba(224,92,92,.12);border:1px solid rgba(224,92,92,.3);color:var(--red);font-family:var(--ff-mono);font-size:.65rem;cursor:pointer;border-radius:var(--radius);}
 .gas-banner{display:none;margin-top:8px;background:rgba(224,92,92,.08);border:1px solid rgba(224,92,92,.25);border-radius:3px;padding:8px 10px;}
-.gas-banner-title{font-family:var(--ff-mono);font-size:.48rem;color:var(--red);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;}
-.gas-banner-sub{font-family:var(--ff-mono);font-size:.5rem;color:var(--muted2);margin-bottom:6px;}
-.btn-gas{width:100%;padding:6px;background:rgba(224,92,92,.1);border:1px solid rgba(224,92,92,.25);color:var(--red);font-family:var(--ff-mono);font-size:.48rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:2px;}
+.gas-banner-title{font-family:var(--ff-mono);font-size:.62rem;color:var(--red);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;}
+.gas-banner-sub{font-family:var(--ff-mono);font-size:.65rem;color:var(--muted2);margin-bottom:6px;}
+.btn-gas{width:100%;padding:6px;background:rgba(224,92,92,.1);border:1px solid rgba(224,92,92,.25);color:var(--red);font-family:var(--ff-mono);font-size:.62rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:2px;}
 
 /* BALANCES */
 .sb-balances{padding:16px 24px;border-bottom:1px solid var(--border);}
-.sb-label{font-family:var(--ff-mono);font-size:.48rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.sb-label{font-family:var(--ff-mono);font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
 .bal-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);}
 .bal-row:last-child{border-bottom:none;}
 .bal-left{display:flex;align-items:center;gap:8px;}
-.bal-icon{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--ff-mono);font-size:.5rem;font-weight:500;flex-shrink:0;}
+.bal-icon{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--ff-mono);font-size:.65rem;font-weight:500;flex-shrink:0;}
 .bi-usdc{background:rgba(39,117,202,.15);color:#4a9fd4;border:1px solid rgba(39,117,202,.25);}
 .bi-sv{background:rgba(200,168,75,.1);color:var(--gold);border:1px solid var(--gold-dim);}
 .bal-name{font-size:.76rem;color:var(--text);}
-.bal-sub{font-family:var(--ff-mono);font-size:.46rem;color:var(--muted);}
+.bal-sub{font-family:var(--ff-mono);font-size:.60rem;color:var(--muted);}
 .bal-amount{font-family:var(--ff-mono);font-size:.68rem;color:var(--white);text-align:right;}
-.bal-yield{font-family:var(--ff-mono);font-size:.46rem;color:var(--green);text-align:right;}
-.btn-faucet{width:100%;margin-top:8px;padding:7px;background:rgba(200,168,75,.06);border:1px solid var(--gold-dim);color:var(--gold);font-family:var(--ff-mono);font-size:.48rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:var(--radius);}
+.bal-yield{font-family:var(--ff-mono);font-size:.60rem;color:var(--green);text-align:right;}
+.btn-faucet{width:100%;margin-top:8px;padding:7px;background:rgba(200,168,75,.06);border:1px solid var(--gold-dim);color:var(--gold);font-family:var(--ff-mono);font-size:.62rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:var(--radius);}
 
 /* STATS */
 .sb-stats{padding:16px 24px;flex:1;}
 .sb-stat{padding:9px 0;border-bottom:1px solid var(--border);}
 .sb-stat:last-child{border-bottom:none;}
-.sb-stat-label{font-family:var(--ff-mono);font-size:.46rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+.sb-stat-label{font-family:var(--ff-mono);font-size:.60rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
 .sb-stat-val{font-family:var(--ff-serif);font-size:1.25rem;font-weight:300;color:var(--gold2);line-height:1;}
-.sb-stat-sub{font-family:var(--ff-mono);font-size:.48rem;color:var(--muted2);margin-top:2px;}
+.sb-stat-sub{font-family:var(--ff-mono);font-size:.62rem;color:var(--muted2);margin-top:2px;}
 .sb-stat-sub.pos{color:var(--green);}
 .sb-footer{padding:12px 24px;border-top:1px solid var(--border);}
-.block-row{display:flex;justify-content:space-between;font-family:var(--ff-mono);font-size:.46rem;color:var(--muted);}
+.block-row{display:flex;justify-content:space-between;font-family:var(--ff-mono);font-size:.60rem;color:var(--muted);}
 
 /* MAIN */
 .main{display:flex;flex-direction:column;min-width:0;}
 .topbar{padding:16px 32px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(8,10,15,.7);backdrop-filter:blur(16px);position:sticky;top:0;z-index:10;}
 .topbar-title{font-family:var(--ff-serif);font-size:1.05rem;font-weight:300;color:var(--white);letter-spacing:1px;}
-.tb-badge{font-family:var(--ff-mono);font-size:.5rem;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border-radius:2px;}
+.tb-badge{font-family:var(--ff-mono);font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border-radius:2px;}
 .tb-badge.green{color:var(--green);border:1px solid rgba(46,203,143,.25);background:var(--green-dim);}
 .tb-badge.gold{color:var(--gold);border:1px solid var(--gold-dim);background:var(--gold-bg);}
 
 /* TICKER */
 .ticker-bar{padding:6px 0;border-bottom:1px solid var(--border);overflow:hidden;background:var(--ink3);}
 .ticker-wrap{display:flex;gap:40px;animation:scroll-x 25s linear infinite;white-space:nowrap;padding:0 20px;}
-.ticker-item{font-family:var(--ff-mono);font-size:.56rem;color:var(--muted2);}
+.ticker-item{font-family:var(--ff-mono);font-size:.70rem;color:var(--muted2);}
 .ticker-item strong{color:var(--gold);}
 
 /* WALLET BANNER */
 .wallet-banner{display:flex;align-items:center;justify-content:space-between;gap:16px;background:linear-gradient(135deg,rgba(200,168,75,.06),rgba(200,168,75,.02));border:1px solid var(--gold-dim);padding:12px 18px;border-radius:var(--radius);margin-bottom:24px;}
 .wallet-banner.hidden{display:none;}
-.wb-text{font-family:var(--ff-mono);font-size:.56rem;color:var(--muted2);}
+.wb-text{font-family:var(--ff-mono);font-size:.70rem;color:var(--muted2);}
 .wb-text strong{color:var(--gold);display:block;font-size:.6rem;margin-bottom:1px;}
-.wb-btn{padding:8px 20px;background:linear-gradient(135deg,var(--gold-dim),var(--gold));color:var(--ink);font-family:var(--ff-mono);font-size:.58rem;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;font-weight:500;border-radius:var(--radius);white-space:nowrap;transition:all .2s;flex-shrink:0;}
+.wb-btn{padding:8px 20px;background:linear-gradient(135deg,var(--gold-dim),var(--gold));color:var(--ink);font-family:var(--ff-mono);font-size:.72rem;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;font-weight:500;border-radius:var(--radius);white-space:nowrap;transition:all .2s;flex-shrink:0;}
 .wb-btn:hover{background:linear-gradient(135deg,var(--gold),var(--gold2));}
 
 /* CONTENT */
 .content{padding:28px 32px;flex:1;}
 .section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.section-title{font-family:var(--ff-mono);font-size:.56rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);}
+.section-title{font-family:var(--ff-mono);font-size:.70rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);}
 
 /* VAULT CARDS */
 .vault-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-bottom:28px;}
@@ -121,8 +121,8 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .vc-ticker{font-family:var(--ff-mono);font-size:.7rem;color:var(--gold);letter-spacing:2px;}
 .vc-name{font-size:.72rem;color:var(--muted2);margin-bottom:8px;}
 .vc-apr{font-family:var(--ff-serif);font-size:1.5rem;font-weight:300;color:var(--white);line-height:1;}
-.vc-apr-unit{font-size:.58rem;font-family:var(--ff-mono);color:var(--muted);margin-left:3px;}
-.vc-meta{font-family:var(--ff-mono);font-size:.48rem;color:var(--muted);margin-top:4px;}
+.vc-apr-unit{font-size:.72rem;font-family:var(--ff-mono);color:var(--muted);margin-left:3px;}
+.vc-meta{font-family:var(--ff-mono);font-size:.62rem;color:var(--muted);margin-top:4px;}
 
 /* LOCK GRID */
 .lock-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-bottom:24px;}
@@ -131,24 +131,24 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .lock-opt.selected{border-color:var(--gold);background:var(--gold-bg);}
 .lock-opt.selected::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
 .lock-days{font-family:var(--ff-serif);font-size:1.1rem;font-weight:300;color:var(--white);line-height:1;}
-.lock-label{font-family:var(--ff-mono);font-size:.44rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
-.lock-apr{font-family:var(--ff-mono);font-size:.5rem;color:var(--green);margin-top:3px;}
+.lock-label{font-family:var(--ff-mono);font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+.lock-apr{font-family:var(--ff-mono);font-size:.65rem;color:var(--green);margin-top:3px;}
 
 /* ACTION PANELS */
 .action-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-bottom:28px;}
 .panel{background:var(--ink2);border:1px solid var(--border);padding:22px;}
-.panel-title{font-family:var(--ff-mono);font-size:.54rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.panel-title{font-family:var(--ff-mono);font-size:.68rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);}
 .field{margin-bottom:14px;}
-.field-label{font-family:var(--ff-mono);font-size:.5rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+.field-label{font-family:var(--ff-mono);font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
 .input-wrap{display:flex;align-items:center;background:var(--ink3);border:1px solid var(--border);transition:border-color .2s;border-radius:var(--radius);}
 .input-wrap:focus-within{border-color:var(--gold-dim);}
 .input-wrap input{flex:1;background:none;border:none;outline:none;padding:9px 12px;font-family:var(--ff-mono);font-size:.8rem;color:var(--white);}
 .input-wrap input::placeholder{color:var(--muted);}
 .input-suffix{padding:0 10px;font-family:var(--ff-mono);font-size:.6rem;color:var(--gold);border-left:1px solid var(--border);}
-.input-max{padding:0 10px;font-family:var(--ff-mono);font-size:.5rem;color:var(--muted2);cursor:pointer;border-left:1px solid var(--border);transition:color .2s;}
+.input-max{padding:0 10px;font-family:var(--ff-mono);font-size:.65rem;color:var(--muted2);cursor:pointer;border-left:1px solid var(--border);transition:color .2s;}
 .input-max:hover{color:var(--gold);}
 .preview{background:var(--ink3);border:1px solid var(--border);padding:12px;margin-bottom:14px;border-radius:var(--radius);}
-.preview-row{display:flex;justify-content:space-between;align-items:center;font-family:var(--ff-mono);font-size:.58rem;padding:2px 0;}
+.preview-row{display:flex;justify-content:space-between;align-items:center;font-family:var(--ff-mono);font-size:.72rem;padding:2px 0;}
 .preview-row .pk{color:var(--muted);}
 .preview-row .pv{color:var(--text);}
 .preview-row .pv.gold{color:var(--gold2);}
@@ -157,10 +157,10 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 
 /* REDEEM PANEL */
 .redeem-pos{background:var(--ink3);border:1px solid var(--border);border-radius:3px;padding:14px;margin-bottom:14px;}
-.redeem-pos-label{font-family:var(--ff-mono);font-size:.46rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
-.redeem-row{display:flex;justify-content:space-between;font-family:var(--ff-mono);font-size:.58rem;padding:2px 0;}
+.redeem-pos-label{font-family:var(--ff-mono);font-size:.60rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.redeem-row{display:flex;justify-content:space-between;font-family:var(--ff-mono);font-size:.72rem;padding:2px 0;}
 .redeem-row .rk{color:var(--muted);}
-.notice-bar{margin-top:8px;border-radius:3px;padding:8px 10px;font-family:var(--ff-mono);font-size:.5rem;display:none;}
+.notice-bar{margin-top:8px;border-radius:3px;padding:8px 10px;font-family:var(--ff-mono);font-size:.65rem;display:none;}
 .notice-bar.active{display:block;background:rgba(200,168,75,.08);border:1px solid var(--gold-dim);color:var(--gold);}
 .notice-bar.ready{display:block;background:var(--green-dim);border:1px solid rgba(46,203,143,.25);color:var(--green);}
 
@@ -178,7 +178,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 /* POSITIONS TABLE */
 .positions-wrap{background:var(--ink2);border:1px solid var(--border);margin-bottom:28px;overflow-x:auto;}
 .pos-table{width:100%;border-collapse:collapse;min-width:800px;}
-.pos-table th{font-family:var(--ff-mono);font-size:.46rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);padding:10px 14px;text-align:left;border-bottom:1px solid var(--border2);background:var(--ink4);}
+.pos-table th{font-family:var(--ff-mono);font-size:.60rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);padding:10px 14px;text-align:left;border-bottom:1px solid var(--border2);background:var(--ink4);}
 .pos-table td{padding:11px 14px;border-bottom:1px solid var(--border);font-size:.78rem;color:var(--text);}
 .pos-table tbody tr:nth-child(odd) td{background:var(--ink3);}
 .pos-table tr:last-child td{border-bottom:none;}
@@ -189,16 +189,16 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .lock-progress-wrap{margin-top:4px;}
 .lock-progress-bar{height:3px;background:var(--border2);border-radius:2px;overflow:hidden;}
 .lock-progress-fill{height:100%;background:linear-gradient(90deg,var(--gold-dim),var(--gold));}
-.lock-progress-label{display:flex;justify-content:space-between;font-family:var(--ff-mono);font-size:.44rem;color:var(--muted);margin-top:2px;}
+.lock-progress-label{display:flex;justify-content:space-between;font-family:var(--ff-mono);font-size:.72rem;color:var(--muted);margin-top:2px;}
 
 /* LEADERBOARD */
 .lb-wrap{display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-bottom:28px;}
 .lb-panel{background:var(--ink2);border:1px solid var(--border);}
 .lb-head{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.lb-title{font-family:var(--ff-mono);font-size:.48rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
-.lb-row{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid var(--border);font-family:var(--ff-mono);font-size:.54rem;}
+.lb-title{font-family:var(--ff-mono);font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+.lb-row{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid var(--border);font-family:var(--ff-mono);font-size:.68rem;}
 .lb-row:last-child{border-bottom:none;}
-.lb-empty{text-align:center;padding:20px;font-family:var(--ff-mono);font-size:.56rem;color:var(--muted);}
+.lb-empty{text-align:center;padding:20px;font-family:var(--ff-mono);font-size:.70rem;color:var(--muted);}
 .lb-medal{font-size:.7rem;width:18px;flex-shrink:0;}
 .lb-addr{color:var(--muted2);flex:1;}
 .lb-addr.me{color:var(--gold);}
@@ -207,15 +207,15 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 /* TX LOG */
 .tx-panel{background:var(--ink2);border:1px solid var(--border);margin-bottom:28px;}
 .tx-list{max-height:180px;overflow-y:auto;}
-.tx-item{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--border);font-family:var(--ff-mono);font-size:.56rem;}
+.tx-item{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--border);font-family:var(--ff-mono);font-size:.70rem;}
 .tx-item:last-child{border-bottom:none;}
-.tx-type{width:64px;padding:2px 5px;border-radius:2px;text-align:center;font-size:.44rem;letter-spacing:1px;text-transform:uppercase;flex-shrink:0;}
+.tx-type{width:64px;padding:2px 5px;border-radius:2px;text-align:center;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;flex-shrink:0;}
 .tx-type.deposit{background:var(--green-dim);color:var(--green);border:1px solid rgba(46,203,143,.2);}
 .tx-type.redeem{background:var(--red-dim);color:var(--red);border:1px solid rgba(224,92,92,.2);}
 .tx-type.penalty{background:var(--orange-dim);color:var(--orange);border:1px solid rgba(232,146,74,.2);}
 .tx-hash-link{color:var(--muted2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-decoration:none;}
 .tx-hash-link:hover{color:var(--gold);}
-.tx-empty{text-align:center;padding:20px;font-family:var(--ff-mono);font-size:.58rem;color:var(--muted);}
+.tx-empty{text-align:center;padding:20px;font-family:var(--ff-mono);font-size:.72rem;color:var(--muted);}
 
 /* MODAL */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;}
@@ -227,9 +227,9 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .processing{text-align:center;padding:32px 24px;}
 .proc-spinner{width:42px;height:42px;border:2px solid var(--border2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px;}
 .proc-title{font-family:var(--ff-serif);font-size:1.2rem;color:var(--white);margin-bottom:3px;}
-.proc-sub{font-family:var(--ff-mono);font-size:.56rem;color:var(--muted);letter-spacing:1px;}
+.proc-sub{font-family:var(--ff-mono);font-size:.70rem;color:var(--muted);letter-spacing:1px;}
 .proc-steps{margin-top:16px;display:flex;flex-direction:column;gap:5px;}
-.proc-step{display:flex;align-items:center;gap:10px;font-family:var(--ff-mono);font-size:.54rem;color:var(--muted);text-align:left;}
+.proc-step{display:flex;align-items:center;gap:10px;font-family:var(--ff-mono);font-size:.68rem;color:var(--muted);text-align:left;}
 .proc-step.done{color:var(--green);}
 .proc-step.active{color:var(--gold);}
 .proc-dot{width:6px;height:6px;border-radius:50%;background:var(--border2);flex-shrink:0;}
@@ -238,15 +238,15 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .success-modal{text-align:center;padding:32px 24px;}
 .success-icon{font-size:2rem;margin-bottom:12px;}
 .success-title{font-family:var(--ff-serif);font-size:1.4rem;font-weight:300;color:var(--white);margin-bottom:3px;}
-.success-sub{font-family:var(--ff-mono);font-size:.54rem;color:var(--muted);letter-spacing:1px;margin-bottom:16px;}
+.success-sub{font-family:var(--ff-mono);font-size:.68rem;color:var(--muted);letter-spacing:1px;margin-bottom:16px;}
 .success-data{background:var(--ink3);border:1px solid var(--border);padding:12px;margin-bottom:14px;text-align:left;border-radius:var(--radius);}
-.srow{display:flex;justify-content:space-between;font-family:var(--ff-mono);font-size:.58rem;padding:2px 0;}
+.srow{display:flex;justify-content:space-between;font-family:var(--ff-mono);font-size:.72rem;padding:2px 0;}
 .srow .sk{color:var(--muted);}
 .srow .sv{color:var(--white);}
 .srow .sv.green{color:var(--green);}
 .srow .sv.gold{color:var(--gold2);}
 .srow .sv.orange{color:var(--orange);}
-.tx-hash-display{font-family:var(--ff-mono);font-size:.46rem;color:var(--muted);word-break:break-all;margin-top:4px;}
+.tx-hash-display{font-family:var(--ff-mono);font-size:.60rem;color:var(--muted);word-break:break-all;margin-top:4px;}
 
 /* EXIT OPTIONS MODAL */
 .exit-modal{padding:24px;}
@@ -259,14 +259,14 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .exit-opt.notice{border-color:var(--gold-dim);}
 .exit-opt.notice:hover{border-color:var(--gold);background:var(--gold-bg);}
 .exit-opt.disabled{opacity:.4;cursor:not-allowed;}
-.exit-opt-label{font-family:var(--ff-mono);font-size:.46rem;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+.exit-opt-label{font-family:var(--ff-mono);font-size:.60rem;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
 .exit-opt.immediate .exit-opt-label{color:var(--red);}
 .exit-opt.notice .exit-opt-label{color:var(--gold);}
 .exit-opt.disabled .exit-opt-label{color:var(--muted);}
 .exit-opt-pct{font-family:var(--ff-serif);font-size:1.4rem;font-weight:300;color:var(--white);line-height:1;margin-bottom:3px;}
-.exit-opt-desc{font-family:var(--ff-mono);font-size:.46rem;color:var(--muted);margin-bottom:10px;}
-.exit-opt-receive{font-family:var(--ff-mono);font-size:.5rem;color:var(--muted);}
-.exit-opt-receive strong{color:var(--white);display:block;font-size:.58rem;margin-top:2px;}
+.exit-opt-desc{font-family:var(--ff-mono);font-size:.60rem;color:var(--muted);margin-bottom:10px;}
+.exit-opt-receive{font-family:var(--ff-mono);font-size:.65rem;color:var(--muted);}
+.exit-opt-receive strong{color:var(--white);display:block;font-size:.72rem;margin-top:2px;}
 .coming-soon{display:inline-block;font-family:var(--ff-mono);font-size:.42rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);background:var(--border);padding:2px 7px;border-radius:2px;margin-top:6px;}
 
 /* ANIMATIONS */
@@ -308,7 +308,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <div class="wallet-addr-box" id="wallet-addr">—</div>
       <div class="chain-row">
         <div class="chain-dot" id="chain-dot"></div>
-        <span id="chain-name" style="font-family:var(--ff-mono);font-size:.5rem;color:var(--muted2);">—</span>
+        <span id="chain-name" style="font-family:var(--ff-mono);font-size:.65rem;color:var(--muted2);">—</span>
       </div>
       <div class="wrong-net-warn" id="wrong-net-warn">
         Please switch to Sepolia Testnet.
@@ -332,26 +332,26 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       </div>
       <div>
         <div class="bal-amount" id="bal-usdc">—</div>
-        <div style="font-family:var(--ff-mono);font-size:.46rem;color:var(--muted);text-align:right;" id="bal-usdc-sub">Connect wallet</div>
+        <div style="font-family:var(--ff-mono);font-size:.60rem;color:var(--muted);text-align:right;" id="bal-usdc-sub">Connect wallet</div>
       </div>
     </div>
     <div class="bal-row" id="bal-svng-row" style="display:none;">
       <div class="bal-left">
-        <div class="bal-icon bi-sv" style="font-size:.44rem;">svNG</div>
+        <div class="bal-icon bi-sv" style="font-size:.72rem;">svNG</div>
         <div><div class="bal-name">svNG</div><div class="bal-sub">Nigeria FGN Bond</div></div>
       </div>
       <div><div class="bal-amount" id="bal-svng">0</div><div class="bal-yield" id="bal-svng-yield"></div></div>
     </div>
     <div class="bal-row" id="bal-svtr-row" style="display:none;">
       <div class="bal-left">
-        <div class="bal-icon bi-sv" style="font-size:.44rem;">svTR</div>
+        <div class="bal-icon bi-sv" style="font-size:.72rem;">svTR</div>
         <div><div class="bal-name">svTR</div><div class="bal-sub">Sovereign Bond</div></div>
       </div>
       <div><div class="bal-amount" id="bal-svtr">0</div><div class="bal-yield" id="bal-svtr-yield"></div></div>
     </div>
     <div class="bal-row" id="bal-svar-row" style="display:none;">
       <div class="bal-left">
-        <div class="bal-icon bi-sv" style="font-size:.44rem;">svAR</div>
+        <div class="bal-icon bi-sv" style="font-size:.72rem;">svAR</div>
         <div><div class="bal-name">svAR</div><div class="bal-sub">Sovereign Bond</div></div>
       </div>
       <div><div class="bal-amount" id="bal-svar">0</div><div class="bal-yield" id="bal-svar-yield"></div></div>
@@ -360,19 +360,8 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   </div>
 
   <div class="sb-stats">
-    <div class="sb-label">Portfolio</div>
+    <div class="sb-label">Protocol TVL</div>
     <div class="sb-stat">
-      <div class="sb-stat-label">Total Value</div>
-      <div class="sb-stat-val" id="stat-total">$0.00</div>
-      <div class="sb-stat-sub" id="stat-total-sub">No active positions</div>
-    </div>
-    <div class="sb-stat">
-      <div class="sb-stat-label">Yield Earned</div>
-      <div class="sb-stat-val" id="stat-yield">$0.000000</div>
-      <div class="sb-stat-sub pos">Accruing in real-time</div>
-    </div>
-    <div class="sb-stat">
-      <div class="sb-stat-label">Protocol TVL</div>
       <div class="sb-stat-val" id="stat-tvl">$0</div>
       <div class="sb-stat-sub">Simulated testnet</div>
     </div>
@@ -394,6 +383,13 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     </div>
   </div>
 
+  <!-- Tab Navigation -->
+  <div style="background:var(--ink2);border-bottom:1px solid var(--border);display:flex;gap:0;padding:0 32px;">
+    <button onclick="showTab('trade')" id="tab-trade" style="font-family:var(--ff-mono);font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;padding:14px 20px;background:none;border:none;border-bottom:2px solid var(--gold);color:var(--gold);cursor:pointer;">Trade</button>
+    <button onclick="showTab('portfolio')" id="tab-portfolio" style="font-family:var(--ff-mono);font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;padding:14px 20px;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted2);cursor:pointer;">Portfolio</button>
+    <button onclick="showTab('community')" id="tab-community" style="font-family:var(--ff-mono);font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;padding:14px 20px;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted2);cursor:pointer;">Community</button>
+  </div>
+
   <div class="ticker-bar">
     <div class="ticker-wrap">
       <span class="ticker-item">svNG Sovereign Bond <strong>16–20%</strong> p.a.</span><span style="color:var(--border2);margin:0 4px;">·</span>
@@ -413,6 +409,8 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 
   <div class="content">
 
+    <!-- TRADE TAB -->
+    <div id="tab-trade-content">
     <!-- Wallet banner -->
     <div class="wallet-banner" id="wallet-banner">
       <div class="wb-text">
@@ -451,30 +449,10 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       </div>
     </div>
 
-    <!-- Bond Features Bar -->
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-bottom:28px;">
-      <div style="background:var(--ink2);border:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:10px;">
-        <span style="font-size:1.1rem;">🛡️</span>
-        <div><div style="font-family:var(--ff-mono);font-size:.54rem;color:var(--white);">Very Low Default Risk</div><div style="font-family:var(--ff-mono);font-size:.44rem;color:var(--muted);margin-top:2px;line-height:1.5;">Sovereign guarantee from national treasuries — backed by full faith &amp; credit</div></div>
-      </div>
-      <div style="background:var(--ink2);border:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:10px;">
-        <span style="font-size:1.1rem;">🏛️</span>
-        <div><div style="font-family:var(--ff-mono);font-size:.54rem;color:var(--white);">Tax-Exempt Income</div><div style="font-family:var(--ff-mono);font-size:.44rem;color:var(--muted);margin-top:2px;line-height:1.5;">Interest payments often fully exempt from withholding &amp; income taxes</div></div>
-      </div>
-      <div style="background:var(--ink2);border:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:10px;">
-        <span style="font-size:1.1rem;">💧</span>
-        <div><div style="font-family:var(--ff-mono);font-size:.54rem;color:var(--white);">Good Liquidity</div><div style="font-family:var(--ff-mono);font-size:.44rem;color:var(--muted);margin-top:2px;line-height:1.5;">Actively traded on local exchanges with reliable daily volumes &amp; narrow spreads</div></div>
-      </div>
-      <div style="background:var(--ink2);border:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:10px;">
-        <span style="font-size:1.1rem;">🔓</span>
-        <div><div style="font-family:var(--ff-mono);font-size:.54rem;color:var(--white);">Flexible Exit</div><div style="font-family:var(--ff-mono);font-size:.44rem;color:var(--muted);margin-top:2px;line-height:1.5;">Sell via secondary markets or our OTC before maturity at prevailing market prices</div></div>
-      </div>
-    </div>
-
     <!-- Lock Period -->
     <div class="section-head">
       <div class="section-title">Lock Period</div>
-      <div style="font-family:var(--ff-mono);font-size:.5rem;color:var(--muted2);">Longer lock = higher coupon rate</div>
+      <div style="font-family:var(--ff-mono);font-size:.65rem;color:var(--muted2);">Longer lock = higher coupon rate</div>
     </div>
     <div class="lock-grid">
       <div class="lock-opt" data-days="30" onclick="selectLock(30)">
@@ -529,7 +507,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
         <div class="panel-title">Redeem svToken</div>
         <div class="redeem-pos" id="redeem-pos">
           <div class="redeem-pos-label">Active Position</div>
-          <div id="rp-empty" style="font-family:var(--ff-mono);font-size:.58rem;color:var(--muted);text-align:center;padding:6px 0;">No active position</div>
+          <div id="rp-empty" style="font-family:var(--ff-mono);font-size:.72rem;color:var(--muted);text-align:center;padding:6px 0;">No active position</div>
           <div id="rp-data" style="display:none;">
             <div class="redeem-row"><span class="rk">Principal</span><span style="font-family:var(--ff-mono);font-size:.6rem;color:var(--white);" id="rp-principal">—</span></div>
             <div class="redeem-row"><span class="rk">FX Value</span><span style="font-family:var(--ff-mono);font-size:.6rem;color:var(--gold2);" id="rp-fx">—</span></div>
@@ -542,10 +520,14 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       </div>
     </div>
 
+    </div><!-- /trade tab -->
+
+    <!-- PORTFOLIO TAB -->
+    <div id="tab-portfolio-content" style="display:none;">
     <!-- Positions -->
     <div class="section-head">
       <div class="section-title">Your Positions</div>
-      <div style="font-family:var(--ff-mono);font-size:.48rem;color:var(--green);" id="yield-label"></div>
+      <div style="font-family:var(--ff-mono);font-size:.62rem;color:var(--green);" id="yield-label"></div>
     </div>
     <div class="positions-wrap">
       <table class="pos-table">
@@ -562,28 +544,109 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       </table>
     </div>
 
-    <!-- Leaderboard -->
-    <div class="section-head">
-      <div class="section-title">Testnet Leaderboard</div>
-      <button onclick="refreshLeaderboard()" style="font-family:var(--ff-mono);font-size:.46rem;color:var(--muted2);background:none;border:1px solid var(--border);padding:3px 10px;cursor:pointer;border-radius:2px;">Refresh</button>
+    <!-- Transaction History -->
+    <div class="section-head" style="margin-top:24px;">
+      <div class="section-title">Transaction History</div>
     </div>
-    <div class="lb-wrap">
-      <div class="lb-panel">
-        <div class="lb-head"><span class="lb-title">Top Depositors</span></div>
-        <div id="lb-depositors"><div class="lb-empty">Connect wallet to load</div></div>
-      </div>
-      <div class="lb-panel">
-        <div class="lb-head"><span class="lb-title">Top Yield Earners</span></div>
-        <div id="lb-yield"><div class="lb-empty">Connect wallet to load</div></div>
-      </div>
-    </div>
-
-    <!-- TX Log -->
-    <div class="section-head"><div class="section-title">Transaction Log</div></div>
     <div class="tx-panel">
       <div class="tx-list" id="tx-list"><div class="tx-empty">No transactions yet</div></div>
     </div>
 
+    </div><!-- /portfolio tab -->
+
+    <!-- COMMUNITY TAB -->
+    <div id="tab-community-content" style="display:none;">
+
+    <!-- Protocol Stats -->
+    <div class="section-head">
+      <div class="section-title">Protocol Activity</div>
+      <div style="display:flex;gap:6px;">
+        <button onclick="setStatWindow(7)"  id="sw-7"  style="font-family:var(--ff-mono);font-size:.62rem;padding:3px 10px;cursor:pointer;border-radius:2px;background:var(--gold-bg);border:1px solid var(--gold);color:var(--gold);">7d</button>
+        <button onclick="setStatWindow(14)" id="sw-14" style="font-family:var(--ff-mono);font-size:.62rem;padding:3px 10px;cursor:pointer;border-radius:2px;background:none;border:1px solid var(--border);color:var(--muted2);">14d</button>
+        <button onclick="setStatWindow(30)" id="sw-30" style="font-family:var(--ff-mono);font-size:.62rem;padding:3px 10px;cursor:pointer;border-radius:2px;background:none;border:1px solid var(--border);color:var(--muted2);">30d</button>
+        <button onclick="refreshLeaderboard()" style="font-family:var(--ff-mono);font-size:.62rem;padding:3px 10px;cursor:pointer;border-radius:2px;background:none;border:1px solid var(--border);color:var(--muted2);">Refresh</button>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-bottom:24px;">
+      <div style="background:var(--ink2);border:1px solid var(--border);padding:16px 18px;">
+        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">Total Deposits</div>
+        <div style="font-family:var(--ff-serif);font-size:1.4rem;font-weight:300;color:var(--green);line-height:1;" id="stat-deposits-window">$0</div>
+        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted);margin-top:4px;" id="stat-deposits-count">0 transactions</div>
+      </div>
+      <div style="background:var(--ink2);border:1px solid var(--border);padding:16px 18px;">
+        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">Withdrawals</div>
+        <div style="font-family:var(--ff-serif);font-size:1.4rem;font-weight:300;color:var(--orange);line-height:1;" id="stat-withdrawals-window">$0</div>
+        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted);margin-top:4px;" id="stat-withdrawals-count">0 transactions</div>
+      </div>
+      <div style="background:var(--ink2);border:1px solid var(--border);padding:16px 18px;">
+        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">Protocol TVL</div>
+        <div style="font-family:var(--ff-serif);font-size:1.4rem;font-weight:300;color:var(--gold2);line-height:1;" id="stat-tvl-window">$0</div>
+        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted);margin-top:4px;" id="stat-active-users">0 active wallets</div>
+      </div>
+      <div style="background:var(--ink2);border:1px solid var(--border);padding:16px 18px;">
+        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">Yield Paid Out</div>
+        <div style="font-family:var(--ff-serif);font-size:1.4rem;font-weight:300;color:var(--green);line-height:1;" id="stat-yield-window">$0</div>
+        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted);margin-top:4px;">to depositors</div>
+      </div>
+    </div>
+
+    <!-- Vault Performance -->
+    <div class="section-head"><div class="section-title">Vault Performance</div></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-bottom:24px;" id="vault-performance">
+      <div style="background:var(--ink2);border:1px solid var(--border);padding:16px 18px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <span style="font-size:1.1rem;">🇳🇬</span>
+          <span style="font-family:var(--ff-mono);font-size:.7rem;color:var(--gold);">svNG</span>
+        </div>
+        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted2);margin-bottom:3px;">TVL</div>
+        <div style="font-family:var(--ff-serif);font-size:1.2rem;color:var(--white);" id="vp-tvl-svNG">$0</div>
+        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted);margin-top:8px;" id="vp-deps-svNG">0 depositors</div>
+        <div style="margin-top:10px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;">
+          <div style="height:100%;background:var(--gold);border-radius:2px;transition:width .5s;" id="vp-bar-svNG"></div>
+        </div>
+      </div>
+      <div style="background:var(--ink2);border:1px solid var(--border);padding:16px 18px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <span style="font-size:1.1rem;">🇹🇷</span>
+          <span style="font-family:var(--ff-mono);font-size:.7rem;color:var(--gold);">svTR</span>
+        </div>
+        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted2);margin-bottom:3px;">TVL</div>
+        <div style="font-family:var(--ff-serif);font-size:1.2rem;color:var(--white);" id="vp-tvl-svTR">$0</div>
+        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted);margin-top:8px;" id="vp-deps-svTR">0 depositors</div>
+        <div style="margin-top:10px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;">
+          <div style="height:100%;background:var(--gold);border-radius:2px;transition:width .5s;" id="vp-bar-svTR"></div>
+        </div>
+      </div>
+      <div style="background:var(--ink2);border:1px solid var(--border);padding:16px 18px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <span style="font-size:1.1rem;">🇦🇷</span>
+          <span style="font-family:var(--ff-mono);font-size:.7rem;color:var(--gold);">svAR</span>
+        </div>
+        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted2);margin-bottom:3px;">TVL</div>
+        <div style="font-family:var(--ff-serif);font-size:1.2rem;color:var(--white);" id="vp-tvl-svAR">$0</div>
+        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted);margin-top:8px;" id="vp-deps-svAR">0 depositors</div>
+        <div style="margin-top:10px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;">
+          <div style="height:100%;background:var(--gold);border-radius:2px;transition:width .5s;" id="vp-bar-svAR"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Activities -->
+    <div class="section-head"><div class="section-title">User Activities</div></div>
+    <div class="lb-wrap" style="grid-template-columns:1fr 1fr;">
+      <div class="lb-panel">
+        <div class="lb-head"><span class="lb-title">💰 Top Depositors</span></div>
+        <div id="lb-depositors"><div class="lb-empty">Loading...</div></div>
+      </div>
+      <div class="lb-panel">
+        <div class="lb-head"><span class="lb-title">📈 Top Yield Earners</span></div>
+        <div id="lb-yield"><div class="lb-empty">Loading...</div></div>
+      </div>
+    </div>
+
+    </div><!-- /community tab -->
   </div>
 </main>
 </div>
@@ -845,11 +908,11 @@ async function showGasFaucet(){
     '<div class="success-title">Get Free Sepolia ETH</div>'+
     '<div class="success-sub">0.02 ETH sent directly to your wallet</div>'+
     '<div style="background:var(--ink3);border:1px solid var(--border);border-radius:3px;padding:14px;margin-bottom:16px;text-align:left;">'+
-    '<div style="font-family:var(--ff-mono);font-size:.58rem;color:var(--muted);margin-bottom:4px;">Your wallet</div>'+
+    '<div style="font-family:var(--ff-mono);font-size:.72rem;color:var(--muted);margin-bottom:4px;">Your wallet</div>'+
     '<div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--gold);word-break:break-all;">'+wallet.address+'</div>'+
     '</div>'+
     '<button class="btn btn-gold" id="btn-claim-gas" onclick="claimGasFromFaucet()">Send Me 0.02 ETH</button>'+
-    '<div style="font-family:var(--ff-mono);font-size:.48rem;color:var(--muted);margin-top:10px;">One claim per wallet per 24 hours</div>'+
+    '<div style="font-family:var(--ff-mono);font-size:.62rem;color:var(--muted);margin-top:10px;">One claim per wallet per 24 hours</div>'+
     '<button class="btn btn-outline" style="margin-top:8px;" onclick="closeModal()">Cancel</button>'+
   '</div>');
 }
@@ -973,7 +1036,7 @@ function updateRedeemPanel(){
 
   document.getElementById('rp-principal').textContent='$'+fmt(dep,2)+' USDC';
   document.getElementById('rp-fx').textContent=fxAmt.toLocaleString()+' '+vault.fxSymbol;
-  document.getElementById('rp-yield').innerHTML='+$'+fmt(netYield,6)+' <span style="font-size:.44rem;color:var(--muted);">after taxes</span>';
+  document.getElementById('rp-yield').innerHTML='+$'+fmt(netYield,6)+' <span style="font-size:.72rem;color:var(--muted);">after taxes</span>';
 
   var statusEl=document.getElementById('rp-status');
   var noticeBar=document.getElementById('notice-bar');
@@ -1027,7 +1090,7 @@ function showExitOptionsModal(v,dep){
     '<div class="exit-warning">'+
       '<div style="font-size:1.5rem;margin-bottom:8px;">⚠</div>'+
       '<div style="font-family:var(--ff-serif);font-size:1.25rem;color:var(--white);margin-bottom:6px;">Vault Not Matured</div>'+
-      '<div style="font-family:var(--ff-mono);font-size:.56rem;color:var(--muted);line-height:1.8;">Your <strong style="color:var(--gold);">'+v+'</strong> vault matures in <strong style="color:var(--orange);">'+fmt(rem,0)+' days</strong>.<br>Exiting early incurs a fee on your principal.</div>'+
+      '<div style="font-family:var(--ff-mono);font-size:.70rem;color:var(--muted);line-height:1.8;">Your <strong style="color:var(--gold);">'+v+'</strong> vault matures in <strong style="color:var(--orange);">'+fmt(rem,0)+' days</strong>.<br>Exiting early incurs a fee on your principal.</div>'+
     '</div>'+
     '<div class="exit-options">'+
 
@@ -1181,7 +1244,7 @@ async function doRedeem(){
       '<div class="success-sub">USDC returned to your wallet</div>'+
       '<div class="success-data">'+
       '<div class="srow"><span class="sk">Principal</span><span class="sv">$'+fmt(principal,2)+' USDC</span></div>'+
-      '<div class="srow"><span class="sk">Net Yield</span><span class="sv green">+$'+fmt(netYield,6)+' USDC <span style="font-size:.44rem;color:var(--muted);">after taxes</span></span></div>'+
+      '<div class="srow"><span class="sk">Net Yield</span><span class="sv green">+$'+fmt(netYield,6)+' USDC <span style="font-size:.72rem;color:var(--muted);">after taxes</span></span></div>'+
       (penAmt>0?'<div class="srow"><span class="sk">Early Exit Fee</span><span class="sv orange">-$'+fmt(penAmt,4)+' USDC ('+exitLabel+')</span></div>':'')+
       '<div class="srow"><span class="sk">You Received</span><span class="sv gold">$'+fmt(netOut,4)+' USDC</span></div>'+
       '</div>'+
@@ -1218,47 +1281,152 @@ async function claimDailyFaucet(){
 }
 
 // ── Leaderboard ──
+var statWindowDays = 7;
+
+function setStatWindow(days){
+  statWindowDays = days;
+  [7,14,30].forEach(function(d){
+    var btn = document.getElementById('sw-'+d);
+    if(!btn) return;
+    if(d===days){
+      btn.style.background='var(--gold-bg)'; btn.style.borderColor='var(--gold)'; btn.style.color='var(--gold)';
+    } else {
+      btn.style.background='none'; btn.style.borderColor='var(--border)'; btn.style.color='var(--muted2)';
+    }
+  });
+  refreshLeaderboard();
+}
+
 async function refreshLeaderboard(){
-  if(!wallet.connected||!wallet.chainOk) return;
   var dEl=document.getElementById('lb-depositors');
   var yEl=document.getElementById('lb-yield');
+  if(!dEl||!yEl) return;
   dEl.innerHTML='<div class="lb-empty">Loading...</div>';
   yEl.innerHTML='<div class="lb-empty">Loading...</div>';
+
   try {
-    var depositors={};
+    var pub = new ethers.JsonRpcProvider('https://rpc.sepolia.org');
+    var pubVaults = {
+      svNG: new ethers.Contract(CONTRACTS.svNG, VAULT_ABI, pub),
+      svTR: new ethers.Contract(CONTRACTS.svTR, VAULT_ABI, pub),
+      svAR: new ethers.Contract(CONTRACTS.svAR, VAULT_ABI, pub),
+    };
+
+    var now       = Math.floor(Date.now()/1000);
+    var windowSec = statWindowDays * 86400;
+    var cutoff    = now - windowSec;
+
+    var depositors     = {};  // addr -> total deposited ever
+    var depositWindow  = 0;   // $ deposited in window
+    var depositCount   = 0;
+    var withdrawWindow = 0;
+    var withdrawCount  = 0;
+    var yieldWindow    = 0;
+    var vaultTvl       = { svNG:0, svTR:0, svAR:0 };
+    var vaultDeps      = { svNG:new Set(), svTR:new Set(), svAR:new Set() };
+    var activeWallets  = new Set();
+
     for(var v of ['svNG','svTR','svAR']){
-      var filter=wallet.vaults[v].filters.Deposited();
-      var events=await wallet.vaults[v].queryFilter(filter,-50000);
-      events.forEach(function(e){
-        var addr=e.args[0].toLowerCase();
-        var amt=Number(ethers.formatUnits(e.args[1],6));
-        depositors[addr]=(depositors[addr]||0)+amt;
-      });
+      try {
+        // Deposit events
+        var depFilter = pubVaults[v].filters.Deposited();
+        var depEvents = await pubVaults[v].queryFilter(depFilter, -100000);
+        for(var e of depEvents){
+          var addr  = e.args[0].toLowerCase();
+          var amt   = Number(ethers.formatUnits(e.args[1],6));
+          var block = await pub.getBlock(e.blockNumber);
+          var ts    = block ? block.timestamp : 0;
+          depositors[addr] = (depositors[addr]||0) + amt;
+          vaultDeps[v].add(addr);
+          activeWallets.add(addr);
+          if(ts >= cutoff){
+            depositWindow += amt;
+            depositCount++;
+          }
+        }
+
+        // Redeem events
+        var redFilter = pubVaults[v].filters.Redeemed();
+        var redEvents = await pubVaults[v].queryFilter(redFilter, -100000);
+        for(var e of redEvents){
+          var block = await pub.getBlock(e.blockNumber);
+          var ts    = block ? block.timestamp : 0;
+          var net   = Number(ethers.formatUnits(e.args[5],6));
+          var yFee  = Number(ethers.formatUnits(e.args[3],6));
+          if(ts >= cutoff){
+            withdrawWindow += net;
+            withdrawCount++;
+            yieldWindow += yFee * 10; // fee is 10%, reverse to get gross
+          }
+        }
+
+        // TVL
+        var tvlRaw = await pubVaults[v].totalDeposited();
+        vaultTvl[v] = Number(ethers.formatUnits(tvlRaw,6));
+
+      } catch(err){ console.log('LB error', v, err.message); }
     }
-    var yielders={};
+
+    // Protocol stats
+    var totalTvl = vaultTvl.svNG + vaultTvl.svTR + vaultTvl.svAR;
+    var maxTvl   = Math.max(vaultTvl.svNG, vaultTvl.svTR, vaultTvl.svAR, 1);
+
+    var dw = document.getElementById('stat-deposits-window');
+    var ww = document.getElementById('stat-withdrawals-window');
+    var tw = document.getElementById('stat-tvl-window');
+    var yw = document.getElementById('stat-yield-window');
+    var dc = document.getElementById('stat-deposits-count');
+    var wc = document.getElementById('stat-withdrawals-count');
+    var au = document.getElementById('stat-active-users');
+
+    if(dw) dw.textContent = '$'+fmt(depositWindow,2);
+    if(ww) ww.textContent = '$'+fmt(withdrawWindow,2);
+    if(tw) tw.textContent = '$'+fmt(totalTvl,2);
+    if(yw) yw.textContent = '$'+fmt(yieldWindow,4);
+    if(dc) dc.textContent = depositCount+' transactions';
+    if(wc) wc.textContent = withdrawCount+' transactions';
+    if(au) au.textContent = activeWallets.size+' active wallets';
+
+    // Vault performance bars
+    for(var v of ['svNG','svTR','svAR']){
+      var tvlEl  = document.getElementById('vp-tvl-'+v);
+      var depEl2 = document.getElementById('vp-deps-'+v);
+      var barEl  = document.getElementById('vp-bar-'+v);
+      if(tvlEl)  tvlEl.textContent  = '$'+fmt(vaultTvl[v],2);
+      if(depEl2) depEl2.textContent = vaultDeps[v].size+' depositor'+(vaultDeps[v].size!==1?'s':'');
+      if(barEl)  barEl.style.width  = Math.round((vaultTvl[v]/maxTvl)*100)+'%';
+    }
+
+    // Yield earned per depositor (use on-chain getYieldEarned)
+    var yielders = {};
     for(var addr of Object.keys(depositors)){
-      var total=0;
+      var total = 0;
       for(var v of ['svNG','svTR','svAR']){
-        try { var y=await wallet.vaults[v].getYieldEarned(addr); total+=Number(ethers.formatUnits(y,6)); } catch(e){}
+        try { var y=await pubVaults[v].getYieldEarned(addr); total+=Number(ethers.formatUnits(y,6)); } catch(e){}
       }
       if(total>0) yielders[addr]=total;
     }
-    function lbRow(addr,amt,rank){
+
+    function lbRow(addr,amt,rank,suffix,color){
       var medal=rank===0?'🥇':rank===1?'🥈':rank===2?'🥉':'·';
       var isMe=wallet.address&&addr===wallet.address.toLowerCase();
       return '<div class="lb-row">'+
         '<span class="lb-medal">'+medal+'</span>'+
         '<span class="lb-addr'+(isMe?' me':'')+'">'+addr.slice(0,6)+'...'+addr.slice(-4)+(isMe?' (you)':'')+'</span>'+
-        '<span class="lb-amt">$'+fmt(amt,2)+'</span>'+
+        '<span class="lb-amt" style="color:'+(color||'var(--white)')+';">$'+fmt(amt,2)+(suffix||'')+'</span>'+
       '</div>';
     }
+
     var topDep=Object.entries(depositors).sort((a,b)=>b[1]-a[1]).slice(0,5);
     var topYld=Object.entries(yielders).sort((a,b)=>b[1]-a[1]).slice(0,5);
-    dEl.innerHTML=topDep.length?topDep.map((e,i)=>lbRow(e[0],e[1],i)).join(''):'<div class="lb-empty">No deposits yet</div>';
-    yEl.innerHTML=topYld.length?topYld.map((e,i)=>lbRow(e[0],e[1],i)).join(''):'<div class="lb-empty">No yield yet</div>';
+
+    dEl.innerHTML=topDep.length?topDep.map((e,i)=>lbRow(e[0],e[1],i,'','var(--white)')).join(''):'<div class="lb-empty">No deposits yet — be first!</div>';
+    yEl.innerHTML=topYld.length?topYld.map((e,i)=>lbRow(e[0],e[1],i,' yield','var(--green)')).join(''):'<div class="lb-empty">No yield earned yet</div>';
+
   } catch(e){
-    dEl.innerHTML='<div class="lb-empty">Failed to load</div>';
-    yEl.innerHTML='<div class="lb-empty">Failed to load</div>';
+    dEl.innerHTML='<div class="lb-empty">Failed to load — try refreshing</div>';
+    yEl.innerHTML='<div class="lb-empty">Failed to load — try refreshing</div>';
+    console.error('Leaderboard error:', e);
   }
 }
 
@@ -1290,9 +1458,9 @@ function renderPositions(){
     var prog=lockProgress(state.lockStart[v],state.lockDays[v]);
     var rem=daysRemaining(state.lockStart[v],state.lockDays[v]);
     var status=locked
-      ?'<span style="font-family:var(--ff-mono);font-size:.48rem;color:var(--orange);background:var(--orange-dim);border:1px solid rgba(232,146,74,.3);padding:2px 7px;border-radius:2px;">LOCKED·'+fmt(rem,0)+'d</span>'
-      :'<span style="font-family:var(--ff-mono);font-size:.48rem;color:var(--green);background:var(--green-dim);border:1px solid rgba(46,203,143,.2);padding:2px 7px;border-radius:2px;">UNLOCKED</span>';
-    var action='<button class="btn '+(locked?'btn-orange':'btn-outline')+'" style="width:auto;padding:4px 10px;font-size:.46rem;" onclick="selectVault(\''+v+'\');handleRedeemClick();">'+(locked?'Exit':'Redeem')+'</button>';
+      ?'<span style="font-family:var(--ff-mono);font-size:.62rem;color:var(--orange);background:var(--orange-dim);border:1px solid rgba(232,146,74,.3);padding:2px 7px;border-radius:2px;">LOCKED·'+fmt(rem,0)+'d</span>'
+      :'<span style="font-family:var(--ff-mono);font-size:.62rem;color:var(--green);background:var(--green-dim);border:1px solid rgba(46,203,143,.2);padding:2px 7px;border-radius:2px;">UNLOCKED</span>';
+    var action='<button class="btn '+(locked?'btn-orange':'btn-outline')+'" style="width:auto;padding:4px 10px;font-size:.60rem;" onclick="selectVault(\''+v+'\');handleRedeemClick();">'+(locked?'Exit':'Redeem')+'</button>';
     var progress='<div class="lock-progress-wrap"><div class="lock-progress-bar"><div class="lock-progress-fill" style="width:'+Math.round(prog*100)+'%"></div></div><div class="lock-progress-label"><span>'+Math.round(prog*100)+'%</span><span>'+state.lockDays[v]+'d</span></div></div>';
     rows.push('<tr>'+
       '<td><span class="pos-ticker">'+vault.flag+' '+v+'</span></td>'+
@@ -1346,9 +1514,9 @@ function renderTxLog(){
     return '<div class="tx-item">'+
       '<span class="tx-type '+tx.type+'">'+tx.type+'</span>'+
       '<a class="tx-hash-link" href="https://sepolia.etherscan.io/tx/'+tx.hash+'" target="_blank">'+maskHash(tx.hash)+'</a>'+
-      '<span style="font-family:var(--ff-mono);font-size:.56rem;color:var(--text);">'+tx.amount+'</span>'+
-      '<span style="font-family:var(--ff-mono);font-size:.5rem;color:var(--gold);flex-shrink:0;">'+tx.vault+'</span>'+
-      '<span style="font-family:var(--ff-mono);font-size:.46rem;color:var(--muted);flex-shrink:0;">'+timeAgo(tx.time)+'</span>'+
+      '<span style="font-family:var(--ff-mono);font-size:.70rem;color:var(--text);">'+tx.amount+'</span>'+
+      '<span style="font-family:var(--ff-mono);font-size:.65rem;color:var(--gold);flex-shrink:0;">'+tx.vault+'</span>'+
+      '<span style="font-family:var(--ff-mono);font-size:.60rem;color:var(--muted);flex-shrink:0;">'+timeAgo(tx.time)+'</span>'+
     '</div>';
   }).join('');
 }
@@ -1365,6 +1533,21 @@ function tickBlock(){
 
 function updateAll(){
   renderBalances(); renderStats(); renderPositions(); renderTxLog(); updateRedeemPanel();
+}
+
+// ── Tab Navigation ──
+function showTab(tab){
+  ['trade','portfolio','community'].forEach(function(t){
+    var content = document.getElementById('tab-'+t+'-content');
+    var btn     = document.getElementById('tab-'+t);
+    if(content) content.style.display = t===tab ? 'block' : 'none';
+    if(btn){
+      btn.style.borderBottomColor = t===tab ? 'var(--gold)' : 'transparent';
+      btn.style.color = t===tab ? 'var(--gold)' : 'var(--muted2)';
+    }
+  });
+  // Refresh leaderboard when activity tab opened
+  if(tab==='community') refreshLeaderboard();
 }
 
 // ── FX Rates from CoinGecko ──
@@ -1418,6 +1601,8 @@ updateDepositPreview();
 updateLockGrid();
 fetchFxRates();
 setInterval(fetchFxRates, 5 * 60 * 1000); // refresh every 5 minutes
+refreshLeaderboard(); // load on page open — no wallet needed
+setInterval(refreshLeaderboard, 60 * 1000); // refresh every 60 seconds
 </script>
 </body>
 </html>
