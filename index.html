@@ -1367,9 +1367,57 @@ function updateAll(){
   renderBalances(); renderStats(); renderPositions(); renderTxLog(); updateRedeemPanel();
 }
 
+// ── FX Rates from CoinGecko ──
+async function fetchFxRates(){
+  try {
+    var res = await fetch(
+      'https://api.coingecko.com/api/v3/simple/price?ids=usd-coin&vs_currencies=ngn,try,ars',
+      { headers: { 'Accept': 'application/json' } }
+    );
+    var data = await res.json();
+    var rates = data['usd-coin'];
+    if(!rates) return;
+
+    // Update VAULTS config with live rates (stored as rate * 100 for contract)
+    if(rates.ngn) VAULTS.svNG.fxRate = Math.round(rates.ngn * 100);
+    if(rates.try) VAULTS.svTR.fxRate = Math.round(rates.try * 100);
+    if(rates.ars) VAULTS.svAR.fxRate = Math.round(rates.ars * 100);
+
+    // Update vault card display
+    var ngn = rates.ngn ? Math.round(rates.ngn).toLocaleString() : '1,350';
+    var try_ = rates.try ? rates.try.toFixed(1) : '45';
+    var ars  = rates.ars ? Math.round(rates.ars).toLocaleString() : '1,400';
+
+    // Update vault cards
+    var cards = document.querySelectorAll('.vc-meta');
+    cards.forEach(function(el){
+      if(el.textContent.includes('NGN')) el.textContent = '1 USDC = ' + ngn + ' NGN';
+      if(el.textContent.includes('TRY')) el.textContent = '1 USDC = ' + try_ + ' TRY';
+      if(el.textContent.includes('ARS')) el.textContent = '1 USDC = ' + ars + ' ARS';
+    });
+
+    // Update ticker
+    var tickerItems = document.querySelectorAll('.ticker-item');
+    tickerItems.forEach(function(el){
+      if(el.textContent.includes('NGN')) el.innerHTML = '1 USDC = <strong>' + ngn + ' NGN</strong>';
+      if(el.textContent.includes('TRY')) el.innerHTML = '1 USDC = <strong>' + try_ + ' TRY</strong>';
+      if(el.textContent.includes('ARS')) el.innerHTML = '1 USDC = <strong>' + ars + ' ARS</strong>';
+    });
+
+    // Update redeem panel FX if visible
+    updateRedeemPanel();
+
+    console.log('FX rates updated: NGN=' + ngn + ' TRY=' + try_ + ' ARS=' + ars);
+  } catch(e){
+    console.log('FX rate fetch failed, using defaults:', e.message);
+  }
+}
+
 // ── Init ──
 updateDepositPreview();
 updateLockGrid();
+fetchFxRates();
+setInterval(fetchFxRates, 5 * 60 * 1000); // refresh every 5 minutes
 </script>
 </body>
 </html>
