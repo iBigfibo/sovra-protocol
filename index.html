@@ -524,6 +524,21 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 
     <!-- PORTFOLIO TAB -->
     <div id="tab-portfolio-content" style="display:none;">
+
+    <!-- Portfolio Stats -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-bottom:20px;">
+      <div style="background:var(--ink2);border:1px solid var(--border);padding:18px 20px;">
+        <div style="font-size:.8rem;color:var(--muted2);margin-bottom:6px;">Total Value</div>
+        <div style="font-family:var(--ff-serif);font-size:1.8rem;font-weight:300;color:var(--gold2);line-height:1;" id="stat-total">$0.00</div>
+        <div style="font-size:.78rem;color:var(--muted2);margin-top:4px;" id="stat-total-sub">No active positions</div>
+      </div>
+      <div style="background:var(--ink2);border:1px solid var(--border);padding:18px 20px;">
+        <div style="font-size:.8rem;color:var(--muted2);margin-bottom:6px;">Yield Earned</div>
+        <div style="font-family:var(--ff-serif);font-size:1.8rem;font-weight:300;color:var(--green);line-height:1;" id="stat-yield">$0.000000</div>
+        <div style="font-size:.78rem;color:var(--green);margin-top:4px;">Accruing on-chain</div>
+      </div>
+    </div>
+
     <!-- Positions -->
     <div class="section-head">
       <div class="section-title">Your Positions</div>
@@ -700,7 +715,9 @@ var VAULT_ABI = [
   ],"stateMutability":"view","type":"function"},
   {"inputs":[{"name":"user","type":"address"}],"name":"getYieldEarned","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
   {"inputs":[],"name":"totalDeposited","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[{"name":"account","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+  {"inputs":[{"name":"account","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"principal","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"lockDays","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"effectiveAprBps","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"yieldReserved","type":"uint256"}],"name":"Deposited","type":"event"},
+  {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"principal","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"grossYield","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"yieldFee","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"principalPenalty","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"netReceived","type":"uint256"},{"indexed":false,"internalType":"uint8","name":"exitType","type":"uint8"}],"name":"Redeemed","type":"event"}
 ];
 
 // ── Vault Config ──
@@ -1185,6 +1202,7 @@ async function doDeposit(){
     logTx('deposit',v,'$'+fmt(amt,2)+' USDC',receipt.hash);
     await loadChainData();
     document.getElementById('deposit-input').value='';
+    showTab('portfolio'); // switch to portfolio so user sees their position
     showModal('<div class="success-modal fade-in">'+
       '<div class="success-icon">✦</div>'+
       '<div class="success-title">Deposit Confirmed</div>'+
@@ -1498,14 +1516,20 @@ function renderStats(){
     ty+=Number(state.yieldEarned[v])||0;
     tvl+=Number(state.tvl[v])||0;
   });
-  document.getElementById('stat-total').textContent=fmtShort(tp);
-  document.getElementById('stat-total-sub').textContent=tp>0?'Active positions':'No active positions';
-  document.getElementById('stat-yield').textContent='$'+fmt(ty,6);
-  document.getElementById('stat-tvl').textContent=fmtShort(tvl);
+  var stEl=document.getElementById('stat-total');
+  var ssEl=document.getElementById('stat-total-sub');
+  var syEl=document.getElementById('stat-yield');
+  var tvEl=document.getElementById('stat-tvl');
+  var ylEl=document.getElementById('yield-label');
+  if(stEl) stEl.textContent=fmtShort(tp);
+  if(ssEl) ssEl.textContent=tp>0?'Active positions':'No active positions';
+  if(syEl) syEl.textContent='$'+fmt(ty,6);
+  if(tvEl) tvEl.textContent=fmtShort(tvl);
+  if(ylEl&&ty>0) ylEl.textContent='Yield accruing on-chain';
   ['svNG','svTR','svAR'].forEach(function(v){
-    document.getElementById('tvl-'+v).textContent='TVL: '+fmtShort(state.tvl[v]);
+    var el=document.getElementById('tvl-'+v);
+    if(el) el.textContent='TVL: '+fmtShort(state.tvl[v]);
   });
-  if(ty>0) document.getElementById('yield-label').textContent='Yield accruing on-chain';
 }
 
 function renderTxLog(){
