@@ -1,0 +1,11 @@
+[project]
+name = "sovra-protocol"
+
+[contracts.svng-vault]
+path = "svng-vault.clar"
+
+[contracts.svtr-vault]
+path = "svtr-vault.clar"
+
+[contracts.svar-vault]
+path = "svar-vault.clar"
