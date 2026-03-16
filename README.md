@@ -1,153 +1,50 @@
-# Sovra Protocol
-Status: Pre-MVP | Getting Started Grant Application Phase
+# Remix IDE Blank Template
 
-Sovra is a sovereign yield vault protocol built on Stacks, providing structured access to emerging market Treasury Bill exposure.
+Welcome to your new **Remix IDE Blank Workspace**!
 
-The protocol enables stablecoin holders to access diversified emerging market Treasury Bill yields through structured on-chain vaults with transparent FX exposure.
-
----
-
-## Problem
-
-The Stacks ecosystem currently lacks diversified real-world sovereign yield primitives. Most yield opportunities are limited to DeFi pools or U.S. Treasury-based RWAs.
-
-There is no structured access to emerging market sovereign yield.
-This limits capital efficiency and yield diversity within the Stacks ecosystem.
+This workspace has been generated using the "Blank Template" option in Remix IDE. It starts with only minimal configuration files, giving you full control to build your project from scratch.
 
 ---
 
-## Solution
-Sovra introduces country-specific sovereign yield vaults, starting with Nigeria Treasury Bills, with a roadmap toward multi-country diversification.
+## What's Included?
 
-Users deposit USDCx into a vault. Capital is allocated off-chain into short-duration Treasury Bills via licensed partners. Yield performance and FX exposure are transparently reflected in vault share value.
+- **`remix.config.json`**: Default Remix IDE workspace configuration.
+- **`.prettierrc.json`**: Basic Prettier formatting rules for code consistency.
 
----
-
-## MVP Scope (Phase 1)
-
-- Single-country vault (Nigeria)
-- Clarity vault contract (testnet)
-- FX oracle integration
-- Basic dashboard for deposits and yield tracking
-- Legal and operational structure outline
+No contract files, folders, or sample code are included.
 
 ---
 
-## Architecture Overview
+## Getting Started
 
-### On-Chain
-- Vault smart contract
-- Deposit and redemption logic
-- Yield accounting
-- FX oracle integration
+1. **Create Files & Folders**
 
-### Off-Chain
-- Licensed asset manager custody
-- Treasury Bill allocation
-- FX conversion layer
-- Proof-of-reserve reporting
+   - Add new Solidity files, scripts, or folders as needed for your project.
+   - You can organize your workspace structure in any way you like.
 
----
-# Technical Specification
+2. **Setup Project Settings** (Optional)
 
-## Overview
+   - Modify `remix.config.json` or add additional configuration files as your project grows.
 
-Sovra is a sovereign yield vault protocol built on Stacks.
+3. **Write & Compile Smart Contracts**
 
-The initial MVP focuses on a Nigeria Treasury Bill vault that allows users to deposit USDCx and gain exposure to short-duration sovereign debt yield with transparent FX adjustment.
+   - Use the **Solidity Compiler** and **Deploy & Run Transactions** plugins (available in Remix IDE's left sidebar) to develop and test your contracts.
+
+4. **(Optional) Initialize Git**
+
+   - If you checked "Initialize as a Git repository" during workspace creation, you can start committing your code immediately.
 
 ---
 
-## Vault Structure
+## Useful Resources
 
-Users deposit USDCx into the Sovra Vault.
-
-Vault shares represent proportional ownership of underlying Treasury Bill allocation.
-
-Vault NAV reflects:
-
-- Principal
-- Accrued T-Bill yield
-- NGN/USD FX adjustment
-- Protocol fee (if applicable)
+- [Remix IDE Documentation](https://remix-ide.readthedocs.io/)
+- [Solidity Language Documentation](https://docs.soliditylang.org/)
+- [Remix IDE Community Forum](https://forum.remix.ethereum.org/)
 
 ---
 
-## Deposit Flow
+Happy coding! 🚀 
 
-1. User deposits USDCx.
-2. Vault mints shares based on current NAV.
-3. Capital is allocated off-chain into Nigerian T-Bills via licensed partners.
-4. Yield accrues over time.
+_Remix IDE Team_
 
----
-
-## Redemption Flow
-
-1. User submits withdrawal request.
-2. Shares are burned.
-3. USDCx is returned based on updated NAV and FX rate.
-
-Redemptions may align with T-Bill maturity cycles.
-
----
-
-## FX Oracle
-
-The vault requires a reliable NGN/USD price feed.
-
-Requirements:
-
-- Periodic updates
-- On-chain integration with Clarity contract
-- Transparent reporting on dashboard
-
----
-
-## Risk Model
-
-Primary risks include:
-
-- FX depreciation
-- Sovereign credit risk
-- Liquidity constraints
-- Capital controls
-
-Risk transparency is prioritized in reporting and documentation.
-Vault performance will transparently reflect both yield accrual and FX impact.
-
-## 12 Week Roadmap
-
-Weeks 1–2  
-Finalize vault mechanics and complete technical design documentation.
-
-Weeks 3–5  
-Develop Clarity vault contract on testnet.
-
-Weeks 6–7  
-Integrate FX oracle and implement NAV calculation logic.
-
-Weeks 8–9  
-Build minimal dashboard for deposits and yield tracking.
-
-Weeks 10–11  
-Internal testing and refinement.
-
-Week 12  
-Public testnet release and documentation.
-
----
-
-## Grant Milestones
-
-Milestone 1  
-Vault contract deployed on Stacks testnet with deposit logic implemented.
-
-Milestone 2  
-FX oracle integrated and NAV calculation live.
-
-Milestone 3  
-Basic dashboard deployed for public testing.
-
-Milestone 4  
-Public documentation and transparency report published.
