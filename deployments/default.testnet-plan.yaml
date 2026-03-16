@@ -10,21 +10,21 @@ plan:
       transactions:
         - contract-publish:
             contract-name: svar-vault
-            expected-sender: ST2JZ3S9S3QP9AFJQZX921J1QQY2F2NJX32T2DTD5
+            expected-sender: ST2RFHQ3JV1BS999EYGF4ZHEDZN3B8X6TX5HMPGZ9
             cost: 28180
             path: svar-vault.clar
             anchor-block-only: true
             clarity-version: 1
         - contract-publish:
             contract-name: svng-vault
-            expected-sender: ST2JZ3S9S3QP9AFJQZX921J1QQY2F2NJX32T2DTD5
+            expected-sender: ST2RFHQ3JV1BS999EYGF4ZHEDZN3B8X6TX5HMPGZ9
             cost: 28160
             path: svng-vault.clar
             anchor-block-only: true
             clarity-version: 1
         - contract-publish:
             contract-name: svtr-vault
-            expected-sender: ST2JZ3S9S3QP9AFJQZX921J1QQY2F2NJX32T2DTD5
+            expected-sender: ST2RFHQ3JV1BS999EYGF4ZHEDZN3B8X6TX5HMPGZ9
             cost: 28150
             path: svtr-vault.clar
             anchor-block-only: true
