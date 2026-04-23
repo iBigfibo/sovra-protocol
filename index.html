@@ -1,1633 +1,1024 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Sovra Protocol — Testnet</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.1/ethers.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400&display=swap" rel="stylesheet"/>
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-:root{
-  --ink:#080a0f;--ink2:#0e1118;--ink3:#161c28;--ink4:#1e2437;
-  --border:#1f2639;--border2:#2b3350;
-  --gold:#c8a84b;--gold2:#e4cc7e;--gold-dim:#6e5a28;--gold-bg:rgba(200,168,75,.06);
-  --text:#dde3f5;--muted:#636b8a;--muted2:#9aa3c2;--white:#f0f3fc;
-  --green:#2ecb8f;--green-dim:rgba(46,203,143,.12);
-  --red:#e05c5c;--red-dim:rgba(224,92,92,.12);
-  --orange:#e8924a;--orange-dim:rgba(232,146,74,.12);
-  --ff-serif:'Cormorant Garamond',Georgia,serif;
-  --ff-sans:'Inter',system-ui,-apple-system,sans-serif;
-  --ff-mono:'DM Mono',monospace;
-  --radius:3px;
-}
-body{background:var(--ink);color:var(--text);font-family:var(--ff-sans);font-weight:400;line-height:1.6;min-height:100vh;overflow-x:hidden;}
-body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.022'/%3E%3C/svg%3E");pointer-events:none;z-index:0;}
-.app{display:grid;grid-template-columns:270px 1fr;min-height:100vh;position:relative;z-index:1;}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sovra Protocol — Onchain Sovereign Bond Yields</title>
+  <meta name="description" content="Permissionless access to high-yield EM sovereign bonds. Deposit USDC. Earn up to 10.375% APR. No KYC. No broker.">
+  <!-- Preconnect & Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ----- RESET & ROOT ----- */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --navy:    #090e1a;
+      --navy2:   #0c1424;
+      --navy3:   #111d30;
+      --navy4:   #162035;
+      --gold:    #c9a84c;
+      --gold2:   #e8c878;
+      --gold3:   #f5e0a0;
+      --white:   #f0f4ff;
+      --muted:   #7a90b0;
+      --dim:     #3a4e68;
+      --border:  rgba(201,168,76,0.12);
+      --border2: rgba(201,168,76,0.25);
+      --glow:    rgba(201,168,76,0.06);
+    }
 
-/* SIDEBAR */
-.sidebar{background:var(--ink2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
-.sb-logo{padding:24px 24px 18px;border-bottom:1px solid var(--border);}
-.logo-mark{font-family:var(--ff-serif);font-size:1.5rem;font-weight:300;color:var(--white);letter-spacing:5px;text-transform:uppercase;}
-.logo-mark em{font-style:normal;color:var(--gold);}
-.logo-tagline{font-family:var(--ff-serif);font-size:.72rem;color:var(--muted2);font-style:italic;margin-top:4px;line-height:1.4;}
-.logo-sub{font-family:var(--ff-mono);font-size:.62rem;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-top:3px;}
-.net-badge{display:inline-flex;align-items:center;gap:5px;margin-top:8px;background:rgba(200,168,75,.08);border:1px solid var(--gold-dim);padding:3px 10px;border-radius:2px;font-family:var(--ff-mono);font-size:.60rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);}
-.net-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--gold);animation:pulse-gold 2s infinite;}
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      overflow-x: hidden;
+      cursor: default;
+    }
+    ::selection { background: rgba(201,168,76,0.25); }
 
-/* WALLET */
-.wallet-section{padding:16px 24px;border-bottom:1px solid var(--border);}
-.wallet-label{font-family:var(--ff-mono);font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
-.btn-connect{width:100%;padding:11px;background:linear-gradient(135deg,var(--gold-dim),var(--gold));color:var(--ink);font-family:var(--ff-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;font-weight:500;transition:all .2s;border-radius:var(--radius);}
-.btn-connect:hover{background:linear-gradient(135deg,var(--gold),var(--gold2));}
-.btn-disconnect{width:100%;padding:9px;background:none;border:1px solid var(--border2);color:var(--muted2);font-family:var(--ff-mono);font-size:.70rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;border-radius:var(--radius);margin-top:8px;}
-.btn-disconnect:hover{border-color:var(--red);color:var(--red);}
-.wallet-info{display:none;}
-.wallet-info.show{display:block;}
-.wallet-addr-box{background:var(--ink3);border:1px solid var(--border);padding:9px 12px;border-radius:var(--radius);font-family:var(--ff-mono);font-size:.72rem;color:var(--text);word-break:break-all;margin-bottom:6px;}
-.chain-row{display:flex;align-items:center;gap:6px;font-family:var(--ff-mono);font-size:.65rem;}
-.chain-dot{width:6px;height:6px;border-radius:50%;}
-.chain-dot.ok{background:var(--green);animation:pulse 2s infinite;}
-.chain-dot.wrong{background:var(--red);}
-.wrong-net-warn{background:var(--red-dim);border:1px solid rgba(224,92,92,.3);padding:8px 10px;border-radius:var(--radius);font-family:var(--ff-mono);font-size:.65rem;color:var(--red);margin-top:6px;display:none;}
-.wrong-net-warn.show{display:block;}
-.btn-switch{width:100%;padding:7px;margin-top:5px;background:rgba(224,92,92,.12);border:1px solid rgba(224,92,92,.3);color:var(--red);font-family:var(--ff-mono);font-size:.65rem;cursor:pointer;border-radius:var(--radius);}
-.gas-banner{display:none;margin-top:8px;background:rgba(224,92,92,.08);border:1px solid rgba(224,92,92,.25);border-radius:3px;padding:8px 10px;}
-.gas-banner-title{font-family:var(--ff-mono);font-size:.62rem;color:var(--red);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;}
-.gas-banner-sub{font-family:var(--ff-mono);font-size:.65rem;color:var(--muted2);margin-bottom:6px;}
-.btn-gas{width:100%;padding:6px;background:rgba(224,92,92,.1);border:1px solid rgba(224,92,92,.25);color:var(--red);font-family:var(--ff-mono);font-size:.62rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:2px;}
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--navy); }
+    ::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 2px; }
 
-/* BALANCES */
-.sb-balances{padding:16px 24px;border-bottom:1px solid var(--border);}
-.sb-label{font-family:var(--ff-mono);font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
-.bal-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);}
-.bal-row:last-child{border-bottom:none;}
-.bal-left{display:flex;align-items:center;gap:8px;}
-.bal-icon{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--ff-mono);font-size:.65rem;font-weight:500;flex-shrink:0;}
-.bi-usdc{background:rgba(39,117,202,.15);color:#4a9fd4;border:1px solid rgba(39,117,202,.25);}
-.bi-sv{background:rgba(200,168,75,.1);color:var(--gold);border:1px solid var(--gold-dim);}
-.bal-name{font-size:.76rem;color:var(--text);}
-.bal-sub{font-family:var(--ff-mono);font-size:.60rem;color:var(--muted);}
-.bal-amount{font-family:var(--ff-mono);font-size:.68rem;color:var(--white);text-align:right;}
-.bal-yield{font-family:var(--ff-mono);font-size:.60rem;color:var(--green);text-align:right;}
-.btn-faucet{width:100%;margin-top:8px;padding:7px;background:rgba(200,168,75,.06);border:1px solid var(--gold-dim);color:var(--gold);font-family:var(--ff-mono);font-size:.62rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:var(--radius);}
+    /* Utility */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .serif { font-family: 'Cormorant Garamond', serif; }
+    .mono  { font-family: 'DM Mono', monospace; }
+    .gold  { color: var(--gold2); }
+    .tag-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 14px;
+      display: block;
+    }
 
-/* STATS */
-.sb-stats{padding:16px 24px;flex:1;}
-.sb-stat{padding:9px 0;border-bottom:1px solid var(--border);}
-.sb-stat:last-child{border-bottom:none;}
-.sb-stat-label{font-family:var(--ff-mono);font-size:.60rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
-.sb-stat-val{font-family:var(--ff-serif);font-size:1.25rem;font-weight:300;color:var(--gold2);line-height:1;}
-.sb-stat-sub{font-family:var(--ff-mono);font-size:.62rem;color:var(--muted2);margin-top:2px;}
-.sb-stat-sub.pos{color:var(--green);}
-.sb-footer{padding:12px 24px;border-top:1px solid var(--border);}
-.block-row{display:flex;justify-content:space-between;font-family:var(--ff-mono);font-size:.60rem;color:var(--muted);}
+    /* Noise overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
 
-/* MAIN */
-.main{display:flex;flex-direction:column;min-width:0;}
-.topbar{padding:16px 32px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(8,10,15,.7);backdrop-filter:blur(16px);position:sticky;top:0;z-index:10;}
-.topbar-title{font-family:var(--ff-serif);font-size:1.05rem;font-weight:300;color:var(--white);letter-spacing:1px;}
-.tb-badge{font-family:var(--ff-mono);font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border-radius:2px;}
-.tb-badge.green{color:var(--green);border:1px solid rgba(46,203,143,.25);background:var(--green-dim);}
-.tb-badge.gold{color:var(--gold);border:1px solid var(--gold-dim);background:var(--gold-bg);}
+    /* ----- NAVIGATION ----- */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 0 24px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(9,14,26,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.3s;
+    }
+    nav.scrolled {
+      background: rgba(9,14,26,0.97);
+      border-bottom-color: var(--border2);
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .nav-logo-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 700;
+      font-size: 22px;
+      letter-spacing: 0.08em;
+      color: var(--white);
+    }
+    .nav-logo-text span {
+      background: linear-gradient(135deg, var(--gold), var(--gold2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .nav-logo-sub {
+      font-family: 'DM Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 13.5px;
+      font-weight: 400;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+      letter-spacing: 0.01em;
+    }
+    .nav-links a:hover { color: var(--white); background: rgba(255,255,255,0.05); }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn-twitter {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+    .btn-twitter:hover { color: var(--white); border-color: var(--gold); background: rgba(201,168,76,0.08); }
+    .btn-twitter svg { width: 16px; height: 16px; fill: currentColor; }
+    .btn-launch {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--navy);
+      background: linear-gradient(135deg, var(--gold), var(--gold2));
+      border: none;
+      padding: 9px 22px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.2s;
+      white-space: nowrap;
+    }
+    .btn-launch:hover { opacity: 0.88; transform: translateY(-1px); }
 
-/* TICKER */
-.ticker-bar{padding:6px 0;border-bottom:1px solid var(--border);overflow:hidden;background:var(--ink3);}
-.ticker-wrap{display:flex;gap:40px;animation:scroll-x 25s linear infinite;white-space:nowrap;padding:0 20px;}
-.ticker-item{font-family:var(--ff-mono);font-size:.70rem;color:var(--muted2);}
-.ticker-item strong{color:var(--gold);}
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+      background: transparent;
+      border: none;
+    }
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--muted);
+      border-radius: 1px;
+      transition: all 0.3s;
+    }
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 68px; left: 0; right: 0;
+      background: rgba(9,14,26,0.98);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 24px 28px;
+      z-index: 99;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      font-size: 15px;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      transition: color 0.2s;
+    }
+    .mobile-menu a:hover { color: var(--white); }
+    .mobile-menu a:last-child { border-bottom: none; }
 
-/* WALLET BANNER */
-.wallet-banner{display:flex;align-items:center;justify-content:space-between;gap:16px;background:linear-gradient(135deg,rgba(200,168,75,.06),rgba(200,168,75,.02));border:1px solid var(--gold-dim);padding:12px 18px;border-radius:var(--radius);margin-bottom:24px;}
-.wallet-banner.hidden{display:none;}
-.wb-text{font-family:var(--ff-mono);font-size:.70rem;color:var(--muted2);}
-.wb-text strong{color:var(--gold);display:block;font-size:.6rem;margin-bottom:1px;}
-.wb-btn{padding:8px 20px;background:linear-gradient(135deg,var(--gold-dim),var(--gold));color:var(--ink);font-family:var(--ff-mono);font-size:.72rem;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;font-weight:500;border-radius:var(--radius);white-space:nowrap;transition:all .2s;flex-shrink:0;}
-.wb-btn:hover{background:linear-gradient(135deg,var(--gold),var(--gold2));}
+    /* ----- HERO ----- */
+    #home {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding-top: 68px;
+    }
+    .hero-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+    }
+    .hero-orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%); top: -100px; right: -150px; }
+    .hero-orb-2 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(26,100,200,0.06) 0%, transparent 70%); bottom: 50px; left: -100px; }
+    .hero-orb-3 { width: 300px; height: 300px; background: radial-gradient(circle, rgba(201,168,76,0.05) 0%, transparent 70%); top: 40%; left: 35%; }
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+      pointer-events: none;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      width: 100%;
+      padding: 80px 0 60px;
+    }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(201,168,76,0.08);
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      padding: 6px 16px;
+      margin-bottom: 28px;
+    }
+    .hero-eyebrow-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: pulse-dot 2s ease-in-out infinite; }
+    @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(0.8);} }
+    .hero-eyebrow span {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gold2);
+    }
+    .hero-h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 600;
+      font-size: clamp(42px, 5.5vw, 72px);
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      margin-bottom: 24px;
+    }
+    .hero-h1 em {
+      font-style: italic;
+      background: linear-gradient(135deg, var(--gold), var(--gold2), var(--gold3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--muted);
+      max-width: 460px;
+      margin-bottom: 36px;
+      font-weight: 300;
+    }
+    .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 44px; }
+    .btn-primary {
+      font-size: 14px; font-weight: 600; color: var(--navy);
+      background: linear-gradient(135deg, var(--gold), var(--gold2));
+      border: none; padding: 13px 28px; border-radius: 10px; cursor: pointer;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+      transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 24px rgba(201,168,76,0.25);
+    }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 8px 32px rgba(201,168,76,0.35); }
+    .btn-primary svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+    .btn-secondary {
+      font-size: 14px; font-weight: 500; color: var(--muted); background: transparent;
+      border: 1px solid var(--border2); padding: 12px 24px; border-radius: 10px;
+      cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+    .btn-secondary:hover { color: var(--white); border-color: rgba(201,168,76,0.4); background: rgba(201,168,76,0.04); }
+    .btn-secondary svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .hero-badges { display: flex; gap: 10px; flex-wrap: wrap; }
+    .hero-badge {
+      font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--muted); border: 1px solid var(--border);
+      padding: 6px 12px; border-radius: 6px; background: rgba(255,255,255,0.02);
+    }
 
-/* CONTENT */
-.content{padding:28px 32px;flex:1;}
-.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.section-title{font-family:var(--ff-mono);font-size:.70rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);}
+    /* Hero card */
+    .hero-right { display: flex; justify-content: flex-end; position: relative; }
+    .vault-card {
+      background: linear-gradient(145deg, var(--navy3), var(--navy4));
+      border: 1px solid var(--border2); border-radius: 20px; padding: 28px;
+      width: 100%; max-width: 400px;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(201,168,76,0.05) inset;
+      position: relative; overflow: hidden;
+    }
+    .vault-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent); opacity: 0.6;
+    }
+    .vault-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
+    .vault-card-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+    .vault-card-live { display: flex; align-items: center; gap: 6px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: #4ade80; }
+    .vault-card-live-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; animation: pulse-dot 1.5s ease-in-out infinite; }
+    .vault-tvl { margin-bottom: 22px; }
+    .vault-tvl-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .vault-tvl-value { font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 600; color: var(--white); line-height: 1; }
+    .vault-tvl-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: #4ade80; margin-top: 4px; }
+    .vault-rows { display: flex; flex-direction: column; gap: 2px; margin-bottom: 20px; }
+    .vault-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 11px 14px; background: rgba(0,0,0,0.2); border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.04);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .vault-row:hover { border-color: var(--border2); background: rgba(201,168,76,0.03); }
+    .vault-row-left { display: flex; align-items: center; gap: 10px; }
+    .vault-flag {
+      width: 28px; height: 28px; border-radius: 50%; background: var(--navy4);
+      border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 14px;
+    }
+    .vault-row-name { font-size: 13px; font-weight: 500; color: var(--white); }
+    .vault-row-type { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.1em; color: var(--muted); margin-top: 1px; }
+    .vault-row-apy { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--gold2); }
+    .vault-deposit-btn {
+      width: 100%; padding: 14px; background: linear-gradient(135deg, var(--gold), var(--gold2));
+      border: none; border-radius: 12px; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600;
+      color: var(--navy); cursor: pointer; letter-spacing: 0.02em;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .vault-deposit-btn:hover { opacity: 0.9; transform: translateY(-1px); }
 
-/* VAULT CARDS */
-.vault-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-bottom:28px;}
-.vault-card{background:var(--ink2);border:1px solid var(--border);padding:18px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
-.vault-card:hover{border-color:var(--gold-dim);background:var(--ink3);}
-.vault-card.active{border-color:var(--gold);background:var(--gold-bg);}
-.vault-card.active::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
-.vc-flag{font-size:1.2rem;margin-bottom:6px;}
-.vc-ticker{font-family:var(--ff-mono);font-size:.7rem;color:var(--gold);letter-spacing:2px;}
-.vc-name{font-size:.72rem;color:var(--muted2);margin-bottom:8px;}
-.vc-apr{font-family:var(--ff-serif);font-size:1.5rem;font-weight:300;color:var(--white);line-height:1;}
-.vc-apr-unit{font-size:.72rem;font-family:var(--ff-mono);color:var(--muted);margin-left:3px;}
-.vc-meta{font-family:var(--ff-mono);font-size:.62rem;color:var(--muted);margin-top:4px;}
+    /* Stats bar */
+    .stats-bar {
+      background: var(--navy2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      padding: 24px 0; position: relative; z-index: 2;
+    }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
+    .stat-item { text-align: center; padding: 8px 20px; border-right: 1px solid var(--border); }
+    .stat-item:last-child { border-right: none; }
+    .stat-val { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 600; color: var(--white); line-height: 1; margin-bottom: 4px; }
+    .stat-val .gold { color: var(--gold2); }
+    .stat-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
 
-/* LOCK GRID */
-.lock-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-bottom:24px;}
-.lock-opt{background:var(--ink3);border:1px solid var(--border);padding:11px 6px;text-align:center;cursor:pointer;transition:all .2s;position:relative;border-radius:var(--radius);}
-.lock-opt:hover{border-color:var(--gold-dim);}
-.lock-opt.selected{border-color:var(--gold);background:var(--gold-bg);}
-.lock-opt.selected::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
-.lock-days{font-family:var(--ff-serif);font-size:1.1rem;font-weight:300;color:var(--white);line-height:1;}
-.lock-label{font-family:var(--ff-mono);font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
-.lock-apr{font-family:var(--ff-mono);font-size:.65rem;color:var(--green);margin-top:3px;}
+    /* Sections */
+    section { padding: 100px 0; position: relative; }
+    .section-head { text-align: center; max-width: 620px; margin: 0 auto 64px; }
+    .section-h2 {
+      font-family: 'Cormorant Garamond', serif; font-size: clamp(34px, 4vw, 52px);
+      font-weight: 600; line-height: 1.1; margin-bottom: 16px; letter-spacing: -0.01em;
+    }
+    .section-sub { font-size: 15px; line-height: 1.7; color: var(--muted); font-weight: 300; }
 
-/* ACTION PANELS */
-.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-bottom:28px;}
-.panel{background:var(--ink2);border:1px solid var(--border);padding:22px;}
-.panel-title{font-family:var(--ff-mono);font-size:.68rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);}
-.field{margin-bottom:14px;}
-.field-label{font-family:var(--ff-mono);font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
-.input-wrap{display:flex;align-items:center;background:var(--ink3);border:1px solid var(--border);transition:border-color .2s;border-radius:var(--radius);}
-.input-wrap:focus-within{border-color:var(--gold-dim);}
-.input-wrap input{flex:1;background:none;border:none;outline:none;padding:9px 12px;font-family:var(--ff-mono);font-size:.8rem;color:var(--white);}
-.input-wrap input::placeholder{color:var(--muted);}
-.input-suffix{padding:0 10px;font-family:var(--ff-mono);font-size:.6rem;color:var(--gold);border-left:1px solid var(--border);}
-.input-max{padding:0 10px;font-family:var(--ff-mono);font-size:.65rem;color:var(--muted2);cursor:pointer;border-left:1px solid var(--border);transition:color .2s;}
-.input-max:hover{color:var(--gold);}
-.preview{background:var(--ink3);border:1px solid var(--border);padding:12px;margin-bottom:14px;border-radius:var(--radius);}
-.preview-row{display:flex;justify-content:space-between;align-items:center;font-family:var(--ff-mono);font-size:.72rem;padding:2px 0;}
-.preview-row .pk{color:var(--muted);}
-.preview-row .pv{color:var(--text);}
-.preview-row .pv.gold{color:var(--gold2);}
-.preview-row .pv.green{color:var(--green);}
-.preview-divider{border:none;border-top:1px solid var(--border);margin:5px 0;}
+    /* How it works */
+    #how-it-works { background: var(--navy2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+    .step {
+      background: var(--navy); padding: 40px 32px; position: relative; overflow: hidden;
+      transition: background 0.3s;
+    }
+    .step:hover { background: var(--navy3); }
+    .step::after {
+      content: ''; position: absolute; bottom: 0; left: 32px; right: 32px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2), transparent);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .step:hover::after { opacity: 1; }
+    .step-num { font-family: 'Cormorant Garamond', serif; font-size: 60px; font-weight: 300; color: rgba(201,168,76,0.12); line-height: 1; margin-bottom: 20px; transition: color 0.3s; }
+    .step:hover .step-num { color: rgba(201,168,76,0.22); }
+    .step-icon {
+      width: 48px; height: 48px; border-radius: 12px; background: rgba(201,168,76,0.08);
+      border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; margin-bottom: 20px;
+    }
+    .step-icon svg { width: 22px; height: 22px; stroke: var(--gold2); fill: none; stroke-width: 1.5; }
+    .step-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; margin-bottom: 12px; color: var(--white); }
+    .step-desc { font-size: 14px; line-height: 1.7; color: var(--muted); font-weight: 300; }
 
-/* REDEEM PANEL */
-.redeem-pos{background:var(--ink3);border:1px solid var(--border);border-radius:3px;padding:14px;margin-bottom:14px;}
-.redeem-pos-label{font-family:var(--ff-mono);font-size:.60rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
-.redeem-row{display:flex;justify-content:space-between;font-family:var(--ff-mono);font-size:.72rem;padding:2px 0;}
-.redeem-row .rk{color:var(--muted);}
-.notice-bar{margin-top:8px;border-radius:3px;padding:8px 10px;font-family:var(--ff-mono);font-size:.65rem;display:none;}
-.notice-bar.active{display:block;background:rgba(200,168,75,.08);border:1px solid var(--gold-dim);color:var(--gold);}
-.notice-bar.ready{display:block;background:var(--green-dim);border:1px solid rgba(46,203,143,.25);color:var(--green);}
+    /* Vaults tabs */
+    .vaults-tabs {
+      display: flex; gap: 2px; background: var(--navy2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 4px; margin: 0 auto 48px; max-width: 340px;
+    }
+    .vault-tab {
+      flex: 1; padding: 10px 20px; border-radius: 9px; font-size: 13px; font-weight: 500;
+      color: var(--muted); cursor: pointer; text-align: center; transition: color 0.2s, background 0.2s;
+      border: none; background: none; font-family: 'Outfit', sans-serif;
+    }
+    .vault-tab.active { background: var(--navy4); color: var(--gold2); border: 1px solid var(--border2); }
+    .vaults-table-wrap { background: var(--navy2); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .vaults-table { width: 100%; border-collapse: collapse; }
+    .vaults-table thead tr { background: var(--navy3); border-bottom: 1px solid var(--border); }
+    .vaults-table th {
+      padding: 14px 20px; text-align: left; font-family: 'DM Mono', monospace;
+      font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); font-weight: 400;
+    }
+    .vaults-table th:last-child { text-align: right; }
+    .vaults-table td { padding: 18px 20px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .vaults-table tr:last-child td { border-bottom: none; }
+    .vaults-table tbody tr { transition: background 0.2s; }
+    .vaults-table tbody tr:hover { background: rgba(201,168,76,0.03); }
+    .vault-name-cell { display: flex; align-items: center; gap: 14px; }
+    .vault-icon {
+      width: 40px; height: 40px; border-radius: 50%; background: var(--navy3);
+      border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 20px;
+    }
+    .vault-name-text { font-size: 15px; font-weight: 500; }
+    .vault-name-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 2px; }
+    .vault-gross { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--muted); }
+    .vault-net { font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 500; color: var(--gold2); }
+    .vault-badge {
+      display: inline-block; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 4px 10px; border-radius: 100px;
+      background: rgba(74,222,128,0.1); color: #4ade80; border: 1px solid rgba(74,222,128,0.2);
+    }
+    .vault-badge.lc { background: rgba(201,168,76,0.1); color: var(--gold2); border-color: var(--border2); }
+    .vault-action-btn {
+      float: right; font-size: 12px; font-weight: 600; color: var(--gold2);
+      background: rgba(201,168,76,0.08); border: 1px solid var(--border2); padding: 7px 18px;
+      border-radius: 8px; cursor: pointer; text-decoration: none; transition: background 0.2s, color 0.2s;
+      font-family: 'Outfit', sans-serif;
+    }
+    .vault-action-btn:hover { background: rgba(201,168,76,0.15); color: var(--white); }
+    .vault-panel { display: none; }
+    .vault-panel.active { display: block; }
 
-/* BUTTONS */
-.btn{width:100%;padding:11px;font-family:var(--ff-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;transition:all .2s;border-radius:var(--radius);}
-.btn-gold{background:linear-gradient(135deg,var(--gold-dim),var(--gold));color:var(--ink);font-weight:500;}
-.btn-gold:hover:not(:disabled){background:linear-gradient(135deg,var(--gold),var(--gold2));}
-.btn-gold:disabled{opacity:.35;cursor:not-allowed;}
-.btn-outline{background:none;border:1px solid var(--border2);color:var(--text);}
-.btn-outline:hover:not(:disabled){border-color:var(--gold-dim);color:var(--gold);}
-.btn-outline:disabled{opacity:.35;cursor:not-allowed;}
-.btn-orange{background:rgba(232,146,74,.12);border:1px solid rgba(232,146,74,.3);color:var(--orange);}
-.btn-orange:hover{background:rgba(232,146,74,.22);}
+    /* Features */
+    #features { background: var(--navy2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+    .feature {
+      padding: 36px 32px; background: var(--navy); position: relative; overflow: hidden;
+      transition: background 0.3s;
+    }
+    .feature:hover { background: var(--navy3); }
+    .feature-icon {
+      width: 44px; height: 44px; border-radius: 10px; background: rgba(201,168,76,0.08);
+      border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; margin-bottom: 18px;
+    }
+    .feature-icon svg { width: 20px; height: 20px; stroke: var(--gold2); fill: none; stroke-width: 1.5; }
+    .feature-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; margin-bottom: 10px; }
+    .feature-desc { font-size: 14px; line-height: 1.7; color: var(--muted); font-weight: 300; }
+    .feature-tag {
+      display: inline-block; margin-top: 14px; font-family: 'DM Mono', monospace; font-size: 9px;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold);
+      border: 1px solid var(--border2); padding: 4px 10px; border-radius: 4px;
+    }
 
-/* POSITIONS TABLE */
-.positions-wrap{background:var(--ink2);border:1px solid var(--border);margin-bottom:28px;overflow-x:auto;}
-.pos-table{width:100%;border-collapse:collapse;min-width:800px;}
-.pos-table th{font-family:var(--ff-mono);font-size:.60rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);padding:10px 14px;text-align:left;border-bottom:1px solid var(--border2);background:var(--ink4);}
-.pos-table td{padding:11px 14px;border-bottom:1px solid var(--border);font-size:.78rem;color:var(--text);}
-.pos-table tbody tr:nth-child(odd) td{background:var(--ink3);}
-.pos-table tr:last-child td{border-bottom:none;}
-.pos-empty{text-align:center;padding:36px;font-family:var(--ff-mono);font-size:.6rem;color:var(--muted);}
-.pos-ticker{font-family:var(--ff-mono);font-size:.68rem;color:var(--gold);}
-.pos-amount{font-family:var(--ff-mono);font-size:.7rem;color:var(--white);}
-.pos-yield{font-family:var(--ff-mono);font-size:.62rem;color:var(--green);}
-.lock-progress-wrap{margin-top:4px;}
-.lock-progress-bar{height:3px;background:var(--border2);border-radius:2px;overflow:hidden;}
-.lock-progress-fill{height:100%;background:linear-gradient(90deg,var(--gold-dim),var(--gold));}
-.lock-progress-label{display:flex;justify-content:space-between;font-family:var(--ff-mono);font-size:.72rem;color:var(--muted);margin-top:2px;}
+    /* Competitive */
+    #competitive { padding: 100px 0; background: var(--navy); }
+    .comp-table-wrap { background: var(--navy2); border: 1px solid var(--border2); border-radius: 20px; overflow-x: auto; padding: 4px; }
+    .comp-table { width: 100%; border-collapse: collapse; min-width: 900px; }
+    .comp-table th {
+      text-align: left; padding: 16px 20px; font-family: 'DM Mono', monospace; font-size: 10px;
+      letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted);
+      background: var(--navy3); border-bottom: 1px solid var(--border);
+    }
+    .comp-table td { padding: 18px 20px; border-bottom: 1px solid var(--border); font-size: 14px; }
+    .comp-table tr:last-child td { border-bottom: none; }
+    .comp-table tbody tr:hover { background: rgba(201,168,76,0.03); }
+    .comp-highlight { color: var(--gold2); font-weight: 500; }
+    .comp-badge {
+      background: rgba(201,168,76,0.15); color: var(--gold2); font-family: 'DM Mono', monospace;
+      font-size: 10px; padding: 2px 10px; border-radius: 100px; border: 1px solid var(--border2);
+    }
 
-/* LEADERBOARD */
-.lb-wrap{display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-bottom:28px;}
-.lb-panel{background:var(--ink2);border:1px solid var(--border);}
-.lb-head{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.lb-title{font-family:var(--ff-mono);font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
-.lb-row{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid var(--border);font-family:var(--ff-mono);font-size:.68rem;}
-.lb-row:last-child{border-bottom:none;}
-.lb-empty{text-align:center;padding:20px;font-family:var(--ff-mono);font-size:.70rem;color:var(--muted);}
-.lb-medal{font-size:.7rem;width:18px;flex-shrink:0;}
-.lb-addr{color:var(--muted2);flex:1;}
-.lb-addr.me{color:var(--gold);}
-.lb-amt{color:var(--white);}
+    /* Yield example */
+    .yield-section { padding: 100px 0; }
+    .yield-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+    .yield-table-wrap { background: var(--navy2); border: 1px solid var(--border2); border-radius: 16px; overflow: hidden; }
+    .yield-table-header {
+      background: var(--navy3); padding: 18px 24px; border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .yield-table-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+    .yield-table-badge { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--gold2); background: rgba(201,168,76,0.1); border: 1px solid var(--border2); padding: 3px 10px; border-radius: 100px; }
+    .yield-row {
+      display: flex; justify-content: space-between; align-items: center; padding: 14px 24px;
+      border-bottom: 1px solid var(--border); font-size: 14px;
+    }
+    .yield-row:last-child { border-bottom: none; }
+    .yield-row.total { background: rgba(201,168,76,0.04); border-top: 1px solid var(--border2); }
+    .yield-row-label { color: var(--muted); font-weight: 300; }
+    .yield-row-label.main { color: var(--white); font-weight: 500; }
+    .yield-row-val { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--white); }
+    .yield-row-val.red { color: #f87171; }
+    .yield-row-val.green { color: #4ade80; }
+    .yield-row-val.gold { color: var(--gold2); font-size: 15px; font-weight: 500; }
+    .yield-big {
+      font-family: 'Cormorant Garamond', serif; font-size: 72px; font-weight: 600; line-height: 1;
+      background: linear-gradient(135deg, var(--gold), var(--gold2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 8px;
+    }
+    .yield-big-label { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 24px; }
+    .yield-payout-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 28px; }
+    .payout-card {
+      background: var(--navy2); border: 1px solid var(--border); border-radius: 12px;
+      padding: 16px 18px; transition: border-color 0.2s;
+    }
+    .payout-card:hover { border-color: var(--border2); }
+    .payout-freq { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .payout-amount { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--white); }
+    .payout-currency { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); margin-top: 2px; }
 
-/* TX LOG */
-.tx-panel{background:var(--ink2);border:1px solid var(--border);margin-bottom:28px;}
-.tx-list{max-height:180px;overflow-y:auto;}
-.tx-item{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--border);font-family:var(--ff-mono);font-size:.70rem;}
-.tx-item:last-child{border-bottom:none;}
-.tx-type{width:64px;padding:2px 5px;border-radius:2px;text-align:center;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;flex-shrink:0;}
-.tx-type.deposit{background:var(--green-dim);color:var(--green);border:1px solid rgba(46,203,143,.2);}
-.tx-type.redeem{background:var(--red-dim);color:var(--red);border:1px solid rgba(224,92,92,.2);}
-.tx-type.penalty{background:var(--orange-dim);color:var(--orange);border:1px solid rgba(232,146,74,.2);}
-.tx-hash-link{color:var(--muted2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-decoration:none;}
-.tx-hash-link:hover{color:var(--gold);}
-.tx-empty{text-align:center;padding:20px;font-family:var(--ff-mono);font-size:.72rem;color:var(--muted);}
+    /* FAQ */
+    #faq { background: var(--navy2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .faq-list { max-width: 760px; margin: 0 auto; }
+    .faq-item { border-bottom: 1px solid var(--border); }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-q {
+      display: flex; justify-content: space-between; align-items: center; padding: 22px 0;
+      cursor: pointer; font-size: 16px; font-weight: 500; color: var(--white);
+      gap: 20px; transition: color 0.2s; user-select: none;
+    }
+    .faq-q:hover { color: var(--gold2); }
+    .faq-icon {
+      width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      transition: background 0.2s, border-color 0.2s, transform 0.3s;
+    }
+    .faq-icon svg { width: 12px; height: 12px; stroke: var(--muted); fill: none; stroke-width: 2.5; transition: transform 0.3s; }
+    .faq-item.open .faq-icon { background: rgba(201,168,76,0.1); border-color: var(--gold); transform: rotate(45deg); }
+    .faq-item.open .faq-icon svg { stroke: var(--gold); }
+    .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.3s; }
+    .faq-item.open .faq-a { max-height: 300px; }
+    .faq-a-inner { padding-bottom: 22px; font-size: 14.5px; line-height: 1.75; color: var(--muted); font-weight: 300; }
+    .faq-a-inner strong { color: var(--white); font-weight: 500; }
 
-/* MODAL */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;}
-.modal-bg.open{opacity:1;pointer-events:all;}
-.modal{background:var(--ink2);border:1px solid var(--border2);width:440px;max-width:94vw;position:relative;transform:translateY(16px);transition:transform .25s;border-radius:var(--radius);max-height:90vh;overflow-y:auto;}
-.modal-bg.open .modal{transform:translateY(0);}
-.modal-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;transition:color .2s;z-index:1;}
-.modal-close:hover{color:var(--white);}
-.processing{text-align:center;padding:32px 24px;}
-.proc-spinner{width:42px;height:42px;border:2px solid var(--border2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px;}
-.proc-title{font-family:var(--ff-serif);font-size:1.2rem;color:var(--white);margin-bottom:3px;}
-.proc-sub{font-family:var(--ff-mono);font-size:.70rem;color:var(--muted);letter-spacing:1px;}
-.proc-steps{margin-top:16px;display:flex;flex-direction:column;gap:5px;}
-.proc-step{display:flex;align-items:center;gap:10px;font-family:var(--ff-mono);font-size:.68rem;color:var(--muted);text-align:left;}
-.proc-step.done{color:var(--green);}
-.proc-step.active{color:var(--gold);}
-.proc-dot{width:6px;height:6px;border-radius:50%;background:var(--border2);flex-shrink:0;}
-.proc-step.done .proc-dot{background:var(--green);}
-.proc-step.active .proc-dot{background:var(--gold);animation:pulse-gold 1s infinite;}
-.success-modal{text-align:center;padding:32px 24px;}
-.success-icon{font-size:2rem;margin-bottom:12px;}
-.success-title{font-family:var(--ff-serif);font-size:1.4rem;font-weight:300;color:var(--white);margin-bottom:3px;}
-.success-sub{font-family:var(--ff-mono);font-size:.68rem;color:var(--muted);letter-spacing:1px;margin-bottom:16px;}
-.success-data{background:var(--ink3);border:1px solid var(--border);padding:12px;margin-bottom:14px;text-align:left;border-radius:var(--radius);}
-.srow{display:flex;justify-content:space-between;font-family:var(--ff-mono);font-size:.72rem;padding:2px 0;}
-.srow .sk{color:var(--muted);}
-.srow .sv{color:var(--white);}
-.srow .sv.green{color:var(--green);}
-.srow .sv.gold{color:var(--gold2);}
-.srow .sv.orange{color:var(--orange);}
-.tx-hash-display{font-family:var(--ff-mono);font-size:.60rem;color:var(--muted);word-break:break-all;margin-top:4px;}
+    /* CTA */
+    .cta-section { padding: 100px 0; text-align: center; position: relative; overflow: hidden; }
+    .cta-orb {
+      position: absolute; width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%);
+      top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; filter: blur(40px);
+    }
+    .cta-h2 {
+      font-family: 'Cormorant Garamond', serif; font-size: clamp(38px, 5vw, 62px);
+      font-weight: 600; line-height: 1.1; margin-bottom: 18px; position: relative; z-index: 1;
+    }
+    .cta-sub {
+      font-size: 16px; color: var(--muted); max-width: 440px; margin: 0 auto 36px;
+      line-height: 1.65; font-weight: 300; position: relative; z-index: 1;
+    }
+    .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative; z-index: 1; }
 
-/* EXIT OPTIONS MODAL */
-.exit-modal{padding:24px;}
-.exit-warning{text-align:center;margin-bottom:20px;}
-.exit-options{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:16px;}
-.exit-opt{background:var(--ink3);border:1px solid var(--border);border-radius:3px;padding:14px 10px;cursor:pointer;transition:all .2s;text-align:center;}
-.exit-opt:hover:not(.disabled){transform:translateY(-2px);}
-.exit-opt.immediate{border-color:rgba(224,92,92,.3);}
-.exit-opt.immediate:hover{border-color:var(--red);background:rgba(224,92,92,.06);}
-.exit-opt.notice{border-color:var(--gold-dim);}
-.exit-opt.notice:hover{border-color:var(--gold);background:var(--gold-bg);}
-.exit-opt.disabled{opacity:.4;cursor:not-allowed;}
-.exit-opt-label{font-family:var(--ff-mono);font-size:.60rem;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
-.exit-opt.immediate .exit-opt-label{color:var(--red);}
-.exit-opt.notice .exit-opt-label{color:var(--gold);}
-.exit-opt.disabled .exit-opt-label{color:var(--muted);}
-.exit-opt-pct{font-family:var(--ff-serif);font-size:1.4rem;font-weight:300;color:var(--white);line-height:1;margin-bottom:3px;}
-.exit-opt-desc{font-family:var(--ff-mono);font-size:.60rem;color:var(--muted);margin-bottom:10px;}
-.exit-opt-receive{font-family:var(--ff-mono);font-size:.65rem;color:var(--muted);}
-.exit-opt-receive strong{color:var(--white);display:block;font-size:.72rem;margin-top:2px;}
-.coming-soon{display:inline-block;font-family:var(--ff-mono);font-size:.42rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);background:var(--border);padding:2px 7px;border-radius:2px;margin-top:6px;}
+    /* Footer */
+    footer { background: var(--navy2); border-top: 1px solid var(--border); padding: 56px 0 32px; }
+    .footer-inner { display: grid; grid-template-columns: 1.8fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+    .footer-brand-desc { font-size: 14px; line-height: 1.7; color: var(--muted); margin-top: 14px; font-weight: 300; max-width: 260px; }
+    .footer-col-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-links a { font-size: 14px; color: var(--muted); text-decoration: none; transition: color 0.2s; font-weight: 300; }
+    .footer-links a:hover { color: var(--white); }
+    .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 24px; border-top: 1px solid var(--border); }
+    .footer-copy { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--dim); letter-spacing: 0.06em; }
+    .footer-status { display: flex; align-items: center; gap: 6px; font-family: 'DM Mono', monospace; font-size: 10px; color: #4ade80; letter-spacing: 0.1em; }
+    .footer-status-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; animation: pulse-dot 2s ease-in-out infinite; }
 
-/* ANIMATIONS */
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(46,203,143,.3)}70%{box-shadow:0 0 0 6px rgba(46,203,143,0)}}
-@keyframes pulse-gold{0%,100%{box-shadow:0 0 0 0 rgba(200,168,75,.3)}70%{box-shadow:0 0 0 6px rgba(200,168,75,0)}}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes scroll-x{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.fade-in{animation:fadeIn .3s ease both;}
-::-webkit-scrollbar{width:4px;height:4px;}
-::-webkit-scrollbar-track{background:var(--ink);}
-::-webkit-scrollbar-thumb{background:var(--border2);}
+    /* Animations */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    .hero-left { animation: fadeUp 0.8s ease both; }
+    .vault-card { animation: fadeUp 0.8s 0.2s ease both, float 6s 1s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
 
-@media(max-width:960px){
-  .app{grid-template-columns:1fr;}
-  .sidebar{position:relative;height:auto;}
-  .vault-grid,.action-grid,.lb-wrap{grid-template-columns:1fr;}
-  .content{padding:18px;}
-  .exit-options{grid-template-columns:1fr;}
-}
-</style>
+    /* Responsive */
+    @media (max-width: 900px) {
+      .hero-content { grid-template-columns: 1fr; gap: 40px; }
+      .hero-right { justify-content: center; }
+      .vault-card { max-width: 100%; }
+      .steps-grid { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
+      .stat-item:nth-child(odd) { border-right: 1px solid var(--border); }
+      .footer-inner { grid-template-columns: 1fr 1fr; gap: 30px; }
+      .yield-inner { grid-template-columns: 1fr; }
+      .yield-big { font-size: 52px; }
+    }
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .features-grid { grid-template-columns: 1fr; }
+      .footer-inner { grid-template-columns: 1fr; }
+      .hero-badges { display: none; }
+      section { padding: 64px 0; }
+      .section-head { margin-bottom: 40px; }
+    }
+  </style>
 </head>
 <body>
-<div class="app">
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-  <div class="sb-logo">
-    <div class="logo-mark">S<em>o</em>vra</div>
-    <div class="logo-tagline">Synthetic sovereign bond yield protocol</div>
-    <div class="logo-sub">Protocol Interface</div>
-    <div class="net-badge">Sepolia Testnet</div>
-  </div>
-
-  <div class="wallet-section">
-    <div class="wallet-label">Wallet</div>
-    <button class="btn-connect" id="btn-connect" onclick="connectWallet()">Connect Wallet</button>
-    <div class="wallet-info" id="wallet-info">
-      <div class="wallet-addr-box" id="wallet-addr">—</div>
-      <div class="chain-row">
-        <div class="chain-dot" id="chain-dot"></div>
-        <span id="chain-name" style="font-family:var(--ff-mono);font-size:.65rem;color:var(--muted2);">—</span>
-      </div>
-      <div class="wrong-net-warn" id="wrong-net-warn">
-        Please switch to Sepolia Testnet.
-        <button class="btn-switch" onclick="switchNetwork()">Switch to Sepolia</button>
-      </div>
-      <div class="gas-banner" id="gas-banner">
-        <div class="gas-banner-title">⚠ Low Sepolia ETH</div>
-        <div class="gas-banner-sub">You need ETH for gas fees.</div>
-        <button class="btn-gas" onclick="showGasFaucet()">Get Free Sepolia ETH</button>
-      </div>
-      <button class="btn-disconnect" onclick="disconnectWallet()">Disconnect</button>
-    </div>
-  </div>
-
-  <div class="sb-balances">
-    <div class="sb-label">Balances</div>
-    <div class="bal-row">
-      <div class="bal-left">
-        <div class="bal-icon bi-usdc">U</div>
-        <div><div class="bal-name">USDC</div><div class="bal-sub">Testnet</div></div>
-      </div>
+  <!-- Navigation -->
+  <nav id="navbar">
+    <a class="nav-logo" href="#home">
       <div>
-        <div class="bal-amount" id="bal-usdc">—</div>
-        <div style="font-family:var(--ff-mono);font-size:.60rem;color:var(--muted);text-align:right;" id="bal-usdc-sub">Connect wallet</div>
+        <div class="nav-logo-text">S<span>O</span>VRA</div>
+        <div class="nav-logo-sub">Protocol</div>
       </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#launch-app">Vaults</a></li>
+      <li><a href="#competitive">Compare</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="https://blog.sovraprotocol.xyz" target="_blank" rel="noopener">Blog</a></li>
+      <li><a href="https://docs.sovraprotocol.xyz" target="_blank" rel="noopener">Docs</a></li>
+    </ul>
+    <div class="nav-right">
+      <a class="btn-twitter" href="https://x.com/Sovra_Protocol" target="_blank" rel="noopener" aria-label="Twitter / X">
+        <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.258 5.632L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </a>
+      <a class="btn-launch" href="#launch-app">Launch App</a>
     </div>
-    <div class="bal-row" id="bal-svng-row" style="display:none;">
-      <div class="bal-left">
-        <div class="bal-icon bi-sv" style="font-size:.72rem;">svNG</div>
-        <div><div class="bal-name">svNG</div><div class="bal-sub">Nigeria FGN Bond</div></div>
-      </div>
-      <div><div class="bal-amount" id="bal-svng">0</div><div class="bal-yield" id="bal-svng-yield"></div></div>
-    </div>
-    <div class="bal-row" id="bal-svtr-row" style="display:none;">
-      <div class="bal-left">
-        <div class="bal-icon bi-sv" style="font-size:.72rem;">svTR</div>
-        <div><div class="bal-name">svTR</div><div class="bal-sub">Sovereign Bond</div></div>
-      </div>
-      <div><div class="bal-amount" id="bal-svtr">0</div><div class="bal-yield" id="bal-svtr-yield"></div></div>
-    </div>
-    <div class="bal-row" id="bal-svar-row" style="display:none;">
-      <div class="bal-left">
-        <div class="bal-icon bi-sv" style="font-size:.72rem;">svAR</div>
-        <div><div class="bal-name">svAR</div><div class="bal-sub">Sovereign Bond</div></div>
-      </div>
-      <div><div class="bal-amount" id="bal-svar">0</div><div class="bal-yield" id="bal-svar-yield"></div></div>
-    </div>
-    <button class="btn-faucet" id="btn-daily-faucet" onclick="claimDailyFaucet()">+ Claim Daily 10,000 USDC</button>
+    <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#home" onclick="closeMenu()">Home</a>
+    <a href="#how-it-works" onclick="closeMenu()">How It Works</a>
+    <a href="#launch-app" onclick="closeMenu()">Vaults</a>
+    <a href="#competitive" onclick="closeMenu()">Compare</a>
+    <a href="#faq" onclick="closeMenu()">FAQ</a>
+    <a href="https://blog.sovraprotocol.xyz" target="_blank" rel="noopener">Blog</a>
+    <a href="https://docs.sovraprotocol.xyz" target="_blank" rel="noopener">Docs</a>
+    <a href="https://x.com/Sovra_Protocol" target="_blank" rel="noopener">Twitter / X</a>
+    <a href="#launch-app" onclick="closeMenu()" style="color:var(--gold2);font-weight:600;">Launch App →</a>
   </div>
 
-  <div class="sb-stats">
-    <div class="sb-label">Protocol TVL</div>
-    <div class="sb-stat">
-      <div class="sb-stat-val" id="stat-tvl">$0</div>
-      <div class="sb-stat-sub">Simulated testnet</div>
-    </div>
-  </div>
-
-  <div class="sb-footer">
-    <div class="block-row"><span>Block</span><span style="color:var(--gold);" id="block-num">—</span></div>
-    <div class="block-row" style="margin-top:2px;"><span>Gas</span><span style="color:var(--green);">FREE · Testnet</span></div>
-  </div>
-</aside>
-
-<!-- MAIN -->
-<main class="main">
-  <div class="topbar">
-    <div class="topbar-title">Bond Vault Interface</div>
-    <div style="display:flex;gap:10px;">
-      <span class="tb-badge green">⬡ Gas-Free</span>
-      <span class="tb-badge gold">Sepolia Testnet</span>
-    </div>
-  </div>
-
-  <!-- Tab Navigation -->
-  <div style="background:var(--ink2);border-bottom:1px solid var(--border);display:flex;gap:0;padding:0 24px;overflow-x:auto;">
-    <button onclick="showTab('vaults')" id="tab-vaults" style="font-family:var(--ff-sans);font-size:.95rem;font-weight:500;padding:16px 24px;background:none;border:none;border-bottom:2px solid var(--gold);color:var(--white);cursor:pointer;white-space:nowrap;">Vaults</button>
-    <button onclick="showTab('portfolio')" id="tab-portfolio" style="font-family:var(--ff-sans);font-size:.95rem;font-weight:400;padding:16px 24px;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted2);cursor:pointer;white-space:nowrap;">Portfolio</button>
-    <button onclick="showTab('analytics')" id="tab-analytics" style="font-family:var(--ff-sans);font-size:.95rem;font-weight:400;padding:16px 24px;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted2);cursor:pointer;white-space:nowrap;">Analytics</button>
-  </div>
-
-  <div class="ticker-bar">
-    <div class="ticker-wrap">
-      <span class="ticker-item">svNG Sovereign Bond <strong>16–20%</strong> p.a.</span><span style="color:var(--border2);margin:0 4px;">·</span>
-      <span class="ticker-item">svTR Sovereign Bond <strong>21–27%</strong> p.a.</span><span style="color:var(--border2);margin:0 4px;">·</span>
-      <span class="ticker-item">svAR Sovereign Bond <strong>32–40%</strong> p.a.</span><span style="color:var(--border2);margin:0 4px;">·</span>
-      <span class="ticker-item">1 USDC = <strong>1,350 NGN</strong></span><span style="color:var(--border2);margin:0 4px;">·</span>
-      <span class="ticker-item">1 USDC = <strong>45 TRY</strong></span><span style="color:var(--border2);margin:0 4px;">·</span>
-      <span class="ticker-item">1 USDC = <strong>1,400 ARS</strong></span><span style="color:var(--border2);margin:0 4px;">·</span>
-      <span class="ticker-item">svNG Sovereign Bond <strong>16–20%</strong> p.a.</span><span style="color:var(--border2);margin:0 4px;">·</span>
-      <span class="ticker-item">svTR Sovereign Bond <strong>21–27%</strong> p.a.</span><span style="color:var(--border2);margin:0 4px;">·</span>
-      <span class="ticker-item">svAR Sovereign Bond <strong>32–40%</strong> p.a.</span><span style="color:var(--border2);margin:0 4px;">·</span>
-      <span class="ticker-item">1 USDC = <strong>1,350 NGN</strong></span><span style="color:var(--border2);margin:0 4px;">·</span>
-      <span class="ticker-item">1 USDC = <strong>45 TRY</strong></span><span style="color:var(--border2);margin:0 4px;">·</span>
-      <span class="ticker-item">1 USDC = <strong>1,400 ARS</strong></span>
-    </div>
-  </div>
-
-  <div class="content">
-
-    <!-- VAULTS TAB -->
-    <div id="tab-vaults-content">
-    <!-- Wallet banner -->
-    <div class="wallet-banner" id="wallet-banner">
-      <div class="wb-text">
-        <strong>Connect wallet to activate transactions</strong>
-        Browse vaults freely — connect when ready to deposit.
-      </div>
-      <button class="wb-btn" onclick="connectWallet()">Connect Wallet</button>
-    </div>
-
-    <!-- Vault Selection -->
-    <div class="section-head"><div class="section-title">Select Vault</div></div>
-    <div class="vault-grid">
-      <div class="vault-card active" data-vault="svNG" onclick="selectVault('svNG')">
-        <div class="vc-flag">🇳🇬</div>
-        <div class="vc-ticker">svNG</div>
-        <div class="vc-name">Sovereign Bond</div>
-        <div class="vc-apr">20%<span class="vc-apr-unit">p.a. coupon</span></div>
-        <div class="vc-meta" id="tvl-svNG">TVL: $0</div>
-        <div class="vc-meta" style="color:var(--muted2);margin-top:1px;">1 USDC = 1,350 NGN</div>
-      </div>
-      <div class="vault-card" data-vault="svTR" onclick="selectVault('svTR')">
-        <div class="vc-flag">🇹🇷</div>
-        <div class="vc-ticker">svTR</div>
-        <div class="vc-name">Sovereign Bond</div>
-        <div class="vc-apr">27%<span class="vc-apr-unit">p.a. coupon</span></div>
-        <div class="vc-meta" id="tvl-svTR">TVL: $0</div>
-        <div class="vc-meta" style="color:var(--muted2);margin-top:1px;">1 USDC = 45 TRY</div>
-      </div>
-      <div class="vault-card" data-vault="svAR" onclick="selectVault('svAR')">
-        <div class="vc-flag">🇦🇷</div>
-        <div class="vc-ticker">svAR</div>
-        <div class="vc-name">Sovereign Bond</div>
-        <div class="vc-apr">40%<span class="vc-apr-unit">p.a. coupon</span></div>
-        <div class="vc-meta" id="tvl-svAR">TVL: $0</div>
-        <div class="vc-meta" style="color:var(--muted2);margin-top:1px;">1 USDC = 1,400 ARS</div>
-      </div>
-    </div>
-
-    <!-- Lock Period -->
-    <div class="section-head">
-      <div class="section-title">Lock Period</div>
-      <div style="font-family:var(--ff-mono);font-size:.65rem;color:var(--muted2);">Longer lock = higher coupon rate</div>
-    </div>
-    <div class="lock-grid">
-      <div class="lock-opt" data-days="30" onclick="selectLock(30)">
-        <div class="lock-days">30</div><div class="lock-label">Days</div>
-        <div class="lock-apr" id="lapr-30">—</div>
-      </div>
-      <div class="lock-opt" data-days="60" onclick="selectLock(60)">
-        <div class="lock-days">60</div><div class="lock-label">Days</div>
-        <div class="lock-apr" id="lapr-60">—</div>
-      </div>
-      <div class="lock-opt" data-days="90" onclick="selectLock(90)">
-        <div class="lock-days">90</div><div class="lock-label">Days</div>
-        <div class="lock-apr" id="lapr-90">—</div>
-      </div>
-      <div class="lock-opt selected" data-days="180" onclick="selectLock(180)">
-        <div class="lock-days">180</div><div class="lock-label">Days</div>
-        <div class="lock-apr" id="lapr-180">—</div>
-      </div>
-      <div class="lock-opt" data-days="365" onclick="selectLock(365)">
-        <div class="lock-days">365</div><div class="lock-label">Days</div>
-        <div class="lock-apr" id="lapr-365">—</div>
-      </div>
-    </div>
-
-    <!-- Deposit & Redeem -->
-    <div class="action-grid">
-      <!-- DEPOSIT -->
-      <div class="panel">
-        <div class="panel-title">Deposit USDC</div>
-        <div class="field">
-          <div class="field-label">Amount</div>
-          <div class="input-wrap">
-            <input type="number" id="deposit-input" placeholder="0.00" oninput="updateDepositPreview()" min="1"/>
-            <span class="input-suffix">USDC</span>
-            <span class="input-max" onclick="setDepositMax()">MAX</span>
+  <!-- Hero -->
+  <section id="home">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-orb hero-orb-3"></div>
+    <div class="hero-grid"></div>
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-left">
+          <div class="hero-eyebrow">
+            <div class="hero-eyebrow-dot"></div>
+            <span>RWA · Sovereign Bond Protocol</span>
+          </div>
+          <h1 class="hero-h1"><em>Sovereign</em> Bond<br>Yields, Onchain.</h1>
+          <p class="hero-sub">Deposit USDC. Access real EM sovereign bonds yielding up to 10.375% APR. No KYC. No broker. No minimum. Just yield.</p>
+          <div class="hero-ctas">
+            <a href="#launch-app" class="btn-primary">
+              <svg viewBox="0 0 24 24"><polyline points="13 2 13 9 22 9"/><path d="M19 22H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9l7 7v13a2 2 0 0 1-2 2z"/></svg>
+              Start Earning
+            </a>
+            <a href="#how-it-works" class="btn-secondary">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+              How It Works
+            </a>
+          </div>
+          <div class="hero-badges">
+            <span class="hero-badge">Non-Custodial</span>
+            <span class="hero-badge">No KYC</span>
+            <span class="hero-badge">USD Eurobonds</span>
+            <span class="hero-badge">Permissionless</span>
           </div>
         </div>
-        <div class="preview">
-          <div class="preview-row"><span class="pk">Vault</span><span class="pv" id="dp-vault">svNG</span></div>
-          <div class="preview-row"><span class="pk">Lock Period</span><span class="pv" id="dp-lock">180 days</span></div>
-          <div class="preview-row"><span class="pk">Coupon Rate</span><span class="pv green" id="dp-apr">—</span></div>
-          <div class="preview-row"><span class="pk">You Receive</span><span class="pv gold" id="dp-receive">0.00 svNG</span></div>
-          <div class="preview-row"><span class="pk">Daily Yield</span><span class="pv green" id="dp-daily">—</span></div>
-          <hr class="preview-divider"/>
-          <div class="preview-row"><span class="pk">Unlock Date</span><span class="pv" id="dp-unlock">—</span></div>
-        </div>
-        <button class="btn btn-gold" id="btn-deposit" onclick="doDeposit()">Deposit &amp; Lock</button>
-      </div>
-
-      <!-- REDEEM -->
-      <div class="panel">
-        <div class="panel-title">Redeem svToken</div>
-        <div class="redeem-pos" id="redeem-pos">
-          <div class="redeem-pos-label">Active Position</div>
-          <div id="rp-empty" style="font-family:var(--ff-mono);font-size:.72rem;color:var(--muted);text-align:center;padding:6px 0;">No active position</div>
-          <div id="rp-data" style="display:none;">
-            <div class="redeem-row"><span class="rk">Principal</span><span style="font-family:var(--ff-mono);font-size:.6rem;color:var(--white);" id="rp-principal">—</span></div>
-            <div class="redeem-row"><span class="rk">FX Value</span><span style="font-family:var(--ff-mono);font-size:.6rem;color:var(--gold2);" id="rp-fx">—</span></div>
-            <div class="redeem-row"><span class="rk">Net Yield</span><span style="font-family:var(--ff-mono);font-size:.6rem;color:var(--green);" id="rp-yield">—</span></div>
-            <div class="redeem-row"><span class="rk">Lock Status</span><span style="font-family:var(--ff-mono);font-size:.6rem;" id="rp-status">—</span></div>
-            <div class="notice-bar" id="notice-bar"></div>
+        <div class="hero-right">
+          <div class="vault-card">
+            <div class="vault-card-header">
+              <span class="vault-card-title">Live Vaults</span>
+              <div class="vault-card-live"><div class="vault-card-live-dot"></div><span>Live</span></div>
+            </div>
+            <div class="vault-tvl">
+              <div class="vault-tvl-label">Total Value Locked</div>
+              <div class="vault-tvl-value" id="tvlCounter">$0</div>
+              <div class="vault-tvl-sub">↑ Growing</div>
+            </div>
+            <div class="vault-rows">
+              <div class="vault-row">
+                <div class="vault-row-left"><div class="vault-flag">🇳🇬</div><div><div class="vault-row-name">Nigeria Vault</div><div class="vault-row-type">USD Eurobond · No FX Risk</div></div></div>
+                <div class="vault-row-apy">8.40%</div>
+              </div>
+              <div class="vault-row">
+                <div class="vault-row-left"><div class="vault-flag">🇦🇴</div><div><div class="vault-row-name">Angola Vault</div><div class="vault-row-type">USD Eurobond · No FX Risk</div></div></div>
+                <div class="vault-row-apy">7.49%</div>
+              </div>
+              <div class="vault-row">
+                <div class="vault-row-left"><div class="vault-flag">🇪🇬</div><div><div class="vault-row-name">Egypt Vault</div><div class="vault-row-type">USD Eurobond · No FX Risk</div></div></div>
+                <div class="vault-row-apy">6.77%</div>
+              </div>
+              <div class="vault-row">
+                <div class="vault-row-left"><div class="vault-flag">🇹🇷</div><div><div class="vault-row-name">Turkey Vault</div><div class="vault-row-type">USD Eurobond · No FX Risk</div></div></div>
+                <div class="vault-row-apy">5.47%</div>
+              </div>
+            </div>
+            <button class="vault-deposit-btn" onclick="document.getElementById('launch-app').scrollIntoView({behavior:'smooth'})">Deposit USDC →</button>
           </div>
         </div>
-        <button class="btn btn-gold" id="btn-redeem" onclick="handleRedeemClick()" disabled>Redeem</button>
       </div>
     </div>
+  </section>
 
-    </div><!-- /vaults tab -->
-
-    <!-- PORTFOLIO TAB -->
-    <div id="tab-portfolio-content" style="display:none;">
-
-    <!-- Portfolio Stats -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-bottom:20px;">
-      <div style="background:var(--ink2);border:1px solid var(--border);padding:18px 20px;">
-        <div style="font-size:.8rem;color:var(--muted2);margin-bottom:6px;">Total Value</div>
-        <div style="font-family:var(--ff-serif);font-size:1.8rem;font-weight:300;color:var(--gold2);line-height:1;" id="stat-total">$0.00</div>
-        <div style="font-size:.78rem;color:var(--muted2);margin-top:4px;" id="stat-total-sub">No active positions</div>
-      </div>
-      <div style="background:var(--ink2);border:1px solid var(--border);padding:18px 20px;">
-        <div style="font-size:.8rem;color:var(--muted2);margin-bottom:6px;">Yield Earned</div>
-        <div style="font-family:var(--ff-serif);font-size:1.8rem;font-weight:300;color:var(--green);line-height:1;" id="stat-yield">$0.000000</div>
-        <div style="font-size:.78rem;color:var(--green);margin-top:4px;">Accruing on-chain</div>
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item reveal"><div class="stat-val"><span class="gold">10.375</span>%</div><div class="stat-label">Peak Gross Yield</div></div>
+        <div class="stat-item reveal"><div class="stat-val">$<span class="gold">0</span></div><div class="stat-label">EM Sovereign Competition</div></div>
+        <div class="stat-item reveal"><div class="stat-val"><span class="gold">0</span></div><div class="stat-label">KYC Required</div></div>
+        <div class="stat-item reveal"><div class="stat-val"><span class="gold">4</span></div><div class="stat-label">Live Bond Vaults</div></div>
       </div>
     </div>
-
-    <!-- Positions -->
-    <div class="section-head">
-      <div class="section-title">Your Positions</div>
-      <div style="font-family:var(--ff-mono);font-size:.62rem;color:var(--green);" id="yield-label"></div>
-    </div>
-    <div class="positions-wrap">
-      <table class="pos-table">
-        <thead>
-          <tr>
-            <th>Vault</th><th>Deposited</th><th>Current Value</th>
-            <th>Net Yield</th><th>APR</th><th>Lock Progress</th>
-            <th>Status</th><th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="positions-body">
-          <tr><td colspan="8" class="pos-empty">Connect wallet &amp; deposit to see positions.</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Transaction History -->
-    <div class="section-head" style="margin-top:24px;">
-      <div class="section-title">Transaction History</div>
-    </div>
-    <div class="tx-panel">
-      <div class="tx-list" id="tx-list"><div class="tx-empty">No transactions yet</div></div>
-    </div>
-
-    </div><!-- /portfolio tab -->
-
-    <!-- ANALYTICS TAB -->
-    <div id="tab-analytics-content" style="display:none;">
-
-    <!-- Protocol Stats -->
-    <div class="section-head">
-      <div class="section-title">Protocol Activity</div>
-      <div style="display:flex;gap:6px;">
-        <button onclick="setStatWindow(7)"  id="sw-7"  style="font-family:var(--ff-mono);font-size:.62rem;padding:3px 10px;cursor:pointer;border-radius:2px;background:var(--gold-bg);border:1px solid var(--gold);color:var(--gold);">7d</button>
-        <button onclick="setStatWindow(14)" id="sw-14" style="font-family:var(--ff-mono);font-size:.62rem;padding:3px 10px;cursor:pointer;border-radius:2px;background:none;border:1px solid var(--border);color:var(--muted2);">14d</button>
-        <button onclick="setStatWindow(30)" id="sw-30" style="font-family:var(--ff-mono);font-size:.62rem;padding:3px 10px;cursor:pointer;border-radius:2px;background:none;border:1px solid var(--border);color:var(--muted2);">30d</button>
-        <button onclick="refreshLeaderboard()" style="font-family:var(--ff-mono);font-size:.62rem;padding:3px 10px;cursor:pointer;border-radius:2px;background:none;border:1px solid var(--border);color:var(--muted2);">Refresh</button>
-      </div>
-    </div>
-
-    <!-- Stats Grid -->
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-bottom:24px;">
-      <div style="background:var(--ink2);border:1px solid var(--border);padding:16px 18px;">
-        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">Total Deposits</div>
-        <div style="font-family:var(--ff-serif);font-size:1.4rem;font-weight:300;color:var(--green);line-height:1;" id="stat-deposits-window">$0</div>
-        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted);margin-top:4px;" id="stat-deposits-count">0 transactions</div>
-      </div>
-      <div style="background:var(--ink2);border:1px solid var(--border);padding:16px 18px;">
-        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">Withdrawals</div>
-        <div style="font-family:var(--ff-serif);font-size:1.4rem;font-weight:300;color:var(--orange);line-height:1;" id="stat-withdrawals-window">$0</div>
-        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted);margin-top:4px;" id="stat-withdrawals-count">0 transactions</div>
-      </div>
-      <div style="background:var(--ink2);border:1px solid var(--border);padding:16px 18px;">
-        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">Protocol TVL</div>
-        <div style="font-family:var(--ff-serif);font-size:1.4rem;font-weight:300;color:var(--gold2);line-height:1;" id="stat-tvl-window">$0</div>
-        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted);margin-top:4px;" id="stat-active-users">0 active wallets</div>
-      </div>
-      <div style="background:var(--ink2);border:1px solid var(--border);padding:16px 18px;">
-        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">Yield Paid Out</div>
-        <div style="font-family:var(--ff-serif);font-size:1.4rem;font-weight:300;color:var(--green);line-height:1;" id="stat-yield-window">$0</div>
-        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted);margin-top:4px;">to depositors</div>
-      </div>
-    </div>
-
-    <!-- Vault Performance -->
-    <div class="section-head"><div class="section-title">Vault Performance</div></div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-bottom:24px;" id="vault-performance">
-      <div style="background:var(--ink2);border:1px solid var(--border);padding:16px 18px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-          <span style="font-size:1.1rem;">🇳🇬</span>
-          <span style="font-family:var(--ff-mono);font-size:.7rem;color:var(--gold);">svNG</span>
-        </div>
-        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted2);margin-bottom:3px;">TVL</div>
-        <div style="font-family:var(--ff-serif);font-size:1.2rem;color:var(--white);" id="vp-tvl-svNG">$0</div>
-        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted);margin-top:8px;" id="vp-deps-svNG">0 depositors</div>
-        <div style="margin-top:10px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;">
-          <div style="height:100%;background:var(--gold);border-radius:2px;transition:width .5s;" id="vp-bar-svNG"></div>
-        </div>
-      </div>
-      <div style="background:var(--ink2);border:1px solid var(--border);padding:16px 18px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-          <span style="font-size:1.1rem;">🇹🇷</span>
-          <span style="font-family:var(--ff-mono);font-size:.7rem;color:var(--gold);">svTR</span>
-        </div>
-        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted2);margin-bottom:3px;">TVL</div>
-        <div style="font-family:var(--ff-serif);font-size:1.2rem;color:var(--white);" id="vp-tvl-svTR">$0</div>
-        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted);margin-top:8px;" id="vp-deps-svTR">0 depositors</div>
-        <div style="margin-top:10px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;">
-          <div style="height:100%;background:var(--gold);border-radius:2px;transition:width .5s;" id="vp-bar-svTR"></div>
-        </div>
-      </div>
-      <div style="background:var(--ink2);border:1px solid var(--border);padding:16px 18px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-          <span style="font-size:1.1rem;">🇦🇷</span>
-          <span style="font-family:var(--ff-mono);font-size:.7rem;color:var(--gold);">svAR</span>
-        </div>
-        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted2);margin-bottom:3px;">TVL</div>
-        <div style="font-family:var(--ff-serif);font-size:1.2rem;color:var(--white);" id="vp-tvl-svAR">$0</div>
-        <div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--muted);margin-top:8px;" id="vp-deps-svAR">0 depositors</div>
-        <div style="margin-top:10px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;">
-          <div style="height:100%;background:var(--gold);border-radius:2px;transition:width .5s;" id="vp-bar-svAR"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- User Activities -->
-    <div class="section-head"><div class="section-title">User Activities</div></div>
-    <div class="lb-wrap" style="grid-template-columns:1fr 1fr;">
-      <div class="lb-panel">
-        <div class="lb-head"><span class="lb-title">💰 Top Depositors</span></div>
-        <div id="lb-depositors"><div class="lb-empty">Loading...</div></div>
-      </div>
-      <div class="lb-panel">
-        <div class="lb-head"><span class="lb-title">📈 Top Yield Earners</span></div>
-        <div id="lb-yield"><div class="lb-empty">Loading...</div></div>
-      </div>
-    </div>
-
-    </div><!-- /analytics tab -->
   </div>
-</main>
-</div>
 
-<!-- MODAL -->
-<div class="modal-bg" id="modal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div id="modal-body"></div>
-  </div>
-</div>
+  <!-- How It Works -->
+  <section id="how-it-works">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="tag-label">The Process</span>
+        <h2 class="section-h2">Three Steps to Sovereign Yield</h2>
+        <p class="section-sub">From USDC to onchain bond yield in minutes. No broker, no paperwork, no minimum deposit.</p>
+      </div>
+      <div class="steps-grid reveal">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+          <div class="step-title">Connect Your Wallet</div>
+          <p class="step-desc">Connect any Web3 wallet — MetaMask, Rabby, WalletConnect, and all major providers. No account creation. No email. No KYC.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="step-title">Select a Vault & Deposit USDC</div>
+          <p class="step-desc">Choose a vault by APR. Deposit any amount of USDC. 90% is deployed into real sovereign Eurobonds. 10% stays onchain as your liquidity reserve for instant redemptions.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-icon"><svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
+          <div class="step-title">Earn Yield in USDC</div>
+          <p class="step-desc">Your vault earns real bond coupon yield, paid in USDC. Choose your payout frequency — monthly, quarterly, half-yearly, or annually. Redeem anytime by burning your vault position.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<script>
-// ═══════════════════════════════════════════════════
-//  SOVRA PROTOCOL — TESTNET v4
-// ═══════════════════════════════════════════════════
+  <!-- Vaults / Launch App -->
+  <section id="launch-app" style="padding: 100px 0;">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="tag-label">The Vaults</span>
+        <h2 class="section-h2">Choose Your Bond Exposure</h2>
+        <p class="section-sub">USD Eurobond vaults carry no FX risk — yield is paid in USDC. svToken vaults (Phase 2) are local currency bonds with higher nominal yields and explicit FX risk.</p>
+      </div>
+      <div class="vaults-tabs reveal">
+        <button class="vault-tab active" onclick="switchTab('usd', this)">USD Eurobonds</button>
+        <button class="vault-tab" onclick="switchTab('lc', this)">svTokens (LC)</button>
+      </div>
+      <div id="panel-usd" class="vault-panel active reveal">
+        <div class="vaults-table-wrap">
+          <table class="vaults-table">
+            <thead>
+              <tr><th>Vault</th><th>Gross APR</th><th>User Net APR</th><th>Denomination</th><th>FX Risk</th><th>Status</th><th style="text-align:right;">Action</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><div class="vault-name-cell"><div class="vault-icon">🇳🇬</div><div><div class="vault-name-text">Nigeria Vault</div><div class="vault-name-sub">NGN Eurobond</div></div></div></td><td><span class="vault-gross">10.375%</span></td><td><span class="vault-net">8.40%</span></td><td><span class="mono" style="font-size:13px;color:var(--muted);">USD / USDC</span></td><td><span class="vault-badge">None</span></td><td><span class="vault-badge">Live</span></td><td><a href="#" class="vault-action-btn">Deposit →</a></td></tr>
+              <tr><td><div class="vault-name-cell"><div class="vault-icon">🇦🇴</div><div><div class="vault-name-text">Angola Vault</div><div class="vault-name-sub">AGO Eurobond</div></div></div></td><td><span class="vault-gross">9.25%</span></td><td><span class="vault-net">7.49%</span></td><td><span class="mono" style="font-size:13px;color:var(--muted);">USD / USDC</span></td><td><span class="vault-badge">None</span></td><td><span class="vault-badge">Live</span></td><td><a href="#" class="vault-action-btn">Deposit →</a></td></tr>
+              <tr><td><div class="vault-name-cell"><div class="vault-icon">🇪🇬</div><div><div class="vault-name-text">Egypt Vault</div><div class="vault-name-sub">EGY Eurobond</div></div></div></td><td><span class="vault-gross">8.36%</span></td><td><span class="vault-net">6.77%</span></td><td><span class="mono" style="font-size:13px;color:var(--muted);">USD / USDC</span></td><td><span class="vault-badge">None</span></td><td><span class="vault-badge">Live</span></td><td><a href="#" class="vault-action-btn">Deposit →</a></td></tr>
+              <tr><td><div class="vault-name-cell"><div class="vault-icon">🇹🇷</div><div><div class="vault-name-text">Turkey Vault</div><div class="vault-name-sub">TUR Eurobond</div></div></div></td><td><span class="vault-gross">6.75%</span></td><td><span class="vault-net">5.47%</span></td><td><span class="mono" style="font-size:13px;color:var(--muted);">USD / USDC</span></td><td><span class="vault-badge">None</span></td><td><span class="vault-badge">Live</span></td><td><a href="#" class="vault-action-btn">Deposit →</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="text-align:center;font-size:12px;color:var(--dim);margin-top:14px;font-family:'DM Mono',monospace;letter-spacing:0.06em;">Net APR accounts for 10% onchain reserve (earns 0%) and 10% Sovra yield share · 0.1% entry / 0.1% exit fee applies</p>
+      </div>
+      <div id="panel-lc" class="vault-panel reveal">
+        <div class="vaults-table-wrap">
+          <table class="vaults-table">
+            <thead>
+              <tr><th>svToken</th><th>Nominal Yield</th><th>Currency</th><th>FX Risk</th><th>Phase</th><th style="text-align:right;">Action</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><div class="vault-name-cell"><div class="vault-icon">🇦🇷</div><div><div class="vault-name-text">svARGENTINA</div><div class="vault-name-sub">Local currency bond</div></div></div></td><td><span class="vault-net">~40%</span></td><td><span class="mono" style="font-size:13px;color:var(--muted);">ARS</span></td><td><span class="vault-badge lc">Yes — FX</span></td><td><span class="vault-badge lc">Phase 2</span></td><td><a href="#" class="vault-action-btn" style="opacity:0.4;cursor:not-allowed;pointer-events:none;" aria-disabled="true">Soon</a></td></tr>
+              <tr><td><div class="vault-name-cell"><div class="vault-icon">🇹🇷</div><div><div class="vault-name-text">svTURKEY</div><div class="vault-name-sub">Local currency bond</div></div></div></td><td><span class="vault-net">~32%</span></td><td><span class="mono" style="font-size:13px;color:var(--muted);">TRY</span></td><td><span class="vault-badge lc">Yes — FX</span></td><td><span class="vault-badge lc">Phase 2</span></td><td><a href="#" class="vault-action-btn" style="opacity:0.4;cursor:not-allowed;pointer-events:none;" aria-disabled="true">Soon</a></td></tr>
+              <tr><td><div class="vault-name-cell"><div class="vault-icon">🇪🇬</div><div><div class="vault-name-text">svEGYPT</div><div class="vault-name-sub">Local currency bond</div></div></div></td><td><span class="vault-net">~21%</span></td><td><span class="mono" style="font-size:13px;color:var(--muted);">EGP</span></td><td><span class="vault-badge lc">Yes — FX</span></td><td><span class="vault-badge lc">Phase 2</span></td><td><a href="#" class="vault-action-btn" style="opacity:0.4;cursor:not-allowed;pointer-events:none;" aria-disabled="true">Soon</a></td></tr>
+              <tr><td><div class="vault-name-cell"><div class="vault-icon">🇳🇬</div><div><div class="vault-name-text">svNIGERIA</div><div class="vault-name-sub">Local currency bond</div></div></div></td><td><span class="vault-net">~15%</span></td><td><span class="mono" style="font-size:13px;color:var(--muted);">NGN</span></td><td><span class="vault-badge lc">Yes — FX</span></td><td><span class="vault-badge lc">Phase 2</span></td><td><a href="#" class="vault-action-btn" style="opacity:0.4;cursor:not-allowed;pointer-events:none;" aria-disabled="true">Soon</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="text-align:center;font-size:12px;color:var(--dim);margin-top:14px;font-family:'DM Mono',monospace;letter-spacing:0.06em;">svTokens carry FX risk · Nominal yields do not account for local currency depreciation · DeFi-composable: Aave, Pendle integrations planned</p>
+      </div>
+    </div>
+  </section>
 
-// ── Contracts ──
-var CONTRACTS = {
-  USDC: '0x27E8dB2a2BFb704d80c74893DaB2DdEab198d72B',
-  svNG: '0xCDCe154FE4cC5E3EE1F87978DCf284e085131519',
-  svTR: '0x7472d36Ed3644Dee2e8e07844b890dfBF05691F5',
-  svAR: '0xB8B9e990aaFD34526eE633097adB76D64631Ee15',
-};
+  <!-- Yield Example -->
+  <section class="yield-section" style="background:var(--navy2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <div class="container">
+      <div class="yield-inner">
+        <div class="reveal">
+          <div class="yield-table-wrap">
+            <div class="yield-table-header"><span class="yield-table-title">Nigeria Vault — $10,000 Deposit</span><span class="yield-table-badge">10.375% Gross</span></div>
+            <div class="yield-row"><span class="yield-row-label">Working capital deployed (90%)</span><span class="yield-row-val">$9,000</span></div>
+            <div class="yield-row"><span class="yield-row-label">Gross yield on $9,000 @ 10.375%</span><span class="yield-row-val">$933.75</span></div>
+            <div class="yield-row"><span class="yield-row-label">– Sovra yield share (10%)</span><span class="yield-row-val red">– $93.38</span></div>
+            <div class="yield-row total"><span class="yield-row-label main">Your net annual yield</span><span class="yield-row-val gold">$840.38 · 8.40%</span></div>
+          </div>
+        </div>
+        <div class="yield-right reveal">
+          <span class="tag-label">Real Yield. Real Bonds.</span>
+          <div class="yield-big">8.40%</div>
+          <div class="yield-big-label">Effective APR · Nigeria USD Vault</div>
+          <p style="font-size:15px;line-height:1.7;color:var(--muted);font-weight:300;margin-bottom:8px;">Backed by a real sovereign Eurobond. Yield paid in USDC. No token inflation. No ponzinomics. Just bond coupons — onchain.</p>
+          <p style="font-size:13px;color:var(--dim);font-family:'DM Mono',monospace;letter-spacing:0.04em;margin-bottom:4px;">10% of deposit stays onchain as reserve · earns 0%</p>
+          <div class="yield-payout-grid">
+            <div class="payout-card"><div class="payout-freq">Monthly</div><div class="payout-amount">$70.03</div><div class="payout-currency">USDC / month</div></div>
+            <div class="payout-card"><div class="payout-freq">Quarterly</div><div class="payout-amount">$210.09</div><div class="payout-currency">USDC / quarter</div></div>
+            <div class="payout-card"><div class="payout-freq">Half-Yearly</div><div class="payout-amount">$420.19</div><div class="payout-currency">USDC / 6 months</div></div>
+            <div class="payout-card"><div class="payout-freq">Annually</div><div class="payout-amount">$840.38</div><div class="payout-currency">USDC / year</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-var CHAIN_ID = '0xaa36a7'; // Sepolia
-var CHAIN_PARAMS = {
-  chainId: CHAIN_ID,
-  chainName: 'Sepolia',
-  nativeCurrency: { name:'SepoliaETH', symbol:'ETH', decimals:18 },
-  rpcUrls: ['https://rpc.sepolia.org'],
-  blockExplorerUrls: ['https://sepolia.etherscan.io'],
-};
+  <!-- Features -->
+  <section id="features">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="tag-label">Why Sovra</span>
+        <h2 class="section-h2">Built for Real Yield Seekers</h2>
+        <p class="section-sub">The first protocol to bring EM sovereign bond yields onchain — without brokers, paperwork, or minimums.</p>
+      </div>
+      <div class="features-grid reveal">
+        <div class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="feature-title">Real Sovereign Bonds</div><p class="feature-desc">Every vault is backed by actual EM sovereign Eurobonds held by a regulated custodian. Not synthetic. Not algorithmic. Real bond coupons, passed onchain.</p><span class="feature-tag">RWA Backed</span></div>
+        <div class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="feature-title">No KYC. Permissionless.</div><p class="feature-desc">Connect a wallet. Deposit USDC. That's it. No identity verification, no broker account, no bank relationship required.</p><span class="feature-tag">Permissionless</span></div>
+        <div class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div><div class="feature-title">No FX Risk on USD Vaults</div><p class="feature-desc">USD Eurobond vaults are dollar-denominated. Your deposit goes in as USDC. Your yield comes out as USDC.</p><span class="feature-tag">USD Denominated</span></div>
+        <div class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M17 2.1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 21.9l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div><div class="feature-title">Redeem Anytime</div><p class="feature-desc">10% of every deposit is held onchain as an instant-redemption reserve. No lock-ups.</p><span class="feature-tag">Liquid Anytime</span></div>
+        <div class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="feature-title">Flexible Yield Payouts</div><p class="feature-desc">Choose monthly, quarterly, half-yearly, or annually. APR remains the same.</p><span class="feature-tag">Monthly or Annual</span></div>
+        <div class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="feature-title">Transparent Fee Structure</div><p class="feature-desc">0.1% entry. 0.1% exit. 10% of net yield as protocol share. Fully transparent.</p><span class="feature-tag">Fully Transparent</span></div>
+      </div>
+    </div>
+  </section>
 
-var USDC_ABI = [
-  {"inputs":[],"name":"faucet","outputs":[],"stateMutability":"nonpayable","type":"function"},
-  {"inputs":[{"name":"spender","type":"address"},{"name":"amount","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
-  {"inputs":[{"name":"account","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
-];
+  <!-- Competitive Edge -->
+  <section id="competitive">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="tag-label">Competitive Edge</span>
+        <h2 class="section-h2">Sovra vs. The RWA Landscape</h2>
+        <p class="section-sub">Higher yields, permissionless access, and true onchain liquidity.</p>
+      </div>
+      <div class="comp-table-wrap reveal">
+        <table class="comp-table">
+          <thead><tr><th>Protocol / Product</th><th>Yield Range (APR)</th><th>KYC Required</th><th>Liquidity / Redemption</th><th>Asset Class</th><th>Min. Investment</th></tr></thead>
+          <tbody>
+            <tr><td><strong class="gold">Sovra Protocol</strong></td><td class="comp-highlight">6.75% – 40%</td><td><span class="comp-badge">No KYC</span></td><td>Burn svTokens anytime (10% reserve)</td><td>EM Sovereign Bonds (USD & LC)</td><td>$1</td></tr>
+            <tr><td>Ondo Finance (USDY / OUSG)</td><td>4% – 5.3%</td><td>Yes (institutional / whitelist)</td><td>Limited / gated redemptions</td><td>US Treasuries & Money Market</td><td>$100k+ (OUSG)</td></tr>
+            <tr><td>BlackRock BUIDL</td><td>~4.5%</td><td>Yes (accredited investors)</td><td>Monthly liquidity windows</td><td>Tokenized T-bills</td><td>$5M</td></tr>
+            <tr><td>Franklin Templeton BENJI</td><td>~4.2%</td><td>Yes (institutional)</td><td>Daily, via transfer agent</td><td>US Government Money Fund</td><td>$1M (institutional)</td></tr>
+            <tr><td>Centrifuge (Private Credit)</td><td>5% – 9%</td><td>Yes (KYC/AML)</td><td>Locked pools (various terms)</td><td>Private Credit / Invoices</td><td>Varies ($10k+ typical)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="text-align:center;font-size:12px;color:var(--dim);margin-top:18px;font-family:'DM Mono',monospace;letter-spacing:0.06em;">Sovra offers the only permissionless access to high‑yield EM sovereign debt with onchain liquidity.</p>
+    </div>
+  </section>
 
-var VAULT_ABI = [
-  {"inputs":[{"name":"usdcAmount","type":"uint256"},{"name":"lockDays","type":"uint256"}],"name":"deposit","outputs":[],"stateMutability":"nonpayable","type":"function"},
-  {"inputs":[],"name":"redeem","outputs":[],"stateMutability":"nonpayable","type":"function"},
-  {"inputs":[],"name":"giveNotice","outputs":[],"stateMutability":"nonpayable","type":"function"},
-  {"inputs":[{"name":"user","type":"address"}],"name":"getPosition","outputs":[
-    {"name":"principal","type":"uint256"},{"name":"depositTime","type":"uint256"},
-    {"name":"lockDays","type":"uint256"},{"name":"effectiveAprBps","type":"uint256"},
-    {"name":"yieldEarned","type":"uint256"},{"name":"locked","type":"bool"},
-    {"name":"daysLeft","type":"uint256"},{"name":"noticeGiven","type":"bool"},
-    {"name":"noticeReadyAt","type":"uint256"}
-  ],"stateMutability":"view","type":"function"},
-  {"inputs":[{"name":"user","type":"address"}],"name":"getYieldEarned","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[],"name":"totalDeposited","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[{"name":"account","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"principal","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"lockDays","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"effectiveAprBps","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"yieldReserved","type":"uint256"}],"name":"Deposited","type":"event"},
-  {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"principal","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"grossYield","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"yieldFee","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"principalPenalty","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"netReceived","type":"uint256"},{"indexed":false,"internalType":"uint8","name":"exitType","type":"uint8"}],"name":"Redeemed","type":"event"}
-];
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="tag-label">Support</span>
+        <h2 class="section-h2">Common Questions</h2>
+        <p class="section-sub">Everything you need to know before depositing.</p>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item reveal">
+          <div class="faq-q" onclick="toggleFaq(this)"><span>How does Sovra generate real yield?</span><div class="faq-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div>
+          <div class="faq-a"><div class="faq-a-inner">90% of your USDC deposit is sent to a regulated custodian who purchases actual sovereign Eurobonds. Coupons are passed onchain as USDC.</div></div>
+        </div>
+        <div class="faq-item reveal">
+          <div class="faq-q" onclick="toggleFaq(this)"><span>Why is my effective APR lower than the bond's headline rate?</span><div class="faq-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div>
+          <div class="faq-a"><div class="faq-a-inner">Two factors: 10% reserve earns 0%, and 10% yield share to protocol. Example: 10.375% × 0.9 × 0.9 = 8.40% net.</div></div>
+        </div>
+        <div class="faq-item reveal">
+          <div class="faq-q" onclick="toggleFaq(this)"><span>Can I withdraw at any time?</span><div class="faq-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div>
+          <div class="faq-a"><div class="faq-a-inner">Yes, no lock-ups. Small redemptions from onchain reserve; larger ones trigger bond liquidation. 0.1% exit fee applies.</div></div>
+        </div>
+        <div class="faq-item reveal">
+          <div class="faq-q" onclick="toggleFaq(this)"><span>Do I need to complete KYC?</span><div class="faq-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div>
+          <div class="faq-a"><div class="faq-a-inner">No. Permissionless. Connect wallet, deposit USDC.</div></div>
+        </div>
+        <div class="faq-item reveal">
+          <div class="faq-q" onclick="toggleFaq(this)"><span>What's the difference between USD Vaults and svTokens?</span><div class="faq-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div>
+          <div class="faq-a"><div class="faq-a-inner">USD Vaults: dollar Eurobonds, no FX risk. svTokens: local currency bonds with higher nominal yields and FX risk (Phase 2).</div></div>
+        </div>
+        <div class="faq-item reveal">
+          <div class="faq-q" onclick="toggleFaq(this)"><span>What are the fees?</span><div class="faq-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div>
+          <div class="faq-a"><div class="faq-a-inner">0.1% entry, 0.1% exit, 10% of gross yield as protocol share.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-// ── Vault Config ──
-var VAULTS = {
-  svNG: { name:'Sovereign Bond',   flag:'🇳🇬', baseApr:0.20, fxRate:135000, fxSymbol:'NGN', balKey:'svng' },
-  svTR: { name:'Sovereign Bond',    flag:'🇹🇷', baseApr:0.27, fxRate:4500,   fxSymbol:'TRY', balKey:'svtr' },
-  svAR: { name:'Sovereign Bond', flag:'🇦🇷', baseApr:0.40, fxRate:140000, fxSymbol:'ARS', balKey:'svar' },
-};
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="cta-orb"></div>
+    <div class="container">
+      <span class="tag-label" style="text-align:center;display:block;">Get Started</span>
+      <h2 class="cta-h2 reveal">The highest-yielding <em class="serif" style="font-style:italic;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">sovereign bonds</em> on Earth are now onchain.</h2>
+      <p class="cta-sub reveal">Deposit USDC. Earn up to 8.40% net APR. Backed by real bonds. Redeemable anytime. No KYC.</p>
+      <div class="cta-btns reveal">
+        <a href="#launch-app" class="btn-primary"><svg viewBox="0 0 24 24"><polyline points="13 2 13 9 22 9"/><path d="M19 22H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9l7 7v13a2 2 0 0 1-2 2z"/></svg>Start Earning Now</a>
+        <a href="https://docs.sovraprotocol.xyz" target="_blank" rel="noopener" class="btn-secondary">Read the Docs →</a>
+      </div>
+    </div>
+  </section>
 
-var LOCKS = {
-  30:  { mult:0.80, penalty:0.25 },
-  60:  { mult:0.85, penalty:0.22 },
-  90:  { mult:0.90, penalty:0.18 },
-  180: { mult:0.95, penalty:0.10 },
-  365: { mult:1.00, penalty:0.07 },
-};
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div>
+          <div class="nav-logo-text" style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;letter-spacing:0.08em;">S<span style="background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">O</span>VRA</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.25em;color:var(--dim);text-transform:uppercase;margin-top:2px;margin-bottom:12px;">Protocol</div>
+          <p class="footer-brand-desc">The first permissionless protocol for onchain EM sovereign bond yields. Real bonds. Real yield. No KYC.</p>
+        </div>
+        <div><div class="footer-col-title">Product</div><ul class="footer-links"><li><a href="#launch-app">USD Vaults</a></li><li><a href="#launch-app">svTokens (Phase 2)</a></li><li><a href="#how-it-works">How It Works</a></li><li><a href="#features">Features</a></li></ul></div>
+        <div><div class="footer-col-title">Resources</div><ul class="footer-links"><li><a href="https://docs.sovraprotocol.xyz" target="_blank" rel="noopener">Documentation</a></li><li><a href="https://blog.sovraprotocol.xyz" target="_blank" rel="noopener">Blog</a></li><li><a href="#faq">FAQ</a></li></ul></div>
+        <div><div class="footer-col-title">Community</div><ul class="footer-links"><li><a href="https://x.com/Sovra_Protocol" target="_blank" rel="noopener">Twitter / X</a></li><li><a href="#">Telegram</a></li><li><a href="#">Discord</a></li></ul></div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-copy">© 2026 Sovra Protocol. All rights reserved.</div>
+        <div class="footer-status"><div class="footer-status-dot"></div>All Systems Operational</div>
+      </div>
+    </div>
+  </footer>
 
-// ── State ──
-var wallet = { connected:false, address:null, chainOk:false, provider:null, signer:null, usdc:null, vaults:{} };
-var state = {
-  usdc:0,
-  deposited:    { svNG:0, svTR:0, svAR:0 },
-  balances:     { svNG:0, svTR:0, svAR:0 },
-  yieldEarned:  { svNG:0, svTR:0, svAR:0 },
-  lockDays:     { svNG:0, svTR:0, svAR:0 },
-  lockStart:    { svNG:null, svTR:null, svAR:null },
-  effectiveApr: { svNG:0.20, svTR:0.27, svAR:0.40 },
-  noticeGiven:  { svNG:false, svTR:false, svAR:false },
-  noticeReadyAt:{ svNG:0, svTR:0, svAR:0 },
-  tvl:          { svNG:0, svTR:0, svAR:0 },
-  selectedVault:'svNG',
-  selectedLock: 180,
-  blockNum:     5900000,
-  txLog:[],
-};
+  <script>
+    // Navbar scroll effect
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 20));
 
-// ── Formatters ──
-function fmt(n,d){ return Number(n||0).toLocaleString('en-US',{minimumFractionDigits:d??2,maximumFractionDigits:d??2}); }
-function fmtShort(n){ n=Number(n)||0; return n>=1e6?'$'+(n/1e6).toFixed(2)+'M':n>=1000?'$'+(n/1000).toFixed(1)+'K':'$'+fmt(n,2); }
-function fmtAddr(a){ return a.slice(0,6)+'...'+a.slice(-4); }
-function maskHash(h){ return h?h.slice(0,10)+'...'+h.slice(-6):'—'; }
-function randHash(){ return '0x'+Array.from({length:64},()=>'0123456789abcdef'[Math.floor(Math.random()*16)]).join(''); }
-function timeAgo(ms){ var s=Math.floor((Date.now()-ms)/1000); return s<60?s+'s ago':s<3600?Math.floor(s/60)+'m ago':Math.floor(s/3600)+'h ago'; }
-function addDays(d){ var dt=new Date(); dt.setDate(dt.getDate()+d); return dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
-function daysRemaining(startMs, lockDays){
-  if(!startMs||!lockDays) return 0;
-  var elapsed=(Date.now()-startMs)/(1000*86400);
-  return Math.max(0,lockDays-elapsed);
-}
-function lockProgress(startMs,lockDays){
-  if(!startMs||!lockDays) return 0;
-  return Math.min(1,(Date.now()-startMs)/(lockDays*86400*1000));
-}
-function isLocked(v){
-  if(!state.lockStart[v]||!state.lockDays[v]) return false;
-  return daysRemaining(state.lockStart[v],state.lockDays[v])>0.001;
-}
-function effectiveApr(vault,lockDays){
-  return VAULTS[vault].baseApr*(LOCKS[lockDays]?.mult||1);
-}
-function aprLabel(vault,lockDays){
-  return (effectiveApr(vault,lockDays)*100).toFixed(0)+'% p.a.';
-}
+    // Mobile menu
+    function toggleMenu() {
+      const menu = document.getElementById('mobileMenu');
+      const btn = document.getElementById('hamburger');
+      menu.classList.toggle('open');
+      btn.setAttribute('aria-expanded', menu.classList.contains('open'));
+    }
+    function closeMenu() {
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.getElementById('hamburger').setAttribute('aria-expanded', 'false');
+    }
 
-// ── Wallet ──
-async function connectWallet(){
-  if(!window.ethereum){ alert('No Web3 wallet detected.\n\nInstall MetaMask at metamask.io'); return; }
-  try {
-    var accounts = await window.ethereum.request({method:'eth_requestAccounts'});
-    if(!accounts.length) return;
-    wallet.address  = accounts[0];
-    wallet.provider = new ethers.BrowserProvider(window.ethereum);
-    wallet.signer   = await wallet.provider.getSigner();
-    wallet.connected= true;
-    var chainId = await window.ethereum.request({method:'eth_chainId'});
-    wallet.chainOk  = chainId.toLowerCase()===CHAIN_ID.toLowerCase();
-    wallet.usdc     = new ethers.Contract(CONTRACTS.USDC, USDC_ABI, wallet.signer);
-    wallet.vaults   = {
-      svNG: new ethers.Contract(CONTRACTS.svNG, VAULT_ABI, wallet.signer),
-      svTR: new ethers.Contract(CONTRACTS.svTR, VAULT_ABI, wallet.signer),
-      svAR: new ethers.Contract(CONTRACTS.svAR, VAULT_ABI, wallet.signer),
-    };
-    updateWalletUI();
-    document.getElementById('wallet-banner').classList.add('hidden');
-    await loadChainData();
-    await checkGasBalance();
-    loadOnChainTxHistory();
-    setTimeout(refreshLeaderboard, 1500);
-    setInterval(tickBlock, 3000);
-    setInterval(loadChainData, 20000);
-    window.ethereum.on('accountsChanged', async function(accs){
-      if(!accs.length){ disconnectWallet(); return; }
-      wallet.address=accs[0];
-      wallet.signer=await wallet.provider.getSigner();
-      wallet.usdc=new ethers.Contract(CONTRACTS.USDC,USDC_ABI,wallet.signer);
-      wallet.vaults={
-        svNG:new ethers.Contract(CONTRACTS.svNG,VAULT_ABI,wallet.signer),
-        svTR:new ethers.Contract(CONTRACTS.svTR,VAULT_ABI,wallet.signer),
-        svAR:new ethers.Contract(CONTRACTS.svAR,VAULT_ABI,wallet.signer),
-      };
-      updateWalletUI(); await loadChainData();
+    // Vault tabs
+    function switchTab(tab, btn) {
+      document.querySelectorAll('.vault-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.vault-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + tab).classList.add('active');
+    }
+
+    // FAQ accordion
+    function toggleFaq(el) {
+      const item = el.parentElement;
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    }
+
+    // TVL counter animation
+    function animateCounter(el, target, duration) {
+      let start = 0;
+      const step = target / (duration / 16);
+      const timer = setInterval(() => {
+        start += step;
+        if (start >= target) { start = target; clearInterval(timer); }
+        el.textContent = '$' + Math.floor(start).toLocaleString();
+      }, 16);
+    }
+    setTimeout(() => animateCounter(document.getElementById('tvlCounter'), 512450, 1800), 600);
+
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } });
+    }, { threshold: 0.08 });
+    reveals.forEach(el => observer.observe(el));
+
+    // Active nav link highlight (basic)
+    const sections = document.querySelectorAll('section[id], div[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
+      navLinks.forEach(a => { a.style.color = a.getAttribute('href') === '#' + current ? 'var(--white)' : ''; });
     });
-    window.ethereum.on('chainChanged', function(cid){
-      wallet.chainOk=cid.toLowerCase()===CHAIN_ID.toLowerCase();
-      updateWalletUI();
-    });
-  } catch(e){
-    if(e.code!==4001) console.error(e);
-  }
-}
-
-function disconnectWallet(){
-  wallet={connected:false,address:null,chainOk:false,provider:null,signer:null,usdc:null,vaults:{}};
-  document.getElementById('btn-connect').style.display='block';
-  document.getElementById('wallet-info').classList.remove('show');
-  document.getElementById('wallet-banner').classList.remove('hidden');
-  document.getElementById('gas-banner').style.display='none';
-  state.usdc=0;
-  ['svNG','svTR','svAR'].forEach(function(v){
-    state.deposited[v]=state.balances[v]=state.yieldEarned[v]=state.lockDays[v]=state.tvl[v]=0;
-    state.lockStart[v]=null; state.noticeGiven[v]=false; state.noticeReadyAt[v]=0;
-  });
-  document.getElementById('bal-usdc').textContent='—';
-  document.getElementById('bal-usdc-sub').textContent='Connect wallet';
-  renderPositions(); renderStats(); renderBalances(); updateRedeemPanel();
-}
-
-async function switchNetwork(){
-  try {
-    await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:CHAIN_ID}]});
-  } catch(e){
-    if(e.code===4902){
-      try { await window.ethereum.request({method:'wallet_addEthereumChain',params:[CHAIN_PARAMS]}); }
-      catch(e2){ console.error(e2); }
-    }
-  }
-}
-
-function updateWalletUI(){
-  document.getElementById('btn-connect').style.display='none';
-  document.getElementById('wallet-info').classList.add('show');
-  document.getElementById('wallet-addr').textContent=fmtAddr(wallet.address);
-  var dot=document.getElementById('chain-dot');
-  var nm =document.getElementById('chain-name');
-  var warn=document.getElementById('wrong-net-warn');
-  if(wallet.chainOk){
-    dot.className='chain-dot ok'; nm.textContent='Sepolia Testnet'; warn.classList.remove('show');
-  } else {
-    dot.className='chain-dot wrong'; nm.textContent='Wrong Network'; warn.classList.add('show');
-  }
-}
-
-// ── Load Chain Data ──
-async function loadChainData(){
-  if(!wallet.connected||!wallet.chainOk) return;
-  try {
-    var uRaw=await wallet.usdc.balanceOf(wallet.address);
-    state.usdc=Number(ethers.formatUnits(uRaw,6));
-    for(var v of ['svNG','svTR','svAR']){
-      var pos=await wallet.vaults[v].getPosition(wallet.address);
-      var principal =Number(ethers.formatUnits(pos[0],6));
-      var lockDays  =Number(pos[2]);
-      var aprBps    =Number(pos[3]);
-      var yld       =Number(ethers.formatUnits(pos[4],6));
-      var locked    =pos[5];
-      var daysLeft  =Number(pos[6]);
-      var noticeGiven=pos[7];
-      var noticeReadyAt=Number(pos[8]);
-      var svBal=Number(ethers.formatUnits(await wallet.vaults[v].balanceOf(wallet.address),6));
-      var tvlRaw=await wallet.vaults[v].totalDeposited();
-      state.deposited[v]    =principal;
-      state.balances[v]     =svBal;
-      state.yieldEarned[v]  =yld;
-      state.lockDays[v]     =lockDays;
-      state.effectiveApr[v] =aprBps/10000;
-      state.tvl[v]          =Number(ethers.formatUnits(tvlRaw,6));
-      state.noticeGiven[v]  =noticeGiven;
-      state.noticeReadyAt[v]=noticeReadyAt*1000;
-      if(locked&&lockDays>0){
-        var unlockMs=Date.now()+daysLeft*86400*1000;
-        state.lockStart[v]=unlockMs-lockDays*86400*1000;
-      } else if(!locked&&lockDays>0){
-        state.lockStart[v]=Date.now()-lockDays*86400*1000;
-      } else {
-        state.lockStart[v]=null;
-      }
-    }
-    updateAll();
-  } catch(e){ console.error('loadChainData:', e); }
-}
-
-// ── Gas Check ──
-async function checkGasBalance(){
-  if(!wallet.connected) return;
-  try {
-    var bal=await wallet.provider.getBalance(wallet.address);
-    var eth=parseFloat(ethers.formatEther(bal));
-    document.getElementById('gas-banner').style.display=eth<0.01?'block':'none';
-  } catch(e){}
-}
-
-async function showGasFaucet(){
-  if(!wallet.connected){ connectWallet(); return; }
-  showModal('<div class="success-modal">'+
-    '<div class="success-icon">⛽</div>'+
-    '<div class="success-title">Get Free Sepolia ETH</div>'+
-    '<div class="success-sub">0.02 ETH sent directly to your wallet</div>'+
-    '<div style="background:var(--ink3);border:1px solid var(--border);border-radius:3px;padding:14px;margin-bottom:16px;text-align:left;">'+
-    '<div style="font-family:var(--ff-mono);font-size:.72rem;color:var(--muted);margin-bottom:4px;">Your wallet</div>'+
-    '<div style="font-family:var(--ff-mono);font-size:.6rem;color:var(--gold);word-break:break-all;">'+wallet.address+'</div>'+
-    '</div>'+
-    '<button class="btn btn-gold" id="btn-claim-gas" onclick="claimGasFromFaucet()">Send Me 0.02 ETH</button>'+
-    '<div style="font-family:var(--ff-mono);font-size:.62rem;color:var(--muted);margin-top:10px;">One claim per wallet per 24 hours</div>'+
-    '<button class="btn btn-outline" style="margin-top:8px;" onclick="closeModal()">Cancel</button>'+
-  '</div>');
-}
-
-async function claimGasFromFaucet(){
-  var btn = document.getElementById('btn-claim-gas');
-  if(btn){ btn.disabled=true; btn.textContent='Sending...'; }
-
-  try {
-    var res = await fetch('/api/faucet', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ address: wallet.address })
-    });
-    var data = await res.json();
-
-    if(data.success){
-      showModal('<div class="success-modal fade-in">'+
-        '<div class="success-icon">⛽</div>'+
-        '<div class="success-title">ETH Sent!</div>'+
-        '<div class="success-sub">Gas is on its way to your wallet</div>'+
-        '<div class="success-data">'+
-        '<div class="srow"><span class="sk">Amount</span><span class="sv green">0.02 Sepolia ETH</span></div>'+
-        '<div class="srow"><span class="sk">To</span><span class="sv">'+fmtAddr(wallet.address)+'</span></div>'+
-        '</div>'+
-        '<div class="tx-hash-display">TX: <a href="https://sepolia.etherscan.io/tx/'+data.txHash+'" target="_blank" style="color:var(--gold);">'+maskHash(data.txHash)+'</a></div>'+
-        '<button class="btn btn-outline" style="margin-top:14px;" onclick="closeModal();checkGasBalance();">Close</button>'+
-      '</div>');
-    } else {
-      showModal('<div class="success-modal">'+
-        '<div class="success-icon">⚠</div>'+
-        '<div class="success-title">Not Sent</div>'+
-        '<div class="success-sub" style="color:var(--orange);">'+data.error+'</div>'+
-        '<div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;">'+
-        '<a href="https://faucets.chain.link/sepolia" target="_blank" class="btn btn-outline" style="text-decoration:none;text-align:center;">Try Chainlink Faucet Instead</a>'+
-        '<button class="btn btn-outline" onclick="closeModal()">Close</button>'+
-        '</div>'+
-      '</div>');
-    }
-  } catch(e){
-    showModal('<div class="success-modal">'+
-      '<div class="success-icon">⚠</div>'+
-      '<div class="success-title">Request Failed</div>'+
-      '<div class="success-sub">Please try an external faucet</div>'+
-      '<div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;">'+
-      '<a href="https://faucets.chain.link/sepolia" target="_blank" class="btn btn-outline" style="text-decoration:none;text-align:center;">Chainlink Faucet</a>'+
-      '<a href="https://sepoliafaucet.com" target="_blank" class="btn btn-outline" style="text-decoration:none;text-align:center;">Sepolia Faucet</a>'+
-      '<button class="btn btn-outline" onclick="closeModal()">Close</button>'+
-      '</div>'+
-    '</div>');
-  }
-}
-
-// ── Vault & Lock Selection ──
-function selectVault(v){
-  state.selectedVault=v;
-  document.querySelectorAll('.vault-card').forEach(c=>c.classList.remove('active'));
-  document.querySelector('[data-vault="'+v+'"]').classList.add('active');
-  updateDepositPreview(); updateLockGrid(); updateRedeemPanel();
-}
-
-function selectLock(days){
-  state.selectedLock=days;
-  document.querySelectorAll('.lock-opt').forEach(o=>o.classList.remove('selected'));
-  document.querySelector('[data-days="'+days+'"]').classList.add('selected');
-  updateDepositPreview();
-}
-
-function updateLockGrid(){
-  var v=state.selectedVault;
-  [30,60,90,180,365].forEach(function(d){
-    var el=document.getElementById('lapr-'+d);
-    if(el) el.textContent=aprLabel(v,d);
-  });
-}
-
-// ── Deposit Preview ──
-function updateDepositPreview(){
-  var amt=parseFloat(document.getElementById('deposit-input').value)||0;
-  var v=state.selectedVault; var lock=state.selectedLock;
-  var apr=effectiveApr(v,lock); var daily=amt*apr/365;
-  document.getElementById('dp-vault').textContent=v;
-  document.getElementById('dp-lock').textContent=lock+' days';
-  document.getElementById('dp-apr').textContent=aprLabel(v,lock);
-  document.getElementById('dp-receive').textContent=fmt(amt,2)+' '+v;
-  document.getElementById('dp-daily').textContent=amt>0?'+$'+fmt(daily,4)+' USDC/day':'—';
-  document.getElementById('dp-unlock').textContent=amt>0?addDays(lock):'—';
-  updateLockGrid();
-}
-
-function setDepositMax(){
-  document.getElementById('deposit-input').value=Math.floor(state.usdc);
-  updateDepositPreview();
-}
-
-// ── Redeem Panel ──
-function updateRedeemPanel(){
-  var v=state.selectedVault;
-  var dep=Number(state.deposited[v])||0;
-  var yld=Number(state.yieldEarned[v])||0;
-  var locked=isLocked(v);
-  var noticeGiven=state.noticeGiven[v];
-  var noticeReadyAt=state.noticeReadyAt[v];
-  var noticeReady=noticeGiven&&noticeReadyAt>0&&Date.now()>=noticeReadyAt;
-  var btn=document.getElementById('btn-redeem');
-  var emptyEl=document.getElementById('rp-empty');
-  var dataEl=document.getElementById('rp-data');
-
-  if(dep<=0){
-    emptyEl.style.display='block'; dataEl.style.display='none';
-    btn.disabled=true; btn.textContent='Redeem'; btn.className='btn btn-gold';
-    return;
-  }
-
-  emptyEl.style.display='none'; dataEl.style.display='block';
-  btn.disabled=false;
-
-  var netYield=(yld*0.90); // after 10% protocol fee
-  var vault=VAULTS[v];
-  var fxAmt=Math.round(dep*vault.fxRate/100);
-
-  document.getElementById('rp-principal').textContent='$'+fmt(dep,2)+' USDC';
-  document.getElementById('rp-fx').textContent=fxAmt.toLocaleString()+' '+vault.fxSymbol;
-  document.getElementById('rp-yield').innerHTML='+$'+fmt(netYield,6)+' <span style="font-size:.72rem;color:var(--muted);">after taxes</span>';
-
-  var statusEl=document.getElementById('rp-status');
-  var noticeBar=document.getElementById('notice-bar');
-
-  if(!locked){
-    statusEl.textContent='Matured ✓'; statusEl.style.color='var(--green)';
-    btn.textContent='Redeem — No Penalty'; btn.className='btn btn-gold';
-    noticeBar.className='notice-bar';
-  } else if(noticeReady){
-    statusEl.textContent='Notice served ✓'; statusEl.style.color='var(--green)';
-    btn.textContent='Redeem — 2.5% Fee'; btn.className='btn btn-outline';
-    noticeBar.className='notice-bar ready';
-    noticeBar.textContent='✓ 10-day notice complete — redeem at 2.5% fee';
-  } else if(noticeGiven){
-    var dLeft=Math.max(1,Math.ceil((noticeReadyAt-Date.now())/86400000));
-    statusEl.textContent=fmt(daysRemaining(state.lockStart[v],state.lockDays[v]),0)+'d remaining';
-    statusEl.style.color='var(--orange)';
-    btn.textContent='Redeem'; btn.className='btn btn-gold';
-    noticeBar.className='notice-bar active';
-    noticeBar.textContent='⏳ Notice active — '+dLeft+' day(s) until 2.5% exit available';
-  } else {
-    statusEl.textContent=fmt(daysRemaining(state.lockStart[v],state.lockDays[v]),0)+'d remaining';
-    statusEl.style.color='var(--orange)';
-    btn.textContent='Redeem'; btn.className='btn btn-gold';
-    noticeBar.className='notice-bar';
-  }
-}
-
-// ── Handle Redeem Click ──
-function handleRedeemClick(){
-  if(!wallet.connected){ connectWallet(); return; }
-  var v=state.selectedVault;
-  var dep=Number(state.deposited[v])||0;
-  if(dep<=0){ alert('No active position to redeem.'); return; }
-  var locked=isLocked(v);
-  var noticeGiven=state.noticeGiven[v];
-  var noticeReady=noticeGiven&&Date.now()>=state.noticeReadyAt[v];
-  if(!locked||noticeReady){ doRedeem(); return; }
-  showExitOptionsModal(v,dep);
-}
-
-function showExitOptionsModal(v,dep){
-  var yld=Number(state.yieldEarned[v])||0;
-  var netYield=yld*0.90;
-  var rem=daysRemaining(state.lockStart[v],state.lockDays[v]);
-  var immedPenalty=dep*0.05; var noticePenalty=dep*0.025;
-  var immedNet=(dep-immedPenalty)+netYield;
-  var noticeNet=(dep-noticePenalty)+netYield;
-
-  var html='<div class="exit-modal">'+
-    '<div class="exit-warning">'+
-      '<div style="font-size:1.5rem;margin-bottom:8px;">⚠</div>'+
-      '<div style="font-family:var(--ff-serif);font-size:1.25rem;color:var(--white);margin-bottom:6px;">Vault Not Matured</div>'+
-      '<div style="font-family:var(--ff-mono);font-size:.70rem;color:var(--muted);line-height:1.8;">Your <strong style="color:var(--gold);">'+v+'</strong> vault matures in <strong style="color:var(--orange);">'+fmt(rem,0)+' days</strong>.<br>Exiting early incurs a fee on your principal.</div>'+
-    '</div>'+
-    '<div class="exit-options">'+
-
-    '<div class="exit-opt immediate" onclick="closeModal();doRedeem();">'+
-      '<div class="exit-opt-label">Immediate Exit</div>'+
-      '<div class="exit-opt-pct">5%</div>'+
-      '<div class="exit-opt-desc">fee on principal</div>'+
-      '<div class="exit-opt-receive">You receive<strong>$'+fmt(immedNet,2)+'</strong></div>'+
-    '</div>'+
-
-    '<div class="exit-opt notice" onclick="closeModal();doGiveNotice();">'+
-      '<div class="exit-opt-label">10-Day Notice</div>'+
-      '<div class="exit-opt-pct">2.5%</div>'+
-      '<div class="exit-opt-desc">fee on principal</div>'+
-      '<div class="exit-opt-receive">You receive<strong>$'+fmt(noticeNet,2)+'</strong></div>'+
-    '</div>'+
-
-    '<div class="exit-opt disabled">'+
-      '<div class="exit-opt-label">OTC Exit</div>'+
-      '<div class="exit-opt-pct" style="color:var(--muted);">0%</div>'+
-      '<div class="exit-opt-desc" style="visibility:hidden;">—</div>'+
-      '<div class="coming-soon">Coming Soon</div>'+
-    '</div>'+
-
-    '</div>'+
-    '<button class="btn btn-outline" onclick="closeModal()">Cancel — Keep Position</button>'+
-  '</div>';
-  showModal(html);
-}
-
-// ── Give Notice ──
-async function doGiveNotice(){
-  if(!wallet.connected) return;
-  var v=state.selectedVault;
-  showModal(buildProcessing('Recording 10-Day Notice',[
-    'Signing transaction','Recording on-chain','Notice period started'
-  ]));
-  try {
-    var steps=document.querySelectorAll('#modal-body .proc-step');
-    steps[0].classList.add('active');
-    var tx=await wallet.vaults[v].giveNotice();
-    steps[0].classList.remove('active'); steps[0].classList.add('done');
-    steps[1].classList.add('active');
-    await tx.wait();
-    steps[1].classList.remove('active'); steps[1].classList.add('done');
-    steps[2].classList.add('active'); steps[2].classList.remove('active'); steps[2].classList.add('done');
-    await loadChainData();
-    showModal('<div class="success-modal fade-in">'+
-      '<div class="success-icon">⏳</div>'+
-      '<div class="success-title">Notice Recorded</div>'+
-      '<div class="success-sub">10-day period has started</div>'+
-      '<div class="success-data">'+
-      '<div class="srow"><span class="sk">Notice Given</span><span class="sv">Now</span></div>'+
-      '<div class="srow"><span class="sk">Can Withdraw From</span><span class="sv gold">'+new Date(Date.now()+10*86400*1000).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+'</span></div>'+
-      '<div class="srow"><span class="sk">Exit Fee</span><span class="sv orange">2.5% of principal</span></div>'+
-      '</div>'+
-      '<button class="btn btn-outline" style="margin-top:14px;" onclick="closeModal()">Close</button></div>');
-  } catch(e){
-    closeModal();
-    if(e.code!==4001) alert('Failed: '+(e.reason||e.message));
-  }
-}
-
-// ── Deposit ──
-async function doDeposit(){
-  if(!wallet.connected){ connectWallet(); return; }
-  var amt=parseFloat(document.getElementById('deposit-input').value);
-  if(!amt||amt<=0){ alert('Enter an amount.'); return; }
-  if(amt>state.usdc){ alert('Insufficient USDC balance.'); return; }
-  var v=state.selectedVault; var lock=state.selectedLock;
-  var apr=effectiveApr(v,lock);
-  var amtRaw=ethers.parseUnits(amt.toString(),6);
-
-  showModal(buildProcessing('Depositing to '+v,[
-    'Approving USDC','Approval confirmed','Depositing to vault','Minting '+v+' tokens','Position opened'
-  ]));
-
-  try {
-    var steps=document.querySelectorAll('#modal-body .proc-step');
-    steps[0].classList.add('active');
-    var appTx=await wallet.usdc.approve(CONTRACTS[v],amtRaw);
-    await appTx.wait();
-    steps[0].classList.remove('active'); steps[0].classList.add('done');
-    steps[1].classList.add('active'); steps[1].classList.remove('active'); steps[1].classList.add('done');
-    steps[2].classList.add('active');
-    var depTx=await wallet.vaults[v].deposit(amtRaw,lock);
-    var receipt=await depTx.wait();
-    steps[2].classList.remove('active'); steps[2].classList.add('done');
-    steps[3].classList.add('active'); steps[3].classList.remove('active'); steps[3].classList.add('done');
-    steps[4].classList.add('active'); steps[4].classList.remove('active'); steps[4].classList.add('done');
-    logTx('deposit',v,'$'+fmt(amt,2)+' USDC',receipt.hash);
-    await loadChainData();
-    document.getElementById('deposit-input').value='';
-    showTab('portfolio'); // switch to portfolio so user sees their position
-    showModal('<div class="success-modal fade-in">'+
-      '<div class="success-icon">✦</div>'+
-      '<div class="success-title">Deposit Confirmed</div>'+
-      '<div class="success-sub">svTokens minted · lock started</div>'+
-      '<div class="success-data">'+
-      '<div class="srow"><span class="sk">Deposited</span><span class="sv">$'+fmt(amt,2)+' USDC</span></div>'+
-      '<div class="srow"><span class="sk">Received</span><span class="sv gold">'+fmt(amt,2)+' '+v+'</span></div>'+
-      '<div class="srow"><span class="sk">APR</span><span class="sv green">'+aprLabel(v,lock)+'</span></div>'+
-      '<div class="srow"><span class="sk">Lock Period</span><span class="sv">'+lock+' days</span></div>'+
-      '<div class="srow"><span class="sk">Unlock Date</span><span class="sv">'+addDays(lock)+'</span></div>'+
-      '</div>'+
-      '<div class="tx-hash-display">TX: '+maskHash(receipt.hash)+' · Sepolia</div>'+
-      '<button class="btn btn-outline" style="margin-top:14px;" onclick="closeModal()">Close</button></div>');
-  } catch(e){
-    closeModal();
-    if(e.code!==4001) alert('Deposit failed: '+(e.reason||e.message));
-  }
-}
-
-// ── Redeem ──
-async function doRedeem(){
-  if(!wallet.connected) return;
-  var v=state.selectedVault;
-  var principal=Number(state.deposited[v])||0;
-  var yld=Number(state.yieldEarned[v])||0;
-  var locked=isLocked(v);
-  var noticeGiven=state.noticeGiven[v];
-  var noticeReady=noticeGiven&&Date.now()>=state.noticeReadyAt[v];
-  if(principal<=0){ alert('No active position.'); return; }
-
-  var yieldFee=yld*0.10; var netYield=yld-yieldFee;
-  var penFrac=locked?(noticeReady?0.025:0.05):0;
-  var penAmt=principal*penFrac;
-  var netOut=(principal-penAmt)+netYield;
-  var exitLabel=!locked?'Matured':noticeReady?'10-Day Notice':'Immediate Exit';
-
-  showModal(buildProcessing('Redeeming '+v+' — '+exitLabel,[
-    'Signing transaction','Burning '+v+' tokens','Calculating fees','Releasing USDC','Settlement complete'
-  ]));
-
-  try {
-    var steps=document.querySelectorAll('#modal-body .proc-step');
-    steps[0].classList.add('active');
-    var tx=await wallet.vaults[v].redeem();
-    steps[0].classList.remove('active'); steps[0].classList.add('done');
-    steps[1].classList.add('active');
-    var receipt=await tx.wait();
-    for(var i=1;i<5;i++){
-      steps[i].classList.remove('active'); steps[i].classList.add('done');
-      if(i+1<5) steps[i+1].classList.add('active');
-      await new Promise(r=>setTimeout(r,300));
-    }
-    logTx(locked?'penalty':'redeem',v,'$'+fmt(netOut,4)+' USDC',receipt.hash);
-    await loadChainData();
-    showModal('<div class="success-modal fade-in">'+
-      '<div class="success-icon">'+(locked?'⚠':'◎')+'</div>'+
-      '<div class="success-title">Redemption Complete</div>'+
-      '<div class="success-sub">USDC returned to your wallet</div>'+
-      '<div class="success-data">'+
-      '<div class="srow"><span class="sk">Principal</span><span class="sv">$'+fmt(principal,2)+' USDC</span></div>'+
-      '<div class="srow"><span class="sk">Net Yield</span><span class="sv green">+$'+fmt(netYield,6)+' USDC <span style="font-size:.72rem;color:var(--muted);">after taxes</span></span></div>'+
-      (penAmt>0?'<div class="srow"><span class="sk">Early Exit Fee</span><span class="sv orange">-$'+fmt(penAmt,4)+' USDC ('+exitLabel+')</span></div>':'')+
-      '<div class="srow"><span class="sk">You Received</span><span class="sv gold">$'+fmt(netOut,4)+' USDC</span></div>'+
-      '</div>'+
-      '<div class="tx-hash-display">TX: '+maskHash(receipt.hash)+' · Sepolia</div>'+
-      '<button class="btn btn-outline" style="margin-top:14px;" onclick="closeModal()">Close</button></div>');
-  } catch(e){
-    closeModal();
-    if(e.code!==4001) alert('Redemption failed: '+(e.reason||e.message));
-  }
-}
-
-// ── Daily Faucet ──
-async function claimDailyFaucet(){
-  if(!wallet.connected){ connectWallet(); return; }
-  var key='sovra_faucet_'+wallet.address.toLowerCase();
-  var last=parseInt(localStorage.getItem(key)||'0');
-  if(Date.now()-last<86400000){
-    var h=Math.ceil((86400000-(Date.now()-last))/3600000);
-    alert('Already claimed. Come back in '+h+' hour(s).'); return;
-  }
-  var btn=document.getElementById('btn-daily-faucet');
-  btn.textContent='Claiming...';
-  try {
-    var tx=await wallet.usdc.faucet();
-    await tx.wait();
-    localStorage.setItem(key,Date.now().toString());
-    await loadChainData();
-    btn.textContent='Claimed ✓';
-    setTimeout(function(){ btn.textContent='+ Claim Daily 10,000 USDC'; },3000);
-  } catch(e){
-    btn.textContent='+ Claim Daily 10,000 USDC';
-    if(e.code!==4001) alert('Faucet failed: '+(e.reason||e.message));
-  }
-}
-
-// ── Leaderboard ──
-var statWindowDays = 7;
-
-function setStatWindow(days){
-  statWindowDays = days;
-  [7,14,30].forEach(function(d){
-    var btn = document.getElementById('sw-'+d);
-    if(!btn) return;
-    if(d===days){
-      btn.style.background='var(--gold-bg)'; btn.style.borderColor='var(--gold)'; btn.style.color='var(--gold)';
-    } else {
-      btn.style.background='none'; btn.style.borderColor='var(--border)'; btn.style.color='var(--muted2)';
-    }
-  });
-  refreshLeaderboard();
-}
-
-async function refreshLeaderboard(){
-  var dEl=document.getElementById('lb-depositors');
-  var yEl=document.getElementById('lb-yield');
-  if(!dEl||!yEl) return;
-  dEl.innerHTML='<div class="lb-empty">Loading...</div>';
-  yEl.innerHTML='<div class="lb-empty">Loading...</div>';
-
-  try {
-    var pub = new ethers.JsonRpcProvider('https://rpc.sepolia.org');
-    var pubVaults = {
-      svNG: new ethers.Contract(CONTRACTS.svNG, VAULT_ABI, pub),
-      svTR: new ethers.Contract(CONTRACTS.svTR, VAULT_ABI, pub),
-      svAR: new ethers.Contract(CONTRACTS.svAR, VAULT_ABI, pub),
-    };
-
-    var now       = Math.floor(Date.now()/1000);
-    var windowSec = statWindowDays * 86400;
-    var cutoff    = now - windowSec;
-
-    var depositors     = {};  // addr -> total deposited ever
-    var depositWindow  = 0;   // $ deposited in window
-    var depositCount   = 0;
-    var withdrawWindow = 0;
-    var withdrawCount  = 0;
-    var yieldWindow    = 0;
-    var vaultTvl       = { svNG:0, svTR:0, svAR:0 };
-    var vaultDeps      = { svNG:new Set(), svTR:new Set(), svAR:new Set() };
-    var activeWallets  = new Set();
-
-    for(var v of ['svNG','svTR','svAR']){
-      try {
-        // Deposit events
-        var depFilter = pubVaults[v].filters.Deposited();
-        var depEvents = await pubVaults[v].queryFilter(depFilter, -100000);
-        for(var e of depEvents){
-          var addr  = e.args[0].toLowerCase();
-          var amt   = Number(ethers.formatUnits(e.args[1],6));
-          var block = await pub.getBlock(e.blockNumber);
-          var ts    = block ? block.timestamp : 0;
-          depositors[addr] = (depositors[addr]||0) + amt;
-          vaultDeps[v].add(addr);
-          activeWallets.add(addr);
-          if(ts >= cutoff){
-            depositWindow += amt;
-            depositCount++;
-          }
-        }
-
-        // Redeem events
-        var redFilter = pubVaults[v].filters.Redeemed();
-        var redEvents = await pubVaults[v].queryFilter(redFilter, -100000);
-        for(var e of redEvents){
-          var block = await pub.getBlock(e.blockNumber);
-          var ts    = block ? block.timestamp : 0;
-          var net   = Number(ethers.formatUnits(e.args[5],6));
-          var yFee  = Number(ethers.formatUnits(e.args[3],6));
-          if(ts >= cutoff){
-            withdrawWindow += net;
-            withdrawCount++;
-            yieldWindow += yFee * 10; // fee is 10%, reverse to get gross
-          }
-        }
-
-        // TVL
-        var tvlRaw = await pubVaults[v].totalDeposited();
-        vaultTvl[v] = Number(ethers.formatUnits(tvlRaw,6));
-
-      } catch(err){ console.log('LB error', v, err.message); }
-    }
-
-    // Protocol stats
-    var totalTvl = vaultTvl.svNG + vaultTvl.svTR + vaultTvl.svAR;
-    var maxTvl   = Math.max(vaultTvl.svNG, vaultTvl.svTR, vaultTvl.svAR, 1);
-
-    var dw = document.getElementById('stat-deposits-window');
-    var ww = document.getElementById('stat-withdrawals-window');
-    var tw = document.getElementById('stat-tvl-window');
-    var yw = document.getElementById('stat-yield-window');
-    var dc = document.getElementById('stat-deposits-count');
-    var wc = document.getElementById('stat-withdrawals-count');
-    var au = document.getElementById('stat-active-users');
-
-    if(dw) dw.textContent = '$'+fmt(depositWindow,2);
-    if(ww) ww.textContent = '$'+fmt(withdrawWindow,2);
-    if(tw) tw.textContent = '$'+fmt(totalTvl,2);
-    if(yw) yw.textContent = '$'+fmt(yieldWindow,4);
-    if(dc) dc.textContent = depositCount+' transactions';
-    if(wc) wc.textContent = withdrawCount+' transactions';
-    if(au) au.textContent = activeWallets.size+' active wallets';
-
-    // Vault performance bars
-    for(var v of ['svNG','svTR','svAR']){
-      var tvlEl  = document.getElementById('vp-tvl-'+v);
-      var depEl2 = document.getElementById('vp-deps-'+v);
-      var barEl  = document.getElementById('vp-bar-'+v);
-      if(tvlEl)  tvlEl.textContent  = '$'+fmt(vaultTvl[v],2);
-      if(depEl2) depEl2.textContent = vaultDeps[v].size+' depositor'+(vaultDeps[v].size!==1?'s':'');
-      if(barEl)  barEl.style.width  = Math.round((vaultTvl[v]/maxTvl)*100)+'%';
-    }
-
-    // Yield earned per depositor (use on-chain getYieldEarned)
-    var yielders = {};
-    for(var addr of Object.keys(depositors)){
-      var total = 0;
-      for(var v of ['svNG','svTR','svAR']){
-        try { var y=await pubVaults[v].getYieldEarned(addr); total+=Number(ethers.formatUnits(y,6)); } catch(e){}
-      }
-      if(total>0) yielders[addr]=total;
-    }
-
-    function lbRow(addr,amt,rank,suffix,color){
-      var medal=rank===0?'🥇':rank===1?'🥈':rank===2?'🥉':'·';
-      var isMe=wallet.address&&addr===wallet.address.toLowerCase();
-      return '<div class="lb-row">'+
-        '<span class="lb-medal">'+medal+'</span>'+
-        '<span class="lb-addr'+(isMe?' me':'')+'">'+addr.slice(0,6)+'...'+addr.slice(-4)+(isMe?' (you)':'')+'</span>'+
-        '<span class="lb-amt" style="color:'+(color||'var(--white)')+';">$'+fmt(amt,2)+(suffix||'')+'</span>'+
-      '</div>';
-    }
-
-    var topDep=Object.entries(depositors).sort((a,b)=>b[1]-a[1]).slice(0,5);
-    var topYld=Object.entries(yielders).sort((a,b)=>b[1]-a[1]).slice(0,5);
-
-    dEl.innerHTML=topDep.length?topDep.map((e,i)=>lbRow(e[0],e[1],i,'','var(--white)')).join(''):'<div class="lb-empty">No deposits yet — be first!</div>';
-    yEl.innerHTML=topYld.length?topYld.map((e,i)=>lbRow(e[0],e[1],i,' yield','var(--green)')).join(''):'<div class="lb-empty">No yield earned yet</div>';
-
-  } catch(e){
-    dEl.innerHTML='<div class="lb-empty">Failed to load — try refreshing</div>';
-    yEl.innerHTML='<div class="lb-empty">Failed to load — try refreshing</div>';
-    console.error('Leaderboard error:', e);
-  }
-}
-
-// ── Modal ──
-function showModal(html){ document.getElementById('modal-body').innerHTML=html; document.getElementById('modal').classList.add('open'); }
-function closeModal(){ document.getElementById('modal').classList.remove('open'); }
-function buildProcessing(title,steps){
-  return '<div class="processing"><div class="proc-spinner"></div>'+
-    '<div class="proc-title">'+title+'</div>'+
-    '<div class="proc-sub">Confirming on Sepolia...</div>'+
-    '<div class="proc-steps">'+
-    steps.map(s=>'<div class="proc-step"><div class="proc-dot"></div>'+s+'</div>').join('')+
-    '</div></div>';
-}
-
-// ── Render ──
-function renderPositions(){
-  var tbody=document.getElementById('positions-body');
-  var rows=[];
-  ['svNG','svTR','svAR'].forEach(function(v){
-    var dep=Number(state.deposited[v])||0;
-    if(dep<=0) return;
-    var vault=VAULTS[v];
-    var yld=Number(state.yieldEarned[v])||0;
-    var netYield=yld*0.90;
-    var curVal=dep+netYield;
-    var apr=Number(state.effectiveApr[v])||vault.baseApr;
-    var locked=isLocked(v);
-    var prog=lockProgress(state.lockStart[v],state.lockDays[v]);
-    var rem=daysRemaining(state.lockStart[v],state.lockDays[v]);
-    var status=locked
-      ?'<span style="font-family:var(--ff-mono);font-size:.62rem;color:var(--orange);background:var(--orange-dim);border:1px solid rgba(232,146,74,.3);padding:2px 7px;border-radius:2px;">LOCKED·'+fmt(rem,0)+'d</span>'
-      :'<span style="font-family:var(--ff-mono);font-size:.62rem;color:var(--green);background:var(--green-dim);border:1px solid rgba(46,203,143,.2);padding:2px 7px;border-radius:2px;">UNLOCKED</span>';
-    var action='<button class="btn '+(locked?'btn-orange':'btn-outline')+'" style="width:auto;padding:4px 10px;font-size:.60rem;" onclick="selectVault(\''+v+'\');handleRedeemClick();">'+(locked?'Exit':'Redeem')+'</button>';
-    var progress='<div class="lock-progress-wrap"><div class="lock-progress-bar"><div class="lock-progress-fill" style="width:'+Math.round(prog*100)+'%"></div></div><div class="lock-progress-label"><span>'+Math.round(prog*100)+'%</span><span>'+state.lockDays[v]+'d</span></div></div>';
-    rows.push('<tr>'+
-      '<td><span class="pos-ticker">'+vault.flag+' '+v+'</span></td>'+
-      '<td><span class="pos-amount">$'+fmt(dep,2)+'</span></td>'+
-      '<td><span class="pos-amount">$'+fmt(curVal,4)+'</span></td>'+
-      '<td><span class="pos-yield">+$'+fmt(netYield,6)+'</span></td>'+
-      '<td><span style="font-family:var(--ff-mono);font-size:.66rem;color:var(--green);">'+(apr*100).toFixed(0)+'%</span></td>'+
-      '<td>'+progress+'</td>'+
-      '<td>'+status+'</td>'+
-      '<td>'+action+'</td>'+
-    '</tr>');
-  });
-  tbody.innerHTML=rows.length?rows.join(''):'<tr><td colspan="8" class="pos-empty">'+(wallet.connected?'No positions yet. Deposit USDC to get started.':'Connect wallet to see positions.')+'</td></tr>';
-}
-
-function renderBalances(){
-  if(!wallet.connected) return;
-  document.getElementById('bal-usdc').textContent=fmt(state.usdc,2);
-  document.getElementById('bal-usdc-sub').textContent='≈ $'+fmt(state.usdc,0);
-  ['svNG','svTR','svAR'].forEach(function(v){
-    var key=VAULTS[v].balKey;
-    var bal=Number(state.balances[v])||0;
-    var yld=Number(state.yieldEarned[v])||0;
-    document.getElementById('bal-'+key+'-row').style.display=bal>0.001?'flex':'none';
-    document.getElementById('bal-'+key).textContent=fmt(bal,2);
-    document.getElementById('bal-'+key+'-yield').textContent=yld>0?'+$'+fmt(yld,6)+' earned':'';
-  });
-}
-
-function renderStats(){
-  var tp=0,ty=0,tvl=0;
-  ['svNG','svTR','svAR'].forEach(function(v){
-    tp+=(Number(state.deposited[v])||0)+(Number(state.yieldEarned[v])||0)*0.90;
-    ty+=Number(state.yieldEarned[v])||0;
-    tvl+=Number(state.tvl[v])||0;
-  });
-  var stEl=document.getElementById('stat-total');
-  var ssEl=document.getElementById('stat-total-sub');
-  var syEl=document.getElementById('stat-yield');
-  var tvEl=document.getElementById('stat-tvl');
-  var ylEl=document.getElementById('yield-label');
-  if(stEl) stEl.textContent=fmtShort(tp);
-  if(ssEl) ssEl.textContent=tp>0?'Active positions':'No active positions';
-  if(syEl) syEl.textContent='$'+fmt(ty,6);
-  if(tvEl) tvEl.textContent=fmtShort(tvl);
-  if(ylEl&&ty>0) ylEl.textContent='Yield accruing on-chain';
-  ['svNG','svTR','svAR'].forEach(function(v){
-    var el=document.getElementById('tvl-'+v);
-    if(el) el.textContent='TVL: '+fmtShort(state.tvl[v]);
-  });
-}
-
-function renderTxLog(){
-  var el=document.getElementById('tx-list');
-  if(!state.txLog.length){ el.innerHTML='<div class="tx-empty">No transactions yet</div>'; return; }
-  el.innerHTML=state.txLog.map(function(tx){
-    return '<div class="tx-item">'+
-      '<span class="tx-type '+tx.type+'">'+tx.type+'</span>'+
-      '<a class="tx-hash-link" href="https://sepolia.etherscan.io/tx/'+tx.hash+'" target="_blank">'+maskHash(tx.hash)+'</a>'+
-      '<span style="font-family:var(--ff-mono);font-size:.70rem;color:var(--text);">'+tx.amount+'</span>'+
-      '<span style="font-family:var(--ff-mono);font-size:.65rem;color:var(--gold);flex-shrink:0;">'+tx.vault+'</span>'+
-      '<span style="font-family:var(--ff-mono);font-size:.60rem;color:var(--muted);flex-shrink:0;">'+timeAgo(tx.time)+'</span>'+
-    '</div>';
-  }).join('');
-}
-
-function logTx(type,vault,amount,hash){
-  state.txLog.unshift({type,vault,amount,hash:hash||randHash(),time:Date.now()});
-  if(state.txLog.length>30) state.txLog.pop();
-}
-
-function tickBlock(){
-  state.blockNum+=Math.floor(Math.random()*3)+1;
-  document.getElementById('block-num').textContent=state.blockNum.toLocaleString();
-}
-
-function updateAll(){
-  renderBalances(); renderStats(); renderPositions(); renderTxLog(); updateRedeemPanel();
-}
-
-// ── Tab Navigation ──
-function showTab(tab){
-  ['vaults','portfolio','analytics'].forEach(function(t){
-    var content = document.getElementById('tab-'+t+'-content');
-    var btn     = document.getElementById('tab-'+t);
-    if(content) content.style.display = t===tab ? 'block' : 'none';
-    if(btn){
-      btn.style.borderBottomColor = t===tab ? 'var(--gold)' : 'transparent';
-      btn.style.color = t===tab ? 'var(--gold)' : 'var(--muted2)';
-    }
-  });
-  // Refresh leaderboard when activity tab opened
-  if(tab==='community') refreshLeaderboard();
-}
-
-// ── FX Rates from CoinGecko ──
-async function fetchFxRates(){
-  try {
-    var res = await fetch(
-      'https://api.coingecko.com/api/v3/simple/price?ids=usd-coin&vs_currencies=ngn,try,ars',
-      { headers: { 'Accept': 'application/json' } }
-    );
-    var data = await res.json();
-    var rates = data['usd-coin'];
-    if(!rates) return;
-
-    // Update VAULTS config with live rates (stored as rate * 100 for contract)
-    if(rates.ngn) VAULTS.svNG.fxRate = Math.round(rates.ngn * 100);
-    if(rates.try) VAULTS.svTR.fxRate = Math.round(rates.try * 100);
-    if(rates.ars) VAULTS.svAR.fxRate = Math.round(rates.ars * 100);
-
-    // Update vault card display
-    var ngn = rates.ngn ? Math.round(rates.ngn).toLocaleString() : '1,350';
-    var try_ = rates.try ? rates.try.toFixed(1) : '45';
-    var ars  = rates.ars ? Math.round(rates.ars).toLocaleString() : '1,400';
-
-    // Update vault cards
-    var cards = document.querySelectorAll('.vc-meta');
-    cards.forEach(function(el){
-      if(el.textContent.includes('NGN')) el.textContent = '1 USDC = ' + ngn + ' NGN';
-      if(el.textContent.includes('TRY')) el.textContent = '1 USDC = ' + try_ + ' TRY';
-      if(el.textContent.includes('ARS')) el.textContent = '1 USDC = ' + ars + ' ARS';
-    });
-
-    // Update ticker
-    var tickerItems = document.querySelectorAll('.ticker-item');
-    tickerItems.forEach(function(el){
-      if(el.textContent.includes('NGN')) el.innerHTML = '1 USDC = <strong>' + ngn + ' NGN</strong>';
-      if(el.textContent.includes('TRY')) el.innerHTML = '1 USDC = <strong>' + try_ + ' TRY</strong>';
-      if(el.textContent.includes('ARS')) el.innerHTML = '1 USDC = <strong>' + ars + ' ARS</strong>';
-    });
-
-    // Update redeem panel FX if visible
-    updateRedeemPanel();
-
-    console.log('FX rates updated: NGN=' + ngn + ' TRY=' + try_ + ' ARS=' + ars);
-  } catch(e){
-    console.log('FX rate fetch failed, using defaults:', e.message);
-  }
-}
-
-// ── Init ──
-updateDepositPreview();
-updateLockGrid();
-fetchFxRates();
-setInterval(fetchFxRates, 5 * 60 * 1000); // refresh every 5 minutes
-refreshLeaderboard(); // load on page open — no wallet needed
-setInterval(refreshLeaderboard, 60 * 1000); // refresh every 60 seconds
-</script>
+  </script>
 </body>
 </html>
