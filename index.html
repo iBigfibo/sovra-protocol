@@ -551,6 +551,152 @@
     .faq-a-inner { padding-bottom: 22px; font-size: 14.5px; line-height: 1.75; color: var(--muted); font-weight: 300; }
     .faq-a-inner strong { color: var(--white); font-weight: 500; }
 
+    /* ----- WHITEPAPER SECTION ----- */
+    #whitepaper {
+      padding: 100px 0;
+      background: var(--navy2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .whitepaper-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 40px;
+    }
+    .whitepaper-toc {
+      position: sticky;
+      top: 100px;
+      align-self: start;
+      background: var(--navy3);
+      border: 1px solid var(--border2);
+      border-radius: 16px;
+      padding: 24px;
+    }
+    .whitepaper-toc-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+    .whitepaper-toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .whitepaper-toc-list a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      padding: 6px 0;
+      display: block;
+      border-bottom: 1px solid var(--border);
+      transition: color 0.2s;
+    }
+    .whitepaper-toc-list a:hover { color: var(--white); }
+    .whitepaper-toc-list a.active { color: var(--gold2); border-bottom-color: var(--gold2); }
+    .whitepaper-content {
+      background: var(--navy);
+      border: 1px solid var(--border2);
+      border-radius: 20px;
+      padding: 40px;
+    }
+    .wp-section {
+      margin-bottom: 48px;
+    }
+    .wp-section:last-child { margin-bottom: 0; }
+    .wp-section h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      color: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .wp-section h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 600;
+      margin: 28px 0 16px;
+      color: var(--gold2);
+    }
+    .wp-section p {
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--muted);
+      margin-bottom: 16px;
+      font-weight: 300;
+    }
+    .wp-section ul, .wp-section ol {
+      margin-left: 24px;
+      margin-bottom: 16px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.75;
+    }
+    .wp-section li { margin-bottom: 8px; }
+    .wp-highlight {
+      background: rgba(201,168,76,0.08);
+      border-left: 3px solid var(--gold);
+      padding: 16px 20px;
+      border-radius: 0 8px 8px 0;
+      margin: 20px 0;
+      font-style: italic;
+    }
+    .wp-callout {
+      background: var(--navy3);
+      border: 1px solid var(--border2);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 24px 0;
+    }
+    .wp-callout-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+    .wp-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    .wp-table th, .wp-table td {
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      text-align: left;
+      font-size: 14px;
+    }
+    .wp-table th {
+      background: var(--navy3);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 400;
+    }
+    .wp-table td { color: var(--white); }
+    .wp-badge {
+      display: inline-block;
+      background: rgba(201,168,76,0.15);
+      color: var(--gold2);
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      padding: 2px 10px;
+      border-radius: 100px;
+      border: 1px solid var(--border2);
+    }
+    @media (max-width: 900px) {
+      .whitepaper-grid { grid-template-columns: 1fr; }
+      .whitepaper-toc { position: static; }
+    }
+
     /* CTA */
     .cta-section { padding: 100px 0; text-align: center; position: relative; overflow: hidden; }
     .cta-orb {
@@ -629,9 +775,9 @@
       <li><a href="#how-it-works">How It Works</a></li>
       <li><a href="#launch-app">Vaults</a></li>
       <li><a href="#competitive">Compare</a></li>
+      <li><a href="#whitepaper">Whitepaper</a></li>
       <li><a href="#faq">FAQ</a></li>
       <li><a href="https://blog.sovraprotocol.xyz" target="_blank" rel="noopener">Blog</a></li>
-      <li><a href="https://docs.sovraprotocol.xyz" target="_blank" rel="noopener">Docs</a></li>
     </ul>
     <div class="nav-right">
       <a class="btn-twitter" href="https://x.com/Sovra_Protocol" target="_blank" rel="noopener" aria-label="Twitter / X">
@@ -650,9 +796,9 @@
     <a href="#how-it-works" onclick="closeMenu()">How It Works</a>
     <a href="#launch-app" onclick="closeMenu()">Vaults</a>
     <a href="#competitive" onclick="closeMenu()">Compare</a>
+    <a href="#whitepaper" onclick="closeMenu()">Whitepaper</a>
     <a href="#faq" onclick="closeMenu()">FAQ</a>
     <a href="https://blog.sovraprotocol.xyz" target="_blank" rel="noopener">Blog</a>
-    <a href="https://docs.sovraprotocol.xyz" target="_blank" rel="noopener">Docs</a>
     <a href="https://x.com/Sovra_Protocol" target="_blank" rel="noopener">Twitter / X</a>
     <a href="#launch-app" onclick="closeMenu()" style="color:var(--gold2);font-weight:600;">Launch App →</a>
   </div>
@@ -925,6 +1071,153 @@
     </div>
   </section>
 
+  <!-- Whitepaper Section -->
+  <section id="whitepaper">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="tag-label">Official Documentation</span>
+        <h2 class="section-h2">Sovra Protocol Whitepaper</h2>
+        <p class="section-sub">A comprehensive guide to the first permissionless protocol for onchain emerging market sovereign bond yields.</p>
+      </div>
+      <div class="whitepaper-grid">
+        <div class="whitepaper-toc reveal">
+          <div class="whitepaper-toc-title">Contents</div>
+          <ul class="whitepaper-toc-list">
+            <li><a href="#wp-intro" class="toc-link">1. Introduction</a></li>
+            <li><a href="#wp-problem" class="toc-link">2. The Problem</a></li>
+            <li><a href="#wp-solution" class="toc-link">3. The Sovra Solution</a></li>
+            <li><a href="#wp-architecture" class="toc-link">4. Architecture</a></li>
+            <li><a href="#wp-vaults" class="toc-link">5. Vault Mechanics</a></li>
+            <li><a href="#wp-fees" class="toc-link">6. Fee Structure</a></li>
+            <li><a href="#wp-risks" class="toc-link">7. Risk Framework</a></li>
+            <li><a href="#wp-roadmap" class="toc-link">8. Roadmap</a></li>
+            <li><a href="#wp-conclusion" class="toc-link">9. Conclusion</a></li>
+          </ul>
+        </div>
+        <div class="whitepaper-content reveal">
+          <div id="wp-intro" class="wp-section">
+            <h2>1. Introduction</h2>
+            <p>Sovra Protocol is a decentralized finance (DeFi) infrastructure that bridges the gap between the $30+ trillion global sovereign bond market and onchain capital. For the first time, retail and institutional investors can access high‑yield emerging market (EM) sovereign bonds without intermediaries, minimum investment thresholds, or identity verification.</p>
+            <p>By tokenizing real‑world assets (RWAs) — specifically USD‑denominated Eurobonds and local currency government bonds — Sovra delivers sustainable, transparent yield sourced directly from government coupon payments. This whitepaper outlines the protocol's design, economic model, risk management, and long‑term vision.</p>
+            <div class="wp-callout">
+              <div class="wp-callout-title">Key Insight</div>
+              <p style="margin-bottom:0;">EM sovereign bonds offer yields far above developed market treasuries (e.g., Nigeria ~10%, Egypt ~8%, vs. US T‑bills ~4%). Yet these assets are traditionally inaccessible due to high minimums ($100k+), broker gatekeeping, and complex settlement. Sovra removes these barriers.</p>
+            </div>
+          </div>
+          <div id="wp-problem" class="wp-section">
+            <h2>2. The Problem</h2>
+            <h3>2.1 Inefficient Access to Sovereign Debt</h3>
+            <p>Investing in EM government bonds requires navigating a fragmented, opaque, and costly ecosystem:</p>
+            <ul>
+              <li><strong>High Minimums:</strong> Institutional lots typically start at $200,000.</li>
+              <li><strong>Broker Intermediation:</strong> Multiple layers of fees and slow settlement (T+2 or longer).</li>
+              <li><strong>KYC/AML Friction:</strong> Extensive paperwork and jurisdictional restrictions.</li>
+              <li><strong>Liquidity Constraints:</strong> Exiting a position can take days and may incur significant bid‑ask spreads.</li>
+            </ul>
+            <h3>2.2 The DeFi Yield Gap</h3>
+            <p>Existing onchain yield sources are either volatile (LP farming), unsustainable (token emissions), or offer low returns (T‑bill protocols). There is a clear demand for stable, real‑world yield that is both higher than TradFi equivalents and uncorrelated with crypto market cycles.</p>
+          </div>
+          <div id="wp-solution" class="wp-section">
+            <h2>3. The Sovra Solution</h2>
+            <p>Sovra aggregates user deposits and, through a regulated custodian partner, purchases actual sovereign bonds. The bond's coupon payments are streamed back onchain as USDC yield to depositors. The protocol is non‑custodial at the user level — you always retain control of your funds via smart contract vaults.</p>
+            <div class="wp-highlight">“Deposit USDC. Earn real bond yield. No broker. No KYC. No minimum.”</div>
+            <p>Sovra offers two product lines:</p>
+            <ul>
+              <li><strong>USD Eurobond Vaults:</strong> Backed by USD‑denominated EM sovereign bonds. No foreign exchange (FX) risk. Yields range from 5.5% to 10.4% gross.</li>
+              <li><strong>svTokens (Phase 2):</strong> Local currency bond vaults with higher nominal yields (15–40%) but explicit FX exposure. These are DeFi‑composable ERC‑20 tokens.</li>
+            </ul>
+          </div>
+          <div id="wp-architecture" class="wp-section">
+            <h2>4. Architecture</h2>
+            <p>The protocol operates through three coordinated layers:</p>
+            <table class="wp-table">
+              <thead><tr><th>Layer</th><th>Function</th><th>Key Participants</th></tr></thead>
+              <tbody>
+                <tr><td>Smart Contract Vaults</td><td>Handle deposits, mint vault receipts, process redemptions, and distribute yield.</td><td>Users, Sovra Protocol</td></tr>
+                <tr><td>Regulated Custodian</td><td>Holds the physical bonds in a segregated account, executes buy/sell orders, and receives coupon payments.</td><td>Licensed financial institution (partner)</td></tr>
+                <tr><td>Onchain Reserve Pool</td><td>10% of every deposit remains in USDC onchain to enable instant redemptions for most users.</td><td>Smart contract liquidity buffer</td></tr>
+              </tbody>
+            </table>
+            <h3>4.1 Flow of Funds</h3>
+            <ol>
+              <li>User deposits USDC into a selected vault.</li>
+              <li>90% of deposit is sent to the custodian to purchase the target bond.</li>
+              <li>10% remains in the vault's onchain reserve.</li>
+              <li>Bond coupons are paid to the custodian, converted to USDC, and deposited back into the vault contract.</li>
+              <li>Yield is distributed to depositors according to their chosen frequency.</li>
+            </ol>
+          </div>
+          <div id="wp-vaults" class="wp-section">
+            <h2>5. Vault Mechanics</h2>
+            <h3>5.1 Deposit and Representation</h3>
+            <p>When you deposit USDC, you receive a non‑transferable vault receipt (until Phase 2 svTokens) representing your pro‑rata share of the underlying bond and reserve. The receipt tracks your principal and accrued yield.</p>
+            <h3>5.2 Redemptions</h3>
+            <p>Redemptions are always possible:</p>
+            <ul>
+              <li><strong>Small Redemptions (≤ onchain reserve):</strong> Instant — USDC is sent directly from the reserve to your wallet.</li>
+              <li><strong>Large Redemptions ( > reserve):</strong> The custodian liquidates a portion of the bond and returns USDC to the vault. This may take 1–3 business days (TradFi settlement).</li>
+            </ul>
+            <h3>5.3 Yield Calculation Example</h3>
+            <div class="wp-callout">
+              <div class="wp-callout-title">Nigeria Vault — $10,000 Deposit @ 10.375% Gross</div>
+              <ul style="margin-bottom:0;">
+                <li>Working capital (90%): $9,000</li>
+                <li>Gross annual yield on working capital: $933.75</li>
+                <li>Protocol share (10% of gross): –$93.38</li>
+                <li><strong>Net to user: $840.38 (8.40% APR)</strong></li>
+              </ul>
+            </div>
+          </div>
+          <div id="wp-fees" class="wp-section">
+            <h2>6. Fee Structure</h2>
+            <p>Sovra employs a simple, transparent fee model:</p>
+            <table class="wp-table">
+              <thead><tr><th>Fee Type</th><th>Amount</th><th>When Applied</th></tr></thead>
+              <tbody>
+                <tr><td>Entry Fee</td><td>0.10%</td><td>On deposit</td></tr>
+                <tr><td>Exit Fee</td><td>0.10%</td><td>On redemption</td></tr>
+                <tr><td>Protocol Yield Share</td><td>10% of gross yield</td><td>Deducted from coupon payments before distribution</td></tr>
+              </tbody>
+            </table>
+            <p><strong>No hidden fees.</strong> The 10% yield share covers all operational costs, including custodian fees, gas costs, and protocol development. The net APR displayed in the app already accounts for both the reserve drag and the yield share.</p>
+          </div>
+          <div id="wp-risks" class="wp-section">
+            <h2>7. Risk Framework</h2>
+            <p>While Sovra is designed to minimize risk, users should understand the following:</p>
+            <h3>7.1 Sovereign Credit Risk</h3>
+            <p>The underlying bonds are issued by emerging market governments. There is a non‑zero chance of default or restructuring. Sovra diversifies across multiple countries to mitigate concentration risk. All bonds are senior unsecured USD Eurobonds, which historically have high recovery rates.</p>
+            <h3>7.2 Custodian Risk</h3>
+            <p>The regulated custodian holds assets in a segregated account. In the unlikely event of custodian insolvency, the bonds remain the property of the vault (users). Sovra will partner with multiple custodians over time for redundancy.</p>
+            <h3>7.3 Smart Contract Risk</h3>
+            <p>All Sovra smart contracts undergo rigorous audits by top‑tier firms (reports published). The code is open‑source and immutable where appropriate.</p>
+            <h3>7.4 FX Risk (svTokens only)</h3>
+            <p>Local currency vaults are subject to depreciation of the underlying currency vs. USD. The nominal yield is higher to compensate for this risk. Users should assess their own currency outlook.</p>
+            <h3>7.5 Liquidity Risk</h3>
+            <p>Large redemptions that exceed the onchain reserve may take several days to settle. The 10% reserve is designed to cover >95% of expected daily redemption volume based on historical DeFi vault behavior.</p>
+          </div>
+          <div id="wp-roadmap" class="wp-section">
+            <h2>8. Roadmap</h2>
+            <table class="wp-table">
+              <thead><tr><th>Phase</th><th>Milestone</th><th>Expected</th></tr></thead>
+              <tbody>
+                <tr><td><span class="wp-badge">Phase 1 (Live)</span></td><td>USD Eurobond Vaults: Nigeria, Angola, Egypt, Turkey. Basic UI, non‑transferable receipts.</td><td>Q2 2026</td></tr>
+                <tr><td><span class="wp-badge">Phase 2</span></td><td>svTokens: Local currency bonds (Argentina, Turkey, Egypt, Nigeria). ERC‑20 composable tokens. Integration with Aave, Pendle.</td><td>Q3 2026</td></tr>
+                <tr><td><span class="wp-badge">Phase 3</span></td><td>Multi‑custodian support, governance token launch (veSOVRA), and cross‑chain expansion (Arbitrum, Base).</td><td>Q4 2026</td></tr>
+                <tr><td><span class="wp-badge">Phase 4</span></td><td>Institutional on‑ramps, secondary market for svTokens, and structured products (principal‑protected notes).</td><td>2027</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div id="wp-conclusion" class="wp-section">
+            <h2>9. Conclusion</h2>
+            <p>Sovra Protocol democratizes access to one of the world's largest and highest‑yielding asset classes. By combining the transparency and efficiency of DeFi with the stability of sovereign debt, Sovra offers a new primitive for real yield onchain.</p>
+            <p>Whether you're a retail user seeking better returns on idle USDC or an institution exploring RWA exposure, Sovra provides a secure, permissionless, and liquid gateway to emerging market bonds.</p>
+            <div class="wp-highlight"><strong>Start earning today.</strong> No KYC. No minimum. Just real yield.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- CTA -->
   <section class="cta-section">
     <div class="cta-orb"></div>
@@ -934,7 +1227,7 @@
       <p class="cta-sub reveal">Deposit USDC. Earn up to 8.40% net APR. Backed by real bonds. Redeemable anytime. No KYC.</p>
       <div class="cta-btns reveal">
         <a href="#launch-app" class="btn-primary"><svg viewBox="0 0 24 24"><polyline points="13 2 13 9 22 9"/><path d="M19 22H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9l7 7v13a2 2 0 0 1-2 2z"/></svg>Start Earning Now</a>
-        <a href="https://docs.sovraprotocol.xyz" target="_blank" rel="noopener" class="btn-secondary">Read the Docs →</a>
+        <a href="#whitepaper" class="btn-secondary">Read the Whitepaper →</a>
       </div>
     </div>
   </section>
@@ -949,7 +1242,7 @@
           <p class="footer-brand-desc">The first permissionless protocol for onchain EM sovereign bond yields. Real bonds. Real yield. No KYC.</p>
         </div>
         <div><div class="footer-col-title">Product</div><ul class="footer-links"><li><a href="#launch-app">USD Vaults</a></li><li><a href="#launch-app">svTokens (Phase 2)</a></li><li><a href="#how-it-works">How It Works</a></li><li><a href="#features">Features</a></li></ul></div>
-        <div><div class="footer-col-title">Resources</div><ul class="footer-links"><li><a href="https://docs.sovraprotocol.xyz" target="_blank" rel="noopener">Documentation</a></li><li><a href="https://blog.sovraprotocol.xyz" target="_blank" rel="noopener">Blog</a></li><li><a href="#faq">FAQ</a></li></ul></div>
+        <div><div class="footer-col-title">Resources</div><ul class="footer-links"><li><a href="#whitepaper">Whitepaper</a></li><li><a href="https://blog.sovraprotocol.xyz" target="_blank" rel="noopener">Blog</a></li><li><a href="#faq">FAQ</a></li></ul></div>
         <div><div class="footer-col-title">Community</div><ul class="footer-links"><li><a href="https://x.com/Sovra_Protocol" target="_blank" rel="noopener">Twitter / X</a></li><li><a href="#">Telegram</a></li><li><a href="#">Discord</a></li></ul></div>
       </div>
       <div class="footer-bottom">
@@ -1011,13 +1304,31 @@
     }, { threshold: 0.08 });
     reveals.forEach(el => observer.observe(el));
 
-    // Active nav link highlight (basic)
+    // Active nav link highlight
     const sections = document.querySelectorAll('section[id], div[id]');
     const navLinks = document.querySelectorAll('.nav-links a');
     window.addEventListener('scroll', () => {
       let current = '';
       sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
       navLinks.forEach(a => { a.style.color = a.getAttribute('href') === '#' + current ? 'var(--white)' : ''; });
+    });
+
+    // Whitepaper TOC active highlight
+    document.addEventListener('DOMContentLoaded', function() {
+      const tocLinks = document.querySelectorAll('.toc-link');
+      const wpSections = [...document.querySelectorAll('.wp-section')];
+      function updateActiveToc() {
+        let current = '';
+        wpSections.forEach(section => {
+          const sectionTop = section.offsetTop - 120;
+          if (scrollY >= sectionTop) current = section.getAttribute('id');
+        });
+        tocLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+        });
+      }
+      window.addEventListener('scroll', updateActiveToc);
     });
   </script>
 </body>
