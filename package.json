@@ -1,8 +1,0 @@
-{
-  "name": "sovra-protocol",
-  "version": "1.0.0",
-  "description": "Sovra Protocol Testnet",
-  "dependencies": {
-    "ethers": "^6.7.1"
-  }
-}
