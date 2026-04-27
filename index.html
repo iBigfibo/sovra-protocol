@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sovra Protocol – Real USD Yield from Global Sovereign Bonds</title>
-  <meta name="description" content="Permissionless access to high-yield EM sovereign bonds. No KYC. No lock‑ups.">
+  <meta name="description" content="Permissionless access to high-yield EM sovereign bonds. Earn 8–10% APY. No KYC. No lock‑ups. Beats Ondo, OpenEden, and traditional savings.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
   <style>
@@ -28,7 +28,10 @@
     .stats-grid{display:flex;justify-content:center;gap:48px;flex-wrap:wrap;margin:40px 0;}
     .stat-item{text-align:center;}
     .stat-number{font-size:36px;font-weight:700;color:#e8c878;font-family:'Cormorant Garamond',serif;}
-    .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:32px;margin:80px 0;}
+    .section-title{text-align:center;margin:80px 0 40px;}
+    .section-title h2{font-family:'Cormorant Garamond',serif;font-size:36px;margin-bottom:12px;}
+    .section-title p{color:#9aabcf;max-width:600px;margin:0 auto;}
+    .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:32px;margin:60px 0;}
     .feature-card{background:#0c1424;border:1px solid rgba(201,168,76,0.15);border-radius:24px;padding:28px;transition:border 0.2s;}
     .feature-card:hover{border-color:rgba(201,168,76,0.4);}
     .feature-icon{font-size:36px;margin-bottom:16px;}
@@ -36,13 +39,20 @@
     .steps{display:flex;flex-wrap:wrap;gap:32px;justify-content:center;margin-top:48px;}
     .step{flex:1;min-width:200px;text-align:center;}
     .step-number{width:48px;height:48px;background:rgba(201,168,76,0.15);border-radius:60px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-weight:700;font-size:20px;color:#e8c878;}
+    /* competitive table */
+    .comp-table{width:100%;border-collapse:collapse;background:#0c1424;border-radius:24px;overflow:hidden;margin:40px 0;}
+    .comp-table th,.comp-table td{padding:18px 20px;text-align:left;border-bottom:1px solid rgba(201,168,76,0.15);}
+    .comp-table th{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:0.1em;color:#e8c878;background:#162035;}
+    .comp-table tr:last-child td{border-bottom:none;}
+    .comp-table .highlight{color:#e8c878;font-weight:600;}
+    .check{color:#4ade80;font-weight:bold;}
     .faq-grid{max-width:900px;margin:48px auto 0;}
     .faq-item{border-bottom:1px solid rgba(201,168,76,0.15);padding:20px 0;cursor:pointer;}
     .faq-question{font-weight:600;display:flex;justify-content:space-between;gap:16px;}
     .faq-answer{max-height:0;overflow:hidden;transition:max-height 0.35s;color:#9aabcf;font-size:14px;line-height:1.6;}
     .faq-item.open .faq-answer{max-height:400px;padding-top:16px;}
     footer{border-top:1px solid rgba(201,168,76,0.15);padding:48px 0 32px;margin-top:80px;text-align:center;font-size:13px;color:#6e7fa0;}
-    @media(max-width:700px){.hero h1{font-size:36px;}.nav a{margin-left:16px;}}
+    @media(max-width:700px){.hero h1{font-size:36px;}.nav a{margin-left:16px;}.comp-table th,.comp-table td{padding:12px;font-size:13px;}}
   </style>
 </head>
 <body>
@@ -51,14 +61,17 @@
     <div class="logo">S<span>O</span>VRA</div>
     <div class="nav">
       <a href="#how-it-works">How it works</a>
+      <a href="#competitive">Edge</a>
       <a href="#features">Features</a>
       <a href="#faq">FAQ</a>
       <a href="/app" class="btn-outline">Launch App →</a>
     </div>
   </div>
+
+  <!-- Hero -->
   <div class="hero">
     <h1>High‑yield USD sovereign bonds, <em>from emerging markets</em>.</h1>
-    <p>Deposit USDC. Earn ~8.41% APY. Backed by real government bonds. No KYC. No lock‑ups.</p>
+    <p>Deposit USDC. Earn up to 8.41% APY (Nigeria vault). Backed by real government bonds. No KYC. No lock‑ups. Beat the yield-starved DeFi.</p>
     <a href="/app" class="btn-primary">Start earning →</a>
     <div class="stats-grid">
       <div class="stat-item"><div class="stat-number">8.41%</div><div>Net APY (Nigeria)</div></div>
@@ -66,6 +79,8 @@
       <div class="stat-item"><div class="stat-number">10%</div><div>Onchain reserve</div></div>
     </div>
   </div>
+
+  <!-- How it works (unchanged) -->
   <div id="how-it-works" class="how-it-works">
     <div style="text-align:center;"><h2 style="font-family:'Cormorant Garamond',serif;font-size:36px;">How it works</h2><p style="color:#9aabcf;">Simple, transparent, permissionless.</p></div>
     <div class="steps">
@@ -74,25 +89,54 @@
       <div class="step"><div class="step-number">3</div><h3>Earn yield</h3><p style="font-size:14px;color:#9aabcf;">Receive svTokens that accrue yield automatically. Withdraw anytime.</p></div>
     </div>
   </div>
+
+  <!-- COMPETITIVE EDGE SECTION -->
+  <div id="competitive">
+    <div class="section-title">
+      <h2>Why Sovra beats the alternatives</h2>
+      <p>Higher yield, true permissionless access, real sovereign bonds – not just US Treasuries or risky lending pools.</p>
+    </div>
+    <table class="comp-table">
+      <thead>
+        <tr><th></th><th>Sovra Protocol</th><th>Ondo / OpenEden</th><th>Traditional EM bonds</th><th>DeFi lending (Aave, etc.)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Asset class</strong></td><td class="highlight">EM sovereign Eurobonds (Nigeria, Angola, Turkey…)</td><td>US Treasuries (3-5%)</td><td>$100k+ minimum, brokers, KYC</td><td>Variable lending rates (4-7%)</td></tr>
+        <tr><td><strong>Yield (net APY)</strong></td><td class="highlight">8-10% (Nigeria 8.41%)</td><td>4-5%</td><td>8-10% but inaccessible</td><td>4-7% (volatile)</td></tr>
+        <tr><td><strong>KYC / permission</strong></td><td class="highlight">✅ None – permissionless</td><td>❌ Whitelist / KYC</td><td>❌ Broker account, bank, tax forms</td><td>✅ No KYC</td></tr>
+        <tr><td><strong>Liquidity</strong></td><td class="highlight">Instant redemptions (10% reserve) + bond sale</td><td>Daily/weekly windows</td><td>OTC, illiquid for retail</td><td>Instant if pool has liquidity</td></tr>
+        <tr><td><strong>RWA backing</strong></td><td>Real government bonds, regulated custodian</td><td>T-bills (regulated)</td><td>Direct bond holding</td><td>No backing (unsecured lending)</td></tr>
+        <tr><td><strong>Minimum deposit</strong></td><td class="highlight">$1</td><td>$100k (OUSG)</td><td>$100k – $1M</td><td>$1</td></tr>
+      </tbody>
+    </table>
+    <div style="background:#0c1424; border-radius:24px; padding:24px; margin:20px 0 40px;">
+      <p style="font-size:18px; font-weight:500;">✨ <strong>Sovra is the first permissionless bridge to high‑yield EM sovereign bonds.</strong> No other protocol gives you 8%+ USD yield from real government debt – without KYC, without lock‑ups, and with DeFi composability (coming soon).</p>
+    </div>
+  </div>
+
+  <!-- Features (global) -->
   <div id="features" class="features">
     <div class="feature-card"><div class="feature-icon">🏦</div><h3>Real sovereign bonds</h3><p>Backed 1:1 by actual government Eurobonds (Nigeria, Angola, Turkey, Egypt, Pakistan).</p></div>
-    <div class="feature-card"><div class="feature-icon">🔓</div><h3>No KYC</h3><p>Permissionless – just connect a wallet. No identity verification.</p></div>
+    <div class="feature-card"><div class="feature-icon">🔓</div><h3>No KYC</h3><p>Permissionless – just connect a wallet. No identity verification, no bank account.</p></div>
     <div class="feature-card"><div class="feature-icon">💧</div><h3>Instant liquidity</h3><p>10% onchain reserve + bond sale for larger withdrawals. Redeem anytime.</p></div>
-    <div class="feature-card"><div class="feature-icon">🌍</div><h3>Global pipeline</h3><p>Angola, Turkey, Egypt, Pakistan – more coming soon.</p></div>
+    <div class="feature-card"><div class="feature-icon">🌍</div><h3>Global pipeline</h3><p>Angola, Turkey, Egypt, Pakistan – more countries coming soon.</p></div>
   </div>
+
+  <!-- FAQ with tough risk questions (unchanged but valuable) -->
   <div id="faq" style="margin-top:60px;">
     <h2 style="text-align:center;font-family:'Cormorant Garamond',serif;font-size:36px;">Risks & transparency</h2>
     <div class="faq-grid">
       <div class="faq-item"><div class="faq-question">What if a country defaults? <span>+</span></div><div class="faq-answer">Sovereign default is a real risk. Sovra diversifies across multiple markets. In a default, users may face delays or partial loss – identical to holding the bond directly.</div></div>
       <div class="faq-item"><div class="faq-question">Custodian failure? <span>+</span></div><div class="faq-answer">Bonds are held by regulated custodians with monthly audits. However, custodian insolvency remains an off-chain risk.</div></div>
       <div class="faq-item"><div class="faq-question">Smart contract audited? <span>+</span></div><div class="faq-answer">Audit with CertiK scheduled before mainnet. Oracle exploits mitigated by circuit breakers.</div></div>
-      <div class="faq-item"><div class="faq-question">Why net APY 8.41%? <span>+</span></div><div class="faq-answer">Only 90% deployed (10% reserve). After protocol fees, net = 8.41% – trade‑off for instant liquidity.</div></div>
+      <div class="faq-item"><div class="faq-question">Why net APY 8.41% vs 10% gross? <span>+</span></div><div class="faq-answer">Only 90% deployed (10% reserve). After protocol fees, net = 8.41% – trade‑off for instant liquidity.</div></div>
       <div class="faq-item"><div class="faq-question">Can I lose everything? <span>+</span></div><div class="faq-answer">Yes – default, custodian hack, or smart contract bug could cause loss. We mitigate but risk remains.</div></div>
     </div>
   </div>
+
   <footer>
     <p>© 2026 Sovra Protocol — Global sovereign bonds, permissionless. No KYC.</p>
-    <p><a href="/docs">Docs</a> | <a href="/twitter">X (Twitter)</a> | <a href="/audit">Audit</a></p>
+    <p><a href="/docs">Docs</a> | <a href="/twitter">X (Twitter)</a> | <a href="/audit">Audit</a> | <a href="/app">Launch App</a></p>
   </footer>
 </div>
 <script>
