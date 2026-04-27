@@ -2,16 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sovra Protocol — Onchain Sovereign Bond Yields</title>
-  <meta name="description" content="Permissionless access to high-yield EM sovereign bonds. Deposit USDC. Earn up to 10.375% APR. No KYC. No broker.">
-  <!-- Preconnect & Fonts -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Sovra Protocol – Nigeria Eurobond Vault</title>
+  <meta name="description" content="Earn 8.41% APY in USDC from real Nigerian sovereign bonds. No KYC. No lock‑ups.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* ----- RESET & ROOT ----- */
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    * { margin:0; padding:0; box-sizing:border-box; }
     :root {
       --navy:    #090e1a;
       --navy2:   #0c1424;
@@ -19,1317 +16,528 @@
       --navy4:   #162035;
       --gold:    #c9a84c;
       --gold2:   #e8c878;
-      --gold3:   #f5e0a0;
       --white:   #f0f4ff;
       --muted:   #7a90b0;
       --dim:     #3a4e68;
       --border:  rgba(201,168,76,0.12);
       --border2: rgba(201,168,76,0.25);
-      --glow:    rgba(201,168,76,0.06);
     }
-
-    html { scroll-behavior: smooth; }
     body {
-      font-family: 'Outfit', sans-serif;
       background: var(--navy);
       color: var(--white);
-      overflow-x: hidden;
-      cursor: default;
+      font-family: 'Outfit', sans-serif;
+      line-height: 1.5;
     }
-    ::selection { background: rgba(201,168,76,0.25); }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: var(--navy); }
-    ::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 2px; }
-
-    /* Utility */
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-    .serif { font-family: 'Cormorant Garamond', serif; }
-    .mono  { font-family: 'DM Mono', monospace; }
-    .gold  { color: var(--gold2); }
-    .tag-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 14px;
-      display: block;
-    }
-
-    /* Noise overlay */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0.4;
-    }
-
-    /* ----- NAVIGATION ----- */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      padding: 0 24px;
-      height: 68px;
+    .container { max-width: 1300px; margin: 0 auto; padding: 0 24px; }
+    header {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      background: rgba(9,14,26,0.85);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      transition: background 0.3s;
-    }
-    nav.scrolled {
-      background: rgba(9,14,26,0.97);
-      border-bottom-color: var(--border2);
-    }
-    .nav-logo {
-      display: flex;
       align-items: center;
-      gap: 10px;
-      text-decoration: none;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
     }
-    .nav-logo-text {
+    .logo h1 {
       font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
       font-weight: 700;
-      font-size: 22px;
       letter-spacing: 0.08em;
-      color: var(--white);
     }
-    .nav-logo-text span {
+    .logo h1 span {
       background: linear-gradient(135deg, var(--gold), var(--gold2));
       -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
       background-clip: text;
+      color: transparent;
     }
-    .nav-logo-sub {
+    .logo p {
       font-family: 'DM Mono', monospace;
-      font-size: 8px;
+      font-size: 9px;
       letter-spacing: 0.25em;
       text-transform: uppercase;
       color: var(--muted);
-      margin-top: 2px;
     }
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      list-style: none;
-    }
-    .nav-links a {
-      font-size: 13.5px;
-      font-weight: 400;
-      color: var(--muted);
-      text-decoration: none;
-      padding: 6px 14px;
-      border-radius: 6px;
-      transition: color 0.2s, background 0.2s;
-      letter-spacing: 0.01em;
-    }
-    .nav-links a:hover { color: var(--white); background: rgba(255,255,255,0.05); }
-    .nav-right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .btn-twitter {
-      width: 36px; height: 36px;
-      border-radius: 8px;
-      border: 1px solid var(--border2);
-      display: flex; align-items: center; justify-content: center;
-      color: var(--muted);
-      text-decoration: none;
-      transition: color 0.2s, border-color 0.2s, background 0.2s;
-    }
-    .btn-twitter:hover { color: var(--white); border-color: var(--gold); background: rgba(201,168,76,0.08); }
-    .btn-twitter svg { width: 16px; height: 16px; fill: currentColor; }
-    .btn-launch {
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      color: var(--navy);
-      background: linear-gradient(135deg, var(--gold), var(--gold2));
-      border: none;
-      padding: 9px 22px;
-      border-radius: 8px;
-      cursor: pointer;
-      text-decoration: none;
-      transition: opacity 0.2s, transform 0.2s;
-      white-space: nowrap;
-    }
-    .btn-launch:hover { opacity: 0.88; transform: translateY(-1px); }
-
-    /* Hamburger */
-    .hamburger {
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      cursor: pointer;
-      padding: 4px;
-      background: transparent;
-      border: none;
-    }
-    .hamburger span {
-      display: block;
-      width: 22px;
-      height: 2px;
-      background: var(--muted);
-      border-radius: 1px;
-      transition: all 0.3s;
-    }
-    .mobile-menu {
-      display: none;
-      position: fixed;
-      top: 68px; left: 0; right: 0;
-      background: rgba(9,14,26,0.98);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      padding: 20px 24px 28px;
-      z-index: 99;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .mobile-menu.open { display: flex; }
-    .mobile-menu a {
-      font-size: 15px;
-      color: var(--muted);
-      text-decoration: none;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border);
-      transition: color 0.2s;
-    }
-    .mobile-menu a:hover { color: var(--white); }
-    .mobile-menu a:last-child { border-bottom: none; }
-
-    /* ----- HERO ----- */
-    #home {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      position: relative;
-      overflow: hidden;
-      padding-top: 68px;
-    }
-    .hero-orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-      pointer-events: none;
-    }
-    .hero-orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%); top: -100px; right: -150px; }
-    .hero-orb-2 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(26,100,200,0.06) 0%, transparent 70%); bottom: 50px; left: -100px; }
-    .hero-orb-3 { width: 300px; height: 300px; background: radial-gradient(circle, rgba(201,168,76,0.05) 0%, transparent 70%); top: 40%; left: 35%; }
-    .hero-grid {
-      position: absolute;
-      inset: 0;
-      background-image: linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
-      background-size: 60px 60px;
-      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
-      pointer-events: none;
-    }
-    .hero-content {
-      position: relative;
-      z-index: 2;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 60px;
-      align-items: center;
-      width: 100%;
-      padding: 80px 0 60px;
-    }
-    .hero-eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(201,168,76,0.08);
-      border: 1px solid var(--border2);
-      border-radius: 100px;
-      padding: 6px 16px;
-      margin-bottom: 28px;
-    }
-    .hero-eyebrow-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: pulse-dot 2s ease-in-out infinite; }
-    @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(0.8);} }
-    .hero-eyebrow span {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--gold2);
-    }
-    .hero-h1 {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 600;
-      font-size: clamp(42px, 5.5vw, 72px);
-      line-height: 1.05;
-      letter-spacing: -0.01em;
-      margin-bottom: 24px;
-    }
-    .hero-h1 em {
-      font-style: italic;
-      background: linear-gradient(135deg, var(--gold), var(--gold2), var(--gold3));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .hero-sub {
-      font-size: 16px;
-      line-height: 1.7;
-      color: var(--muted);
-      max-width: 460px;
-      margin-bottom: 36px;
-      font-weight: 300;
-    }
-    .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 44px; }
-    .btn-primary {
-      font-size: 14px; font-weight: 600; color: var(--navy);
-      background: linear-gradient(135deg, var(--gold), var(--gold2));
-      border: none; padding: 13px 28px; border-radius: 10px; cursor: pointer;
-      text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
-      transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
-      box-shadow: 0 4px 24px rgba(201,168,76,0.25);
-    }
-    .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 8px 32px rgba(201,168,76,0.35); }
-    .btn-primary svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.5; }
-    .btn-secondary {
-      font-size: 14px; font-weight: 500; color: var(--muted); background: transparent;
-      border: 1px solid var(--border2); padding: 12px 24px; border-radius: 10px;
-      cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
-      transition: color 0.2s, border-color 0.2s, background 0.2s;
-    }
-    .btn-secondary:hover { color: var(--white); border-color: rgba(201,168,76,0.4); background: rgba(201,168,76,0.04); }
-    .btn-secondary svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; }
-    .hero-badges { display: flex; gap: 10px; flex-wrap: wrap; }
-    .hero-badge {
-      font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em;
-      text-transform: uppercase; color: var(--muted); border: 1px solid var(--border);
-      padding: 6px 12px; border-radius: 6px; background: rgba(255,255,255,0.02);
-    }
-
-    /* Hero card */
-    .hero-right { display: flex; justify-content: flex-end; position: relative; }
-    .vault-card {
-      background: linear-gradient(145deg, var(--navy3), var(--navy4));
-      border: 1px solid var(--border2); border-radius: 20px; padding: 28px;
-      width: 100%; max-width: 400px;
-      box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(201,168,76,0.05) inset;
-      position: relative; overflow: hidden;
-    }
-    .vault-card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent); opacity: 0.6;
-    }
-    .vault-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
-    .vault-card-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
-    .vault-card-live { display: flex; align-items: center; gap: 6px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: #4ade80; }
-    .vault-card-live-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; animation: pulse-dot 1.5s ease-in-out infinite; }
-    .vault-tvl { margin-bottom: 22px; }
-    .vault-tvl-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
-    .vault-tvl-value { font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 600; color: var(--white); line-height: 1; }
-    .vault-tvl-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: #4ade80; margin-top: 4px; }
-    .vault-rows { display: flex; flex-direction: column; gap: 2px; margin-bottom: 20px; }
-    .vault-row {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 11px 14px; background: rgba(0,0,0,0.2); border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.04);
-      transition: border-color 0.2s, background 0.2s;
-    }
-    .vault-row:hover { border-color: var(--border2); background: rgba(201,168,76,0.03); }
-    .vault-row-left { display: flex; align-items: center; gap: 10px; }
-    .vault-flag {
-      width: 28px; height: 28px; border-radius: 50%; background: var(--navy4);
-      border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 14px;
-    }
-    .vault-row-name { font-size: 13px; font-weight: 500; color: var(--white); }
-    .vault-row-type { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.1em; color: var(--muted); margin-top: 1px; }
-    .vault-row-apy { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--gold2); }
-    .vault-deposit-btn {
-      width: 100%; padding: 14px; background: linear-gradient(135deg, var(--gold), var(--gold2));
-      border: none; border-radius: 12px; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600;
-      color: var(--navy); cursor: pointer; letter-spacing: 0.02em;
-      transition: opacity 0.2s, transform 0.2s;
-    }
-    .vault-deposit-btn:hover { opacity: 0.9; transform: translateY(-1px); }
-
-    /* Stats bar */
-    .stats-bar {
-      background: var(--navy2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
-      padding: 24px 0; position: relative; z-index: 2;
-    }
-    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
-    .stat-item { text-align: center; padding: 8px 20px; border-right: 1px solid var(--border); }
-    .stat-item:last-child { border-right: none; }
-    .stat-val { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 600; color: var(--white); line-height: 1; margin-bottom: 4px; }
-    .stat-val .gold { color: var(--gold2); }
-    .stat-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
-
-    /* Sections */
-    section { padding: 100px 0; position: relative; }
-    .section-head { text-align: center; max-width: 620px; margin: 0 auto 64px; }
-    .section-h2 {
-      font-family: 'Cormorant Garamond', serif; font-size: clamp(34px, 4vw, 52px);
-      font-weight: 600; line-height: 1.1; margin-bottom: 16px; letter-spacing: -0.01em;
-    }
-    .section-sub { font-size: 15px; line-height: 1.7; color: var(--muted); font-weight: 300; }
-
-    /* How it works */
-    #how-it-works { background: var(--navy2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-    .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
-    .step {
-      background: var(--navy); padding: 40px 32px; position: relative; overflow: hidden;
-      transition: background 0.3s;
-    }
-    .step:hover { background: var(--navy3); }
-    .step::after {
-      content: ''; position: absolute; bottom: 0; left: 32px; right: 32px; height: 1px;
-      background: linear-gradient(90deg, transparent, var(--border2), transparent);
-      opacity: 0; transition: opacity 0.3s;
-    }
-    .step:hover::after { opacity: 1; }
-    .step-num { font-family: 'Cormorant Garamond', serif; font-size: 60px; font-weight: 300; color: rgba(201,168,76,0.12); line-height: 1; margin-bottom: 20px; transition: color 0.3s; }
-    .step:hover .step-num { color: rgba(201,168,76,0.22); }
-    .step-icon {
-      width: 48px; height: 48px; border-radius: 12px; background: rgba(201,168,76,0.08);
-      border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; margin-bottom: 20px;
-    }
-    .step-icon svg { width: 22px; height: 22px; stroke: var(--gold2); fill: none; stroke-width: 1.5; }
-    .step-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; margin-bottom: 12px; color: var(--white); }
-    .step-desc { font-size: 14px; line-height: 1.7; color: var(--muted); font-weight: 300; }
-
-    /* Vaults tabs */
-    .vaults-tabs {
-      display: flex; gap: 2px; background: var(--navy2); border: 1px solid var(--border);
-      border-radius: 12px; padding: 4px; margin: 0 auto 48px; max-width: 340px;
-    }
-    .vault-tab {
-      flex: 1; padding: 10px 20px; border-radius: 9px; font-size: 13px; font-weight: 500;
-      color: var(--muted); cursor: pointer; text-align: center; transition: color 0.2s, background 0.2s;
-      border: none; background: none; font-family: 'Outfit', sans-serif;
-    }
-    .vault-tab.active { background: var(--navy4); color: var(--gold2); border: 1px solid var(--border2); }
-    .vaults-table-wrap { background: var(--navy2); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
-    .vaults-table { width: 100%; border-collapse: collapse; }
-    .vaults-table thead tr { background: var(--navy3); border-bottom: 1px solid var(--border); }
-    .vaults-table th {
-      padding: 14px 20px; text-align: left; font-family: 'DM Mono', monospace;
-      font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); font-weight: 400;
-    }
-    .vaults-table th:last-child { text-align: right; }
-    .vaults-table td { padding: 18px 20px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-    .vaults-table tr:last-child td { border-bottom: none; }
-    .vaults-table tbody tr { transition: background 0.2s; }
-    .vaults-table tbody tr:hover { background: rgba(201,168,76,0.03); }
-    .vault-name-cell { display: flex; align-items: center; gap: 14px; }
-    .vault-icon {
-      width: 40px; height: 40px; border-radius: 50%; background: var(--navy3);
-      border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 20px;
-    }
-    .vault-name-text { font-size: 15px; font-weight: 500; }
-    .vault-name-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 2px; }
-    .vault-gross { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--muted); }
-    .vault-net { font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 500; color: var(--gold2); }
-    .vault-badge {
-      display: inline-block; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.1em;
-      text-transform: uppercase; padding: 4px 10px; border-radius: 100px;
-      background: rgba(74,222,128,0.1); color: #4ade80; border: 1px solid rgba(74,222,128,0.2);
-    }
-    .vault-badge.lc { background: rgba(201,168,76,0.1); color: var(--gold2); border-color: var(--border2); }
-    .vault-action-btn {
-      float: right; font-size: 12px; font-weight: 600; color: var(--gold2);
-      background: rgba(201,168,76,0.08); border: 1px solid var(--border2); padding: 7px 18px;
-      border-radius: 8px; cursor: pointer; text-decoration: none; transition: background 0.2s, color 0.2s;
-      font-family: 'Outfit', sans-serif;
-    }
-    .vault-action-btn:hover { background: rgba(201,168,76,0.15); color: var(--white); }
-    .vault-panel { display: none; }
-    .vault-panel.active { display: block; }
-
-    /* Features */
-    #features { background: var(--navy2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
-    .feature {
-      padding: 36px 32px; background: var(--navy); position: relative; overflow: hidden;
-      transition: background 0.3s;
-    }
-    .feature:hover { background: var(--navy3); }
-    .feature-icon {
-      width: 44px; height: 44px; border-radius: 10px; background: rgba(201,168,76,0.08);
-      border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; margin-bottom: 18px;
-    }
-    .feature-icon svg { width: 20px; height: 20px; stroke: var(--gold2); fill: none; stroke-width: 1.5; }
-    .feature-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; margin-bottom: 10px; }
-    .feature-desc { font-size: 14px; line-height: 1.7; color: var(--muted); font-weight: 300; }
-    .feature-tag {
-      display: inline-block; margin-top: 14px; font-family: 'DM Mono', monospace; font-size: 9px;
-      letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold);
-      border: 1px solid var(--border2); padding: 4px 10px; border-radius: 4px;
-    }
-
-    /* Competitive */
-    #competitive { padding: 100px 0; background: var(--navy); }
-    .comp-table-wrap { background: var(--navy2); border: 1px solid var(--border2); border-radius: 20px; overflow-x: auto; padding: 4px; }
-    .comp-table { width: 100%; border-collapse: collapse; min-width: 900px; }
-    .comp-table th {
-      text-align: left; padding: 16px 20px; font-family: 'DM Mono', monospace; font-size: 10px;
-      letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted);
-      background: var(--navy3); border-bottom: 1px solid var(--border);
-    }
-    .comp-table td { padding: 18px 20px; border-bottom: 1px solid var(--border); font-size: 14px; }
-    .comp-table tr:last-child td { border-bottom: none; }
-    .comp-table tbody tr:hover { background: rgba(201,168,76,0.03); }
-    .comp-highlight { color: var(--gold2); font-weight: 500; }
-    .comp-badge {
-      background: rgba(201,168,76,0.15); color: var(--gold2); font-family: 'DM Mono', monospace;
-      font-size: 10px; padding: 2px 10px; border-radius: 100px; border: 1px solid var(--border2);
-    }
-
-    /* Yield example */
-    .yield-section { padding: 100px 0; }
-    .yield-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
-    .yield-table-wrap { background: var(--navy2); border: 1px solid var(--border2); border-radius: 16px; overflow: hidden; }
-    .yield-table-header {
-      background: var(--navy3); padding: 18px 24px; border-bottom: 1px solid var(--border);
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .yield-table-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
-    .yield-table-badge { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--gold2); background: rgba(201,168,76,0.1); border: 1px solid var(--border2); padding: 3px 10px; border-radius: 100px; }
-    .yield-row {
-      display: flex; justify-content: space-between; align-items: center; padding: 14px 24px;
-      border-bottom: 1px solid var(--border); font-size: 14px;
-    }
-    .yield-row:last-child { border-bottom: none; }
-    .yield-row.total { background: rgba(201,168,76,0.04); border-top: 1px solid var(--border2); }
-    .yield-row-label { color: var(--muted); font-weight: 300; }
-    .yield-row-label.main { color: var(--white); font-weight: 500; }
-    .yield-row-val { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--white); }
-    .yield-row-val.red { color: #f87171; }
-    .yield-row-val.green { color: #4ade80; }
-    .yield-row-val.gold { color: var(--gold2); font-size: 15px; font-weight: 500; }
-    .yield-big {
-      font-family: 'Cormorant Garamond', serif; font-size: 72px; font-weight: 600; line-height: 1;
-      background: linear-gradient(135deg, var(--gold), var(--gold2));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-      margin-bottom: 8px;
-    }
-    .yield-big-label { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 24px; }
-    .yield-payout-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 28px; }
-    .payout-card {
-      background: var(--navy2); border: 1px solid var(--border); border-radius: 12px;
-      padding: 16px 18px; transition: border-color 0.2s;
-    }
-    .payout-card:hover { border-color: var(--border2); }
-    .payout-freq { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
-    .payout-amount { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--white); }
-    .payout-currency { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); margin-top: 2px; }
-
-    /* FAQ */
-    #faq { background: var(--navy2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-    .faq-list { max-width: 760px; margin: 0 auto; }
-    .faq-item { border-bottom: 1px solid var(--border); }
-    .faq-item:last-child { border-bottom: none; }
-    .faq-q {
-      display: flex; justify-content: space-between; align-items: center; padding: 22px 0;
-      cursor: pointer; font-size: 16px; font-weight: 500; color: var(--white);
-      gap: 20px; transition: color 0.2s; user-select: none;
-    }
-    .faq-q:hover { color: var(--gold2); }
-    .faq-icon {
-      width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border2);
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-      transition: background 0.2s, border-color 0.2s, transform 0.3s;
-    }
-    .faq-icon svg { width: 12px; height: 12px; stroke: var(--muted); fill: none; stroke-width: 2.5; transition: transform 0.3s; }
-    .faq-item.open .faq-icon { background: rgba(201,168,76,0.1); border-color: var(--gold); transform: rotate(45deg); }
-    .faq-item.open .faq-icon svg { stroke: var(--gold); }
-    .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.3s; }
-    .faq-item.open .faq-a { max-height: 300px; }
-    .faq-a-inner { padding-bottom: 22px; font-size: 14.5px; line-height: 1.75; color: var(--muted); font-weight: 300; }
-    .faq-a-inner strong { color: var(--white); font-weight: 500; }
-
-    /* ----- WHITEPAPER SECTION ----- */
-    #whitepaper {
-      padding: 100px 0;
-      background: var(--navy2);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-    .whitepaper-grid {
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      gap: 40px;
-    }
-    .whitepaper-toc {
-      position: sticky;
-      top: 100px;
-      align-self: start;
+    .wallet-btn {
       background: var(--navy3);
       border: 1px solid var(--border2);
-      border-radius: 16px;
-      padding: 24px;
+      padding: 10px 20px;
+      border-radius: 40px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--white);
     }
-    .whitepaper-toc-title {
+    .wallet-btn:hover { border-color: var(--gold); background: var(--navy4); }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin: 40px 0;
+    }
+    .kpi-card {
+      background: var(--navy2);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 20px;
+      transition: border 0.2s;
+    }
+    .kpi-card:hover { border-color: var(--border2); }
+    .kpi-label {
       font-family: 'DM Mono', monospace;
       font-size: 11px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 20px;
-    }
-    .whitepaper-toc-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .whitepaper-toc-list a {
+      letter-spacing: 0.12em;
       color: var(--muted);
-      text-decoration: none;
-      font-size: 14px;
-      padding: 6px 0;
-      display: block;
-      border-bottom: 1px solid var(--border);
-      transition: color 0.2s;
+      margin-bottom: 8px;
     }
-    .whitepaper-toc-list a:hover { color: var(--white); }
-    .whitepaper-toc-list a.active { color: var(--gold2); border-bottom-color: var(--gold2); }
-    .whitepaper-content {
-      background: var(--navy);
-      border: 1px solid var(--border2);
-      border-radius: 20px;
-      padding: 40px;
+    .kpi-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px;
+      font-weight: 600;
+      color: var(--gold2);
     }
-    .wp-section {
-      margin-bottom: 48px;
-    }
-    .wp-section:last-child { margin-bottom: 0; }
-    .wp-section h2 {
+    .kpi-sub { font-size: 12px; color: var(--dim); margin-top: 6px; }
+    .section-title { margin: 48px 0 24px 0; }
+    .section-title h2 {
       font-family: 'Cormorant Garamond', serif;
       font-size: 32px;
       font-weight: 600;
-      margin-bottom: 24px;
-      color: var(--white);
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 12px;
     }
-    .wp-section h3 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 22px;
-      font-weight: 600;
-      margin: 28px 0 16px;
-      color: var(--gold2);
-    }
-    .wp-section p {
-      font-size: 15px;
-      line-height: 1.75;
-      color: var(--muted);
-      margin-bottom: 16px;
-      font-weight: 300;
-    }
-    .wp-section ul, .wp-section ol {
-      margin-left: 24px;
-      margin-bottom: 16px;
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.75;
-    }
-    .wp-section li { margin-bottom: 8px; }
-    .wp-highlight {
-      background: rgba(201,168,76,0.08);
-      border-left: 3px solid var(--gold);
-      padding: 16px 20px;
-      border-radius: 0 8px 8px 0;
-      margin: 20px 0;
-      font-style: italic;
-    }
-    .wp-callout {
-      background: var(--navy3);
-      border: 1px solid var(--border2);
-      border-radius: 12px;
-      padding: 20px;
-      margin: 24px 0;
-    }
-    .wp-callout-title {
-      font-family: 'DM Mono', monospace;
-      font-size: 12px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 12px;
-    }
-    .wp-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 20px 0;
-    }
-    .wp-table th, .wp-table td {
-      padding: 12px 16px;
+    .section-title p { color: var(--muted); font-size: 15px; margin-top: 8px; }
+    .vault-card {
+      background: var(--navy2);
       border: 1px solid var(--border);
-      text-align: left;
-      font-size: 14px;
+      border-radius: 24px;
+      overflow: hidden;
+      margin-bottom: 24px;
     }
-    .wp-table th {
+    .vault-header {
       background: var(--navy3);
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .vault-country { display: flex; align-items: center; gap: 12px; }
+    .vault-flag { font-size: 28px; }
+    .vault-name { font-weight: 600; font-size: 18px; }
+    .vault-type {
       font-family: 'DM Mono', monospace;
       font-size: 11px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      font-weight: 400;
+      color: var(--gold);
     }
-    .wp-table td { color: var(--white); }
-    .wp-badge {
-      display: inline-block;
-      background: rgba(201,168,76,0.15);
-      color: var(--gold2);
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      padding: 2px 10px;
-      border-radius: 100px;
+    .vault-badge {
+      background: rgba(201,168,76,0.12);
+      padding: 5px 12px;
+      border-radius: 40px;
+      font-size: 12px;
       border: 1px solid var(--border2);
     }
-    @media (max-width: 900px) {
-      .whitepaper-grid { grid-template-columns: 1fr; }
-      .whitepaper-toc { position: static; }
+    .vault-badge.coming {
+      background: rgba(122,144,176,0.12);
+      color: var(--muted);
+      border-color: var(--border);
     }
-
-    /* CTA */
-    .cta-section { padding: 100px 0; text-align: center; position: relative; overflow: hidden; }
-    .cta-orb {
-      position: absolute; width: 500px; height: 500px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%);
-      top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; filter: blur(40px);
+    .vault-body {
+      padding: 20px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      justify-content: space-between;
+      align-items: center;
     }
-    .cta-h2 {
-      font-family: 'Cormorant Garamond', serif; font-size: clamp(38px, 5vw, 62px);
-      font-weight: 600; line-height: 1.1; margin-bottom: 18px; position: relative; z-index: 1;
+    .vault-stats { display: flex; gap: 32px; flex-wrap: wrap; }
+    .stat { text-align: left; }
+    .stat-label-sm {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
     }
-    .cta-sub {
-      font-size: 16px; color: var(--muted); max-width: 440px; margin: 0 auto 36px;
-      line-height: 1.65; font-weight: 300; position: relative; z-index: 1;
+    .stat-value-lg {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--gold2);
     }
-    .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative; z-index: 1; }
-
-    /* Footer */
-    footer { background: var(--navy2); border-top: 1px solid var(--border); padding: 56px 0 32px; }
-    .footer-inner { display: grid; grid-template-columns: 1.8fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
-    .footer-brand-desc { font-size: 14px; line-height: 1.7; color: var(--muted); margin-top: 14px; font-weight: 300; max-width: 260px; }
-    .footer-col-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
-    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-    .footer-links a { font-size: 14px; color: var(--muted); text-decoration: none; transition: color 0.2s; font-weight: 300; }
-    .footer-links a:hover { color: var(--white); }
-    .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 24px; border-top: 1px solid var(--border); }
-    .footer-copy { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--dim); letter-spacing: 0.06em; }
-    .footer-status { display: flex; align-items: center; gap: 6px; font-family: 'DM Mono', monospace; font-size: 10px; color: #4ade80; letter-spacing: 0.1em; }
-    .footer-status-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; animation: pulse-dot 2s ease-in-out infinite; }
-
-    /* Animations */
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
-    .hero-left { animation: fadeUp 0.8s ease both; }
-    .vault-card { animation: fadeUp 0.8s 0.2s ease both, float 6s 1s ease-in-out infinite; }
-    @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
-    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-
-    /* Responsive */
-    @media (max-width: 900px) {
-      .hero-content { grid-template-columns: 1fr; gap: 40px; }
-      .hero-right { justify-content: center; }
-      .vault-card { max-width: 100%; }
-      .steps-grid { grid-template-columns: 1fr; }
-      .features-grid { grid-template-columns: 1fr 1fr; }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
-      .stat-item:nth-child(odd) { border-right: 1px solid var(--border); }
-      .footer-inner { grid-template-columns: 1fr 1fr; gap: 30px; }
-      .yield-inner { grid-template-columns: 1fr; }
-      .yield-big { font-size: 52px; }
+    .vault-action { display: flex; gap: 12px; align-items: center; }
+    .btn-deposit {
+      background: linear-gradient(135deg, var(--gold), var(--gold2));
+      border: none;
+      padding: 10px 24px;
+      border-radius: 40px;
+      font-weight: 600;
+      color: var(--navy);
+      cursor: pointer;
+      font-size: 14px;
+      transition: opacity 0.2s;
     }
-    @media (max-width: 640px) {
-      .nav-links { display: none; }
-      .hamburger { display: flex; }
-      .features-grid { grid-template-columns: 1fr; }
-      .footer-inner { grid-template-columns: 1fr; }
-      .hero-badges { display: none; }
-      section { padding: 64px 0; }
-      .section-head { margin-bottom: 40px; }
+    .btn-deposit:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-deposit:hover:not(:disabled) { opacity: 0.85; }
+    .tooltip-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--dim);
+      color: var(--white);
+      font-size: 11px;
+      margin-left: 6px;
+      cursor: help;
+      position: relative;
+    }
+    .tooltip-icon:hover::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: 28px;
+      left: 0;
+      background: var(--navy4);
+      color: var(--gold2);
+      font-size: 12px;
+      padding: 8px 14px;
+      border-radius: 12px;
+      white-space: nowrap;
+      z-index: 10;
+      border: 1px solid var(--border2);
+      font-family: 'Outfit', sans-serif;
+      font-weight: normal;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .points-banner {
+      background: linear-gradient(95deg, var(--navy3), var(--navy4));
+      border: 1px solid var(--border2);
+      border-radius: 20px;
+      padding: 14px 24px;
+      margin: 24px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .points-text { font-size: 14px; }
+    .points-badge {
+      background: var(--gold);
+      color: var(--navy);
+      padding: 6px 16px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .referral {
+      background: var(--navy);
+      border: 1px dashed var(--border2);
+      border-radius: 20px;
+      padding: 16px 24px;
+      margin: 24px 0;
+      text-align: center;
+    }
+    .simulate-panel {
+      background: var(--navy3);
+      border-radius: 24px;
+      padding: 24px;
+      margin: 48px 0;
+      border: 1px solid var(--border2);
+    }
+    .simulate-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .input-group { flex: 1; min-width: 150px; }
+    .input-group label {
+      display: block;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .input-group input, .input-group select {
+      width: 100%;
+      background: var(--navy4);
+      border: 1px solid var(--border);
+      padding: 12px 16px;
+      border-radius: 16px;
+      color: var(--white);
+      font-size: 16px;
+      font-family: 'Outfit', sans-serif;
+    }
+    .result-box {
+      background: var(--navy);
+      border-radius: 20px;
+      padding: 16px 24px;
+      margin-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .fee-breakdown { font-size: 13px; color: var(--muted); }
+    .net-yield { text-align: right; font-size: 24px; font-weight: 700; color: var(--gold2); }
+    .net-yield small { font-size: 12px; font-weight: normal; color: var(--muted); }
+    footer {
+      margin-top: 64px;
+      padding: 32px 0;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 12px;
+      color: var(--dim);
+    }
+    .waitlist-form {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    .waitlist-input {
+      flex: 2;
+      background: var(--navy4);
+      border: 1px solid var(--border);
+      padding: 10px 16px;
+      border-radius: 40px;
+      color: var(--white);
+      font-family: 'Outfit', sans-serif;
+    }
+    .waitlist-btn {
+      background: var(--gold);
+      border: none;
+      padding: 10px 24px;
+      border-radius: 40px;
+      font-weight: 600;
+      color: var(--navy);
+      cursor: pointer;
+    }
+    @media (max-width: 700px) {
+      .vault-body, .simulate-row { flex-direction: column; align-items: stretch; }
+      .kpi-value { font-size: 28px; }
+      .net-yield { text-align: left; }
+      .points-banner { flex-direction: column; text-align: center; }
     }
   </style>
 </head>
 <body>
-
-  <!-- Navigation -->
-  <nav id="navbar">
-    <a class="nav-logo" href="#home">
-      <div>
-        <div class="nav-logo-text">S<span>O</span>VRA</div>
-        <div class="nav-logo-sub">Protocol</div>
-      </div>
-    </a>
-    <ul class="nav-links">
-      <li><a href="#home">Home</a></li>
-      <li><a href="#how-it-works">How It Works</a></li>
-      <li><a href="#launch-app">Vaults</a></li>
-      <li><a href="#competitive">Compare</a></li>
-      <li><a href="#whitepaper">Whitepaper</a></li>
-      <li><a href="#faq">FAQ</a></li>
-      <li><a href="https://blog.sovraprotocol.xyz" target="_blank" rel="noopener">Blog</a></li>
-    </ul>
-    <div class="nav-right">
-      <a class="btn-twitter" href="https://x.com/Sovra_Protocol" target="_blank" rel="noopener" aria-label="Twitter / X">
-        <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.258 5.632L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-      </a>
-      <a class="btn-launch" href="#launch-app">Launch App</a>
+<div class="container">
+  <header>
+    <div class="logo">
+      <h1>S<span>O</span>VRA</h1>
+      <p>PROTOCOL · SOVEREIGN BOND VAULTS</p>
     </div>
-    <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false" onclick="toggleMenu()">
-      <span></span><span></span><span></span>
-    </button>
-  </nav>
+    <button id="connectWalletBtn" class="wallet-btn"> Connect Wallet</button>
+  </header>
 
-  <!-- Mobile menu -->
-  <div class="mobile-menu" id="mobileMenu">
-    <a href="#home" onclick="closeMenu()">Home</a>
-    <a href="#how-it-works" onclick="closeMenu()">How It Works</a>
-    <a href="#launch-app" onclick="closeMenu()">Vaults</a>
-    <a href="#competitive" onclick="closeMenu()">Compare</a>
-    <a href="#whitepaper" onclick="closeMenu()">Whitepaper</a>
-    <a href="#faq" onclick="closeMenu()">FAQ</a>
-    <a href="https://blog.sovraprotocol.xyz" target="_blank" rel="noopener">Blog</a>
-    <a href="https://x.com/Sovra_Protocol" target="_blank" rel="noopener">Twitter / X</a>
-    <a href="#launch-app" onclick="closeMenu()" style="color:var(--gold2);font-weight:600;">Launch App →</a>
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi-card"><div class="kpi-label">TOTAL VALUE LOCKED</div><div class="kpi-value" id="tvlDisplay">$4.8M</div><div class="kpi-sub">+22% last month</div></div>
+    <div class="kpi-card"><div class="kpi-label">NET APY (after fees)</div><div class="kpi-value">8.41%</div><div class="kpi-sub">Paid in USDC</div></div>
+    <div class="kpi-card"><div class="kpi-label">NO KYC · NO MINIMUM</div><div class="kpi-value">$1</div><div class="kpi-sub">Entry barrier</div></div>
+    <div class="kpi-card"><div class="kpi-label">BOND COUPON</div><div class="kpi-value">10.00%</div><div class="kpi-sub">Gross yield</div></div>
   </div>
 
-  <!-- Hero -->
-  <section id="home">
-    <div class="hero-orb hero-orb-1"></div>
-    <div class="hero-orb hero-orb-2"></div>
-    <div class="hero-orb hero-orb-3"></div>
-    <div class="hero-grid"></div>
-    <div class="container">
-      <div class="hero-content">
-        <div class="hero-left">
-          <div class="hero-eyebrow">
-            <div class="hero-eyebrow-dot"></div>
-            <span>RWA · Sovereign Bond Protocol</span>
-          </div>
-          <h1 class="hero-h1"><em>Sovereign</em> Bond<br>Yields, Onchain.</h1>
-          <p class="hero-sub">Deposit USDC. Access real EM sovereign bonds yielding up to 10.375% APR. No KYC. No broker. No minimum. Just yield.</p>
-          <div class="hero-ctas">
-            <a href="#launch-app" class="btn-primary">
-              <svg viewBox="0 0 24 24"><polyline points="13 2 13 9 22 9"/><path d="M19 22H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9l7 7v13a2 2 0 0 1-2 2z"/></svg>
-              Start Earning
-            </a>
-            <a href="#how-it-works" class="btn-secondary">
-              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-              How It Works
-            </a>
-          </div>
-          <div class="hero-badges">
-            <span class="hero-badge">Non-Custodial</span>
-            <span class="hero-badge">No KYC</span>
-            <span class="hero-badge">USD Eurobonds</span>
-            <span class="hero-badge">Permissionless</span>
-          </div>
-        </div>
-        <div class="hero-right">
-          <div class="vault-card">
-            <div class="vault-card-header">
-              <span class="vault-card-title">Live Vaults</span>
-              <div class="vault-card-live"><div class="vault-card-live-dot"></div><span>Live</span></div>
-            </div>
-            <div class="vault-tvl">
-              <div class="vault-tvl-label">Total Value Locked</div>
-              <div class="vault-tvl-value" id="tvlCounter">$0</div>
-              <div class="vault-tvl-sub">↑ Growing</div>
-            </div>
-            <div class="vault-rows">
-              <div class="vault-row">
-                <div class="vault-row-left"><div class="vault-flag">🇳🇬</div><div><div class="vault-row-name">Nigeria Vault</div><div class="vault-row-type">USD Eurobond · No FX Risk</div></div></div>
-                <div class="vault-row-apy">8.40%</div>
-              </div>
-              <div class="vault-row">
-                <div class="vault-row-left"><div class="vault-flag">🇦🇴</div><div><div class="vault-row-name">Angola Vault</div><div class="vault-row-type">USD Eurobond · No FX Risk</div></div></div>
-                <div class="vault-row-apy">7.49%</div>
-              </div>
-              <div class="vault-row">
-                <div class="vault-row-left"><div class="vault-flag">🇪🇬</div><div><div class="vault-row-name">Egypt Vault</div><div class="vault-row-type">USD Eurobond · No FX Risk</div></div></div>
-                <div class="vault-row-apy">6.77%</div>
-              </div>
-              <div class="vault-row">
-                <div class="vault-row-left"><div class="vault-flag">🇹🇷</div><div><div class="vault-row-name">Turkey Vault</div><div class="vault-row-type">USD Eurobond · No FX Risk</div></div></div>
-                <div class="vault-row-apy">5.47%</div>
-              </div>
-            </div>
-            <button class="vault-deposit-btn" onclick="document.getElementById('launch-app').scrollIntoView({behavior:'smooth'})">Deposit USDC →</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  <!-- Points / Airdrop Banner -->
+  <div class="points-banner">
+    <div class="points-text">✨ <strong>Sovra Points</strong> – early depositors earn points for future airdrops. Deposit USDC, collect points, get rewarded.</div>
+    <div class="points-badge">Active now</div>
+  </div>
 
-  <!-- Stats Bar -->
-  <div class="stats-bar">
-    <div class="container">
-      <div class="stats-grid">
-        <div class="stat-item reveal"><div class="stat-val"><span class="gold">10.375</span>%</div><div class="stat-label">Peak Gross Yield</div></div>
-        <div class="stat-item reveal"><div class="stat-val">$<span class="gold">0</span></div><div class="stat-label">EM Sovereign Competition</div></div>
-        <div class="stat-item reveal"><div class="stat-val"><span class="gold">0</span></div><div class="stat-label">KYC Required</div></div>
-        <div class="stat-item reveal"><div class="stat-val"><span class="gold">4</span></div><div class="stat-label">Live Bond Vaults</div></div>
+  <!-- Only Nigeria Vault (LIVE) -->
+  <div class="section-title">
+    <h2>🇳🇬 Live Vault</h2>
+    <p>Backed by Nigerian sovereign Eurobond · 10.00% gross coupon · USD denominated</p>
+  </div>
+  <div class="vault-card">
+    <div class="vault-header">
+      <div class="vault-country"><span class="vault-flag">🇳🇬</span><div><div class="vault-name">Nigeria Sovereign Vault</div><div class="vault-type">FGN Eurobond 2030 · 10.00% coupon</div></div></div>
+      <div class="vault-badge">🟢 Live</div>
+    </div>
+    <div class="vault-body">
+      <div class="vault-stats">
+        <div class="stat"><div class="stat-label-sm">Gross Yield</div><div class="stat-value-lg">10.00%</div></div>
+        <div class="stat"><div class="stat-label-sm">Net APY</div><div class="stat-value-lg">8.41%</div></div>
+        <div class="stat"><div class="stat-label-sm">Deposited USDC</div><div class="stat-value-lg">$1.2M</div></div>
       </div>
+      <div class="vault-action"><button class="btn-deposit live-deposit">Deposit USDC →</button></div>
     </div>
   </div>
 
-  <!-- How It Works -->
-  <section id="how-it-works">
-    <div class="container">
-      <div class="section-head reveal">
-        <span class="tag-label">The Process</span>
-        <h2 class="section-h2">Three Steps to Sovereign Yield</h2>
-        <p class="section-sub">From USDC to onchain bond yield in minutes. No broker, no paperwork, no minimum deposit.</p>
+  <!-- Coming Soon Countries with Waitlist -->
+  <div class="section-title">
+    <h2>🌍 More USD Vaults (Coming Soon)</h2>
+    <p>Join waitlist to be notified when new vaults launch</p>
+  </div>
+  <div class="vault-card">
+    <div class="vault-header">
+      <div class="vault-country"><span class="vault-flag">🇦🇴</span><div><div class="vault-name">Angola</div><div class="vault-type">AGO Eurobond · 9.50% gross</div></div></div>
+      <div class="vault-badge coming">🔜 Coming Soon</div>
+    </div>
+    <div class="vault-body">
+      <div class="vault-stats"><div class="stat"><div class="stat-label-sm">Est. Net APY</div><div class="stat-value-lg">~7.98%</div></div></div>
+      <div class="vault-action"><button class="btn-deposit" disabled>Notify Me</button></div>
+    </div>
+  </div>
+  <div class="vault-card">
+    <div class="vault-header">
+      <div class="vault-country"><span class="vault-flag">🇹🇷</span><div><div class="vault-name">Turkey</div><div class="vault-type">TUR Eurobond · 9.85% gross</div></div></div>
+      <div class="vault-badge coming">🔜 Coming Soon</div>
+    </div>
+    <div class="vault-body">
+      <div class="vault-stats"><div class="stat"><div class="stat-label-sm">Est. Net APY</div><div class="stat-value-lg">~8.27%</div></div></div>
+      <div class="vault-action"><button class="btn-deposit" disabled>Notify Me</button></div>
+    </div>
+  </div>
+  <div class="vault-card">
+    <div class="vault-header">
+      <div class="vault-country"><span class="vault-flag">🇪🇬</span><div><div class="vault-name">Egypt</div><div class="vault-type">EGY Eurobond · 8.50% gross</div></div></div>
+      <div class="vault-badge coming">🔜 Coming Soon</div>
+    </div>
+    <div class="vault-body">
+      <div class="vault-stats"><div class="stat"><div class="stat-label-sm">Est. Net APY</div><div class="stat-value-lg">~7.14%</div></div></div>
+      <div class="vault-action"><button class="btn-deposit" disabled>Notify Me</button></div>
+    </div>
+  </div>
+
+  <!-- Waitlist signup form for other countries (simple) -->
+  <div class="referral">
+    <p style="margin-bottom: 8px;">📬 Get early access to Angola, Turkey, Egypt vaults</p>
+    <div class="waitlist-form">
+      <input type="email" placeholder="Your email" class="waitlist-input" id="waitlistEmail">
+      <button class="waitlist-btn" id="waitlistBtn">Join Waitlist</button>
+    </div>
+    <small style="color: var(--muted);">No spam. Only vault launch alerts.</small>
+  </div>
+
+  <!-- Yield simulation and tooltip for 90/10 split -->
+  <div class="simulate-panel">
+    <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 24px; margin-bottom: 8px;">📊 Calculate Your Yield</h3>
+    <p style="margin-bottom: 20px; color: var(--muted);">
+      90% of your deposit buys real sovereign bonds (10% onchain reserve for instant withdrawals)
+      <span class="tooltip-icon" data-tip="Only 90% earns bond yield – the other 10% sits onchain as a safety buffer for instant redemptions. This ensures you can withdraw anytime without waiting for bond settlement.">?</span>
+    </p>
+    
+    <div class="simulate-row">
+      <div class="input-group"><label>Deposit Amount (USDC)</label><input type="number" id="depositAmount" value="10000" step="1000"></div>
+      <div class="input-group"><label>Select Vault</label>
+        <select id="vaultSelect">
+          <option value="8.41">Nigeria (Live) – 10.00% gross → 8.41% net APY</option>
+          <option value="7.98">Angola (Coming Soon) – 9.50% gross → ~7.98% net</option>
+          <option value="8.27">Turkey (Coming Soon) – 9.85% gross → ~8.27% net</option>
+        </select>
       </div>
-      <div class="steps-grid reveal">
-        <div class="step">
-          <div class="step-num">01</div>
-          <div class="step-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
-          <div class="step-title">Connect Your Wallet</div>
-          <p class="step-desc">Connect any Web3 wallet — MetaMask, Rabby, WalletConnect, and all major providers. No account creation. No email. No KYC.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">02</div>
-          <div class="step-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-          <div class="step-title">Select a Vault & Deposit USDC</div>
-          <p class="step-desc">Choose a vault by APR. Deposit any amount of USDC. 90% is deployed into real sovereign Eurobonds. 10% stays onchain as your liquidity reserve for instant redemptions.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">03</div>
-          <div class="step-icon"><svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
-          <div class="step-title">Earn Yield in USDC</div>
-          <p class="step-desc">Your vault earns real bond coupon yield, paid in USDC. Choose your payout frequency — monthly, quarterly, half-yearly, or annually. Redeem anytime by burning your vault position.</p>
-        </div>
+      <div class="input-group"><label>Yield Payout Frequency</label>
+        <select id="payoutFreq">
+          <option value="monthly">Monthly</option>
+          <option value="quarterly">Quarterly</option>
+          <option value="halfyearly">Half‑yearly</option>
+          <option value="annually">Annually</option>
+        </select>
       </div>
     </div>
-  </section>
 
-  <!-- Vaults / Launch App -->
-  <section id="launch-app" style="padding: 100px 0;">
-    <div class="container">
-      <div class="section-head reveal">
-        <span class="tag-label">The Vaults</span>
-        <h2 class="section-h2">Choose Your Bond Exposure</h2>
-        <p class="section-sub">USD Eurobond vaults carry no FX risk — yield is paid in USDC. svToken vaults (Phase 2) are local currency bonds with higher nominal yields and explicit FX risk.</p>
+    <div class="result-box">
+      <div class="fee-breakdown">
+        <div>💰 Deposit fee (0.1%): <span id="depositFee">$10.00</span></div>
+        <div>🔐 10% onchain reserve: <span id="reserveAmount">$999</span></div>
+        <div style="font-size:11px; margin-top:6px;">*Withdrawal fee 0.1% on exit.</div>
       </div>
-      <div class="vaults-tabs reveal">
-        <button class="vault-tab active" onclick="switchTab('usd', this)">USD Eurobonds</button>
-        <button class="vault-tab" onclick="switchTab('lc', this)">svTokens (LC)</button>
-      </div>
-      <div id="panel-usd" class="vault-panel active reveal">
-        <div class="vaults-table-wrap">
-          <table class="vaults-table">
-            <thead>
-              <tr><th>Vault</th><th>Gross APR</th><th>User Net APR</th><th>Denomination</th><th>FX Risk</th><th>Status</th><th style="text-align:right;">Action</th></tr>
-            </thead>
-            <tbody>
-              <tr><td><div class="vault-name-cell"><div class="vault-icon">🇳🇬</div><div><div class="vault-name-text">Nigeria Vault</div><div class="vault-name-sub">NGN Eurobond</div></div></div></td><td><span class="vault-gross">10.375%</span></td><td><span class="vault-net">8.40%</span></td><td><span class="mono" style="font-size:13px;color:var(--muted);">USD / USDC</span></td><td><span class="vault-badge">None</span></td><td><span class="vault-badge">Live</span></td><td><a href="#" class="vault-action-btn">Deposit →</a></td></tr>
-              <tr><td><div class="vault-name-cell"><div class="vault-icon">🇦🇴</div><div><div class="vault-name-text">Angola Vault</div><div class="vault-name-sub">AGO Eurobond</div></div></div></td><td><span class="vault-gross">9.25%</span></td><td><span class="vault-net">7.49%</span></td><td><span class="mono" style="font-size:13px;color:var(--muted);">USD / USDC</span></td><td><span class="vault-badge">None</span></td><td><span class="vault-badge">Live</span></td><td><a href="#" class="vault-action-btn">Deposit →</a></td></tr>
-              <tr><td><div class="vault-name-cell"><div class="vault-icon">🇪🇬</div><div><div class="vault-name-text">Egypt Vault</div><div class="vault-name-sub">EGY Eurobond</div></div></div></td><td><span class="vault-gross">8.36%</span></td><td><span class="vault-net">6.77%</span></td><td><span class="mono" style="font-size:13px;color:var(--muted);">USD / USDC</span></td><td><span class="vault-badge">None</span></td><td><span class="vault-badge">Live</span></td><td><a href="#" class="vault-action-btn">Deposit →</a></td></tr>
-              <tr><td><div class="vault-name-cell"><div class="vault-icon">🇹🇷</div><div><div class="vault-name-text">Turkey Vault</div><div class="vault-name-sub">TUR Eurobond</div></div></div></td><td><span class="vault-gross">6.75%</span></td><td><span class="vault-net">5.47%</span></td><td><span class="mono" style="font-size:13px;color:var(--muted);">USD / USDC</span></td><td><span class="vault-badge">None</span></td><td><span class="vault-badge">Live</span></td><td><a href="#" class="vault-action-btn">Deposit →</a></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p style="text-align:center;font-size:12px;color:var(--dim);margin-top:14px;font-family:'DM Mono',monospace;letter-spacing:0.06em;">Net APR accounts for 10% onchain reserve (earns 0%) and 10% Sovra yield share · 0.1% entry / 0.1% exit fee applies</p>
-      </div>
-      <div id="panel-lc" class="vault-panel reveal">
-        <div class="vaults-table-wrap">
-          <table class="vaults-table">
-            <thead>
-              <tr><th>svToken</th><th>Nominal Yield</th><th>Currency</th><th>FX Risk</th><th>Phase</th><th style="text-align:right;">Action</th></tr>
-            </thead>
-            <tbody>
-              <tr><td><div class="vault-name-cell"><div class="vault-icon">🇦🇷</div><div><div class="vault-name-text">svARGENTINA</div><div class="vault-name-sub">Local currency bond</div></div></div></td><td><span class="vault-net">~40%</span></td><td><span class="mono" style="font-size:13px;color:var(--muted);">ARS</span></td><td><span class="vault-badge lc">Yes — FX</span></td><td><span class="vault-badge lc">Phase 2</span></td><td><a href="#" class="vault-action-btn" style="opacity:0.4;cursor:not-allowed;pointer-events:none;" aria-disabled="true">Soon</a></td></tr>
-              <tr><td><div class="vault-name-cell"><div class="vault-icon">🇹🇷</div><div><div class="vault-name-text">svTURKEY</div><div class="vault-name-sub">Local currency bond</div></div></div></td><td><span class="vault-net">~32%</span></td><td><span class="mono" style="font-size:13px;color:var(--muted);">TRY</span></td><td><span class="vault-badge lc">Yes — FX</span></td><td><span class="vault-badge lc">Phase 2</span></td><td><a href="#" class="vault-action-btn" style="opacity:0.4;cursor:not-allowed;pointer-events:none;" aria-disabled="true">Soon</a></td></tr>
-              <tr><td><div class="vault-name-cell"><div class="vault-icon">🇪🇬</div><div><div class="vault-name-text">svEGYPT</div><div class="vault-name-sub">Local currency bond</div></div></div></td><td><span class="vault-net">~21%</span></td><td><span class="mono" style="font-size:13px;color:var(--muted);">EGP</span></td><td><span class="vault-badge lc">Yes — FX</span></td><td><span class="vault-badge lc">Phase 2</span></td><td><a href="#" class="vault-action-btn" style="opacity:0.4;cursor:not-allowed;pointer-events:none;" aria-disabled="true">Soon</a></td></tr>
-              <tr><td><div class="vault-name-cell"><div class="vault-icon">🇳🇬</div><div><div class="vault-name-text">svNIGERIA</div><div class="vault-name-sub">Local currency bond</div></div></div></td><td><span class="vault-net">~15%</span></td><td><span class="mono" style="font-size:13px;color:var(--muted);">NGN</span></td><td><span class="vault-badge lc">Yes — FX</span></td><td><span class="vault-badge lc">Phase 2</span></td><td><a href="#" class="vault-action-btn" style="opacity:0.4;cursor:not-allowed;pointer-events:none;" aria-disabled="true">Soon</a></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p style="text-align:center;font-size:12px;color:var(--dim);margin-top:14px;font-family:'DM Mono',monospace;letter-spacing:0.06em;">svTokens carry FX risk · Nominal yields do not account for local currency depreciation · DeFi-composable: Aave, Pendle integrations planned</p>
+      <div class="net-yield">
+        <div style="font-size:14px; font-weight:normal; color:var(--muted);">Your net yield</div>
+        <div id="netYieldAmount">$70.00</div>
+        <div style="font-size:13px;" id="periodLabel">per month</div>
+        <div style="font-size:11px; margin-top:4px;">≡ <span id="netAprDisplay">8.41%</span> APY (annualized)</div>
       </div>
     </div>
-  </section>
+    <p style="margin-top: 20px; font-size: 13px; background: var(--navy); padding: 12px; border-radius: 16px; color: var(--muted);">
+      🔄 <strong>Withdraw anytime:</strong> Burn your vault token → redeem from the 10% reserve (0.1% exit fee). Real bonds, transparent mechanics.
+    </p>
+  </div>
 
-  <!-- Yield Example -->
-  <section class="yield-section" style="background:var(--navy2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
-    <div class="container">
-      <div class="yield-inner">
-        <div class="reveal">
-          <div class="yield-table-wrap">
-            <div class="yield-table-header"><span class="yield-table-title">Nigeria Vault — $10,000 Deposit</span><span class="yield-table-badge">10.375% Gross</span></div>
-            <div class="yield-row"><span class="yield-row-label">Working capital deployed (90%)</span><span class="yield-row-val">$9,000</span></div>
-            <div class="yield-row"><span class="yield-row-label">Gross yield on $9,000 @ 10.375%</span><span class="yield-row-val">$933.75</span></div>
-            <div class="yield-row"><span class="yield-row-label">– Sovra yield share (10%)</span><span class="yield-row-val red">– $93.38</span></div>
-            <div class="yield-row total"><span class="yield-row-label main">Your net annual yield</span><span class="yield-row-val gold">$840.38 · 8.40%</span></div>
-          </div>
-        </div>
-        <div class="yield-right reveal">
-          <span class="tag-label">Real Yield. Real Bonds.</span>
-          <div class="yield-big">8.40%</div>
-          <div class="yield-big-label">Effective APR · Nigeria USD Vault</div>
-          <p style="font-size:15px;line-height:1.7;color:var(--muted);font-weight:300;margin-bottom:8px;">Backed by a real sovereign Eurobond. Yield paid in USDC. No token inflation. No ponzinomics. Just bond coupons — onchain.</p>
-          <p style="font-size:13px;color:var(--dim);font-family:'DM Mono',monospace;letter-spacing:0.04em;margin-bottom:4px;">10% of deposit stays onchain as reserve · earns 0%</p>
-          <div class="yield-payout-grid">
-            <div class="payout-card"><div class="payout-freq">Monthly</div><div class="payout-amount">$70.03</div><div class="payout-currency">USDC / month</div></div>
-            <div class="payout-card"><div class="payout-freq">Quarterly</div><div class="payout-amount">$210.09</div><div class="payout-currency">USDC / quarter</div></div>
-            <div class="payout-card"><div class="payout-freq">Half-Yearly</div><div class="payout-amount">$420.19</div><div class="payout-currency">USDC / 6 months</div></div>
-            <div class="payout-card"><div class="payout-freq">Annually</div><div class="payout-amount">$840.38</div><div class="payout-currency">USDC / year</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  <!-- Referral / bonus info -->
+  <div class="referral">
+    <p>🤝 <strong>Refer & Earn</strong></p>
+    <p style="font-size: 13px; margin-top: 6px;">Share your unique referral link and earn 0.1% of every deposit made by friends. Paid in USDC instantly.</p>
+    <div style="background: var(--navy3); padding: 8px 16px; border-radius: 40px; display: inline-block; margin-top: 10px; font-family: monospace; font-size: 13px;">sovra.xyz/ref/3f7A...c9F2</div>
+  </div>
 
-  <!-- Features -->
-  <section id="features">
-    <div class="container">
-      <div class="section-head reveal">
-        <span class="tag-label">Why Sovra</span>
-        <h2 class="section-h2">Built for Real Yield Seekers</h2>
-        <p class="section-sub">The first protocol to bring EM sovereign bond yields onchain — without brokers, paperwork, or minimums.</p>
-      </div>
-      <div class="features-grid reveal">
-        <div class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="feature-title">Real Sovereign Bonds</div><p class="feature-desc">Every vault is backed by actual EM sovereign Eurobonds held by a regulated custodian. Not synthetic. Not algorithmic. Real bond coupons, passed onchain.</p><span class="feature-tag">RWA Backed</span></div>
-        <div class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="feature-title">No KYC. Permissionless.</div><p class="feature-desc">Connect a wallet. Deposit USDC. That's it. No identity verification, no broker account, no bank relationship required.</p><span class="feature-tag">Permissionless</span></div>
-        <div class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div><div class="feature-title">No FX Risk on USD Vaults</div><p class="feature-desc">USD Eurobond vaults are dollar-denominated. Your deposit goes in as USDC. Your yield comes out as USDC.</p><span class="feature-tag">USD Denominated</span></div>
-        <div class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M17 2.1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 21.9l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div><div class="feature-title">Redeem Anytime</div><p class="feature-desc">10% of every deposit is held onchain as an instant-redemption reserve. No lock-ups.</p><span class="feature-tag">Liquid Anytime</span></div>
-        <div class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="feature-title">Flexible Yield Payouts</div><p class="feature-desc">Choose monthly, quarterly, half-yearly, or annually. APR remains the same.</p><span class="feature-tag">Monthly or Annual</span></div>
-        <div class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="feature-title">Transparent Fee Structure</div><p class="feature-desc">0.1% entry. 0.1% exit. 10% of net yield as protocol share. Fully transparent.</p><span class="feature-tag">Fully Transparent</span></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Competitive Edge -->
-  <section id="competitive">
-    <div class="container">
-      <div class="section-head reveal">
-        <span class="tag-label">Competitive Edge</span>
-        <h2 class="section-h2">Sovra vs. The RWA Landscape</h2>
-        <p class="section-sub">Higher yields, permissionless access, and true onchain liquidity.</p>
-      </div>
-      <div class="comp-table-wrap reveal">
-        <table class="comp-table">
-          <thead><tr><th>Protocol / Product</th><th>Yield Range (APR)</th><th>KYC Required</th><th>Liquidity / Redemption</th><th>Asset Class</th><th>Min. Investment</th></tr></thead>
-          <tbody>
-            <tr><td><strong class="gold">Sovra Protocol</strong></td><td class="comp-highlight">6.75% – 40%</td><td><span class="comp-badge">No KYC</span></td><td>Burn svTokens anytime (10% reserve)</td><td>EM Sovereign Bonds (USD & LC)</td><td>$1</td></tr>
-            <tr><td>Ondo Finance (USDY / OUSG)</td><td>4% – 5.3%</td><td>Yes (institutional / whitelist)</td><td>Limited / gated redemptions</td><td>US Treasuries & Money Market</td><td>$100k+ (OUSG)</td></tr>
-            <tr><td>BlackRock BUIDL</td><td>~4.5%</td><td>Yes (accredited investors)</td><td>Monthly liquidity windows</td><td>Tokenized T-bills</td><td>$5M</td></tr>
-            <tr><td>Franklin Templeton BENJI</td><td>~4.2%</td><td>Yes (institutional)</td><td>Daily, via transfer agent</td><td>US Government Money Fund</td><td>$1M (institutional)</td></tr>
-            <tr><td>Centrifuge (Private Credit)</td><td>5% – 9%</td><td>Yes (KYC/AML)</td><td>Locked pools (various terms)</td><td>Private Credit / Invoices</td><td>Varies ($10k+ typical)</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p style="text-align:center;font-size:12px;color:var(--dim);margin-top:18px;font-family:'DM Mono',monospace;letter-spacing:0.06em;">Sovra offers the only permissionless access to high‑yield EM sovereign debt with onchain liquidity.</p>
-    </div>
-  </section>
-
-  <!-- FAQ -->
-  <section id="faq">
-    <div class="container">
-      <div class="section-head reveal">
-        <span class="tag-label">Support</span>
-        <h2 class="section-h2">Common Questions</h2>
-        <p class="section-sub">Everything you need to know before depositing.</p>
-      </div>
-      <div class="faq-list">
-        <div class="faq-item reveal">
-          <div class="faq-q" onclick="toggleFaq(this)"><span>How does Sovra generate real yield?</span><div class="faq-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div>
-          <div class="faq-a"><div class="faq-a-inner">90% of your USDC deposit is sent to a regulated custodian who purchases actual sovereign Eurobonds. Coupons are passed onchain as USDC.</div></div>
-        </div>
-        <div class="faq-item reveal">
-          <div class="faq-q" onclick="toggleFaq(this)"><span>Why is my effective APR lower than the bond's headline rate?</span><div class="faq-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div>
-          <div class="faq-a"><div class="faq-a-inner">Two factors: 10% reserve earns 0%, and 10% yield share to protocol. Example: 10.375% × 0.9 × 0.9 = 8.40% net.</div></div>
-        </div>
-        <div class="faq-item reveal">
-          <div class="faq-q" onclick="toggleFaq(this)"><span>Can I withdraw at any time?</span><div class="faq-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div>
-          <div class="faq-a"><div class="faq-a-inner">Yes, no lock-ups. Small redemptions from onchain reserve; larger ones trigger bond liquidation. 0.1% exit fee applies.</div></div>
-        </div>
-        <div class="faq-item reveal">
-          <div class="faq-q" onclick="toggleFaq(this)"><span>Do I need to complete KYC?</span><div class="faq-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div>
-          <div class="faq-a"><div class="faq-a-inner">No. Permissionless. Connect wallet, deposit USDC.</div></div>
-        </div>
-        <div class="faq-item reveal">
-          <div class="faq-q" onclick="toggleFaq(this)"><span>What's the difference between USD Vaults and svTokens?</span><div class="faq-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div>
-          <div class="faq-a"><div class="faq-a-inner">USD Vaults: dollar Eurobonds, no FX risk. svTokens: local currency bonds with higher nominal yields and FX risk (Phase 2).</div></div>
-        </div>
-        <div class="faq-item reveal">
-          <div class="faq-q" onclick="toggleFaq(this)"><span>What are the fees?</span><div class="faq-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div>
-          <div class="faq-a"><div class="faq-a-inner">0.1% entry, 0.1% exit, 10% of gross yield as protocol share.</div></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Whitepaper Section -->
-  <section id="whitepaper">
-    <div class="container">
-      <div class="section-head reveal">
-        <span class="tag-label">Official Documentation</span>
-        <h2 class="section-h2">Sovra Protocol Whitepaper</h2>
-        <p class="section-sub">A comprehensive guide to the first permissionless protocol for onchain emerging market sovereign bond yields.</p>
-      </div>
-      <div class="whitepaper-grid">
-        <div class="whitepaper-toc reveal">
-          <div class="whitepaper-toc-title">Contents</div>
-          <ul class="whitepaper-toc-list">
-            <li><a href="#wp-intro" class="toc-link">1. Introduction</a></li>
-            <li><a href="#wp-problem" class="toc-link">2. The Problem</a></li>
-            <li><a href="#wp-solution" class="toc-link">3. The Sovra Solution</a></li>
-            <li><a href="#wp-architecture" class="toc-link">4. Architecture</a></li>
-            <li><a href="#wp-vaults" class="toc-link">5. Vault Mechanics</a></li>
-            <li><a href="#wp-fees" class="toc-link">6. Fee Structure</a></li>
-            <li><a href="#wp-risks" class="toc-link">7. Risk Framework</a></li>
-            <li><a href="#wp-roadmap" class="toc-link">8. Roadmap</a></li>
-            <li><a href="#wp-conclusion" class="toc-link">9. Conclusion</a></li>
-          </ul>
-        </div>
-        <div class="whitepaper-content reveal">
-          <div id="wp-intro" class="wp-section">
-            <h2>1. Introduction</h2>
-            <p>Sovra Protocol is a decentralized finance (DeFi) infrastructure that bridges the gap between the $30+ trillion global sovereign bond market and onchain capital. For the first time, retail and institutional investors can access high‑yield emerging market (EM) sovereign bonds without intermediaries, minimum investment thresholds, or identity verification.</p>
-            <p>By tokenizing real‑world assets (RWAs) — specifically USD‑denominated Eurobonds and local currency government bonds — Sovra delivers sustainable, transparent yield sourced directly from government coupon payments. This whitepaper outlines the protocol's design, economic model, risk management, and long‑term vision.</p>
-            <div class="wp-callout">
-              <div class="wp-callout-title">Key Insight</div>
-              <p style="margin-bottom:0;">EM sovereign bonds offer yields far above developed market treasuries (e.g., Nigeria ~10%, Egypt ~8%, vs. US T‑bills ~4%). Yet these assets are traditionally inaccessible due to high minimums ($100k+), broker gatekeeping, and complex settlement. Sovra removes these barriers.</p>
-            </div>
-          </div>
-          <div id="wp-problem" class="wp-section">
-            <h2>2. The Problem</h2>
-            <h3>2.1 Inefficient Access to Sovereign Debt</h3>
-            <p>Investing in EM government bonds requires navigating a fragmented, opaque, and costly ecosystem:</p>
-            <ul>
-              <li><strong>High Minimums:</strong> Institutional lots typically start at $200,000.</li>
-              <li><strong>Broker Intermediation:</strong> Multiple layers of fees and slow settlement (T+2 or longer).</li>
-              <li><strong>KYC/AML Friction:</strong> Extensive paperwork and jurisdictional restrictions.</li>
-              <li><strong>Liquidity Constraints:</strong> Exiting a position can take days and may incur significant bid‑ask spreads.</li>
-            </ul>
-            <h3>2.2 The DeFi Yield Gap</h3>
-            <p>Existing onchain yield sources are either volatile (LP farming), unsustainable (token emissions), or offer low returns (T‑bill protocols). There is a clear demand for stable, real‑world yield that is both higher than TradFi equivalents and uncorrelated with crypto market cycles.</p>
-          </div>
-          <div id="wp-solution" class="wp-section">
-            <h2>3. The Sovra Solution</h2>
-            <p>Sovra aggregates user deposits and, through a regulated custodian partner, purchases actual sovereign bonds. The bond's coupon payments are streamed back onchain as USDC yield to depositors. The protocol is non‑custodial at the user level — you always retain control of your funds via smart contract vaults.</p>
-            <div class="wp-highlight">“Deposit USDC. Earn real bond yield. No broker. No KYC. No minimum.”</div>
-            <p>Sovra offers two product lines:</p>
-            <ul>
-              <li><strong>USD Eurobond Vaults:</strong> Backed by USD‑denominated EM sovereign bonds. No foreign exchange (FX) risk. Yields range from 5.5% to 10.4% gross.</li>
-              <li><strong>svTokens (Phase 2):</strong> Local currency bond vaults with higher nominal yields (15–40%) but explicit FX exposure. These are DeFi‑composable ERC‑20 tokens.</li>
-            </ul>
-          </div>
-          <div id="wp-architecture" class="wp-section">
-            <h2>4. Architecture</h2>
-            <p>The protocol operates through three coordinated layers:</p>
-            <table class="wp-table">
-              <thead><tr><th>Layer</th><th>Function</th><th>Key Participants</th></tr></thead>
-              <tbody>
-                <tr><td>Smart Contract Vaults</td><td>Handle deposits, mint vault receipts, process redemptions, and distribute yield.</td><td>Users, Sovra Protocol</td></tr>
-                <tr><td>Regulated Custodian</td><td>Holds the physical bonds in a segregated account, executes buy/sell orders, and receives coupon payments.</td><td>Licensed financial institution (partner)</td></tr>
-                <tr><td>Onchain Reserve Pool</td><td>10% of every deposit remains in USDC onchain to enable instant redemptions for most users.</td><td>Smart contract liquidity buffer</td></tr>
-              </tbody>
-            </table>
-            <h3>4.1 Flow of Funds</h3>
-            <ol>
-              <li>User deposits USDC into a selected vault.</li>
-              <li>90% of deposit is sent to the custodian to purchase the target bond.</li>
-              <li>10% remains in the vault's onchain reserve.</li>
-              <li>Bond coupons are paid to the custodian, converted to USDC, and deposited back into the vault contract.</li>
-              <li>Yield is distributed to depositors according to their chosen frequency.</li>
-            </ol>
-          </div>
-          <div id="wp-vaults" class="wp-section">
-            <h2>5. Vault Mechanics</h2>
-            <h3>5.1 Deposit and Representation</h3>
-            <p>When you deposit USDC, you receive a non‑transferable vault receipt (until Phase 2 svTokens) representing your pro‑rata share of the underlying bond and reserve. The receipt tracks your principal and accrued yield.</p>
-            <h3>5.2 Redemptions</h3>
-            <p>Redemptions are always possible:</p>
-            <ul>
-              <li><strong>Small Redemptions (≤ onchain reserve):</strong> Instant — USDC is sent directly from the reserve to your wallet.</li>
-              <li><strong>Large Redemptions ( > reserve):</strong> The custodian liquidates a portion of the bond and returns USDC to the vault. This may take 1–3 business days (TradFi settlement).</li>
-            </ul>
-            <h3>5.3 Yield Calculation Example</h3>
-            <div class="wp-callout">
-              <div class="wp-callout-title">Nigeria Vault — $10,000 Deposit @ 10.375% Gross</div>
-              <ul style="margin-bottom:0;">
-                <li>Working capital (90%): $9,000</li>
-                <li>Gross annual yield on working capital: $933.75</li>
-                <li>Protocol share (10% of gross): –$93.38</li>
-                <li><strong>Net to user: $840.38 (8.40% APR)</strong></li>
-              </ul>
-            </div>
-          </div>
-          <div id="wp-fees" class="wp-section">
-            <h2>6. Fee Structure</h2>
-            <p>Sovra employs a simple, transparent fee model:</p>
-            <table class="wp-table">
-              <thead><tr><th>Fee Type</th><th>Amount</th><th>When Applied</th></tr></thead>
-              <tbody>
-                <tr><td>Entry Fee</td><td>0.10%</td><td>On deposit</td></tr>
-                <tr><td>Exit Fee</td><td>0.10%</td><td>On redemption</td></tr>
-                <tr><td>Protocol Yield Share</td><td>10% of gross yield</td><td>Deducted from coupon payments before distribution</td></tr>
-              </tbody>
-            </table>
-            <p><strong>No hidden fees.</strong> The 10% yield share covers all operational costs, including custodian fees, gas costs, and protocol development. The net APR displayed in the app already accounts for both the reserve drag and the yield share.</p>
-          </div>
-          <div id="wp-risks" class="wp-section">
-            <h2>7. Risk Framework</h2>
-            <p>While Sovra is designed to minimize risk, users should understand the following:</p>
-            <h3>7.1 Sovereign Credit Risk</h3>
-            <p>The underlying bonds are issued by emerging market governments. There is a non‑zero chance of default or restructuring. Sovra diversifies across multiple countries to mitigate concentration risk. All bonds are senior unsecured USD Eurobonds, which historically have high recovery rates.</p>
-            <h3>7.2 Custodian Risk</h3>
-            <p>The regulated custodian holds assets in a segregated account. In the unlikely event of custodian insolvency, the bonds remain the property of the vault (users). Sovra will partner with multiple custodians over time for redundancy.</p>
-            <h3>7.3 Smart Contract Risk</h3>
-            <p>All Sovra smart contracts undergo rigorous audits by top‑tier firms (reports published). The code is open‑source and immutable where appropriate.</p>
-            <h3>7.4 FX Risk (svTokens only)</h3>
-            <p>Local currency vaults are subject to depreciation of the underlying currency vs. USD. The nominal yield is higher to compensate for this risk. Users should assess their own currency outlook.</p>
-            <h3>7.5 Liquidity Risk</h3>
-            <p>Large redemptions that exceed the onchain reserve may take several days to settle. The 10% reserve is designed to cover >95% of expected daily redemption volume based on historical DeFi vault behavior.</p>
-          </div>
-          <div id="wp-roadmap" class="wp-section">
-            <h2>8. Roadmap</h2>
-            <table class="wp-table">
-              <thead><tr><th>Phase</th><th>Milestone</th><th>Expected</th></tr></thead>
-              <tbody>
-                <tr><td><span class="wp-badge">Phase 1 (Live)</span></td><td>USD Eurobond Vaults: Nigeria, Angola, Egypt, Turkey. Basic UI, non‑transferable receipts.</td><td>Q2 2026</td></tr>
-                <tr><td><span class="wp-badge">Phase 2</span></td><td>svTokens: Local currency bonds (Argentina, Turkey, Egypt, Nigeria). ERC‑20 composable tokens. Integration with Aave, Pendle.</td><td>Q3 2026</td></tr>
-                <tr><td><span class="wp-badge">Phase 3</span></td><td>Multi‑custodian support, governance token launch (veSOVRA), and cross‑chain expansion (Arbitrum, Base).</td><td>Q4 2026</td></tr>
-                <tr><td><span class="wp-badge">Phase 4</span></td><td>Institutional on‑ramps, secondary market for svTokens, and structured products (principal‑protected notes).</td><td>2027</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <div id="wp-conclusion" class="wp-section">
-            <h2>9. Conclusion</h2>
-            <p>Sovra Protocol democratizes access to one of the world's largest and highest‑yielding asset classes. By combining the transparency and efficiency of DeFi with the stability of sovereign debt, Sovra offers a new primitive for real yield onchain.</p>
-            <p>Whether you're a retail user seeking better returns on idle USDC or an institution exploring RWA exposure, Sovra provides a secure, permissionless, and liquid gateway to emerging market bonds.</p>
-            <div class="wp-highlight"><strong>Start earning today.</strong> No KYC. No minimum. Just real yield.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="cta-section">
-    <div class="cta-orb"></div>
-    <div class="container">
-      <span class="tag-label" style="text-align:center;display:block;">Get Started</span>
-      <h2 class="cta-h2 reveal">The highest-yielding <em class="serif" style="font-style:italic;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">sovereign bonds</em> on Earth are now onchain.</h2>
-      <p class="cta-sub reveal">Deposit USDC. Earn up to 8.40% net APR. Backed by real bonds. Redeemable anytime. No KYC.</p>
-      <div class="cta-btns reveal">
-        <a href="#launch-app" class="btn-primary"><svg viewBox="0 0 24 24"><polyline points="13 2 13 9 22 9"/><path d="M19 22H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9l7 7v13a2 2 0 0 1-2 2z"/></svg>Start Earning Now</a>
-        <a href="#whitepaper" class="btn-secondary">Read the Whitepaper →</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
   <footer>
-    <div class="container">
-      <div class="footer-inner">
-        <div>
-          <div class="nav-logo-text" style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;letter-spacing:0.08em;">S<span style="background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">O</span>VRA</div>
-          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.25em;color:var(--dim);text-transform:uppercase;margin-top:2px;margin-bottom:12px;">Protocol</div>
-          <p class="footer-brand-desc">The first permissionless protocol for onchain EM sovereign bond yields. Real bonds. Real yield. No KYC.</p>
-        </div>
-        <div><div class="footer-col-title">Product</div><ul class="footer-links"><li><a href="#launch-app">USD Vaults</a></li><li><a href="#launch-app">svTokens (Phase 2)</a></li><li><a href="#how-it-works">How It Works</a></li><li><a href="#features">Features</a></li></ul></div>
-        <div><div class="footer-col-title">Resources</div><ul class="footer-links"><li><a href="#whitepaper">Whitepaper</a></li><li><a href="https://blog.sovraprotocol.xyz" target="_blank" rel="noopener">Blog</a></li><li><a href="#faq">FAQ</a></li></ul></div>
-        <div><div class="footer-col-title">Community</div><ul class="footer-links"><li><a href="https://x.com/Sovra_Protocol" target="_blank" rel="noopener">Twitter / X</a></li><li><a href="#">Telegram</a></li><li><a href="#">Discord</a></li></ul></div>
-      </div>
-      <div class="footer-bottom">
-        <div class="footer-copy">© 2026 Sovra Protocol. All rights reserved.</div>
-        <div class="footer-status"><div class="footer-status-dot"></div>All Systems Operational</div>
-      </div>
-    </div>
+    <p>© 2026 Sovra Protocol — Real sovereign Eurobonds, permissionless. No KYC. Testnet live → Mainnet Q3 2026.</p>
+    <p style="margin-top: 8px;">🔒 <a href="#" style="color: var(--gold2);">Audit (Certik)</a> | 📄 <a href="#" style="color: var(--gold2);">Docs</a> | 🐦 <a href="#" style="color: var(--gold2);">X (Twitter)</a></p>
   </footer>
+</div>
 
-  <script>
-    // Navbar scroll effect
-    const navbar = document.getElementById('navbar');
-    window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 20));
+<script>
+  // Wallet mock
+  let walletConnected = false;
+  const connectBtn = document.getElementById('connectWalletBtn');
+  connectBtn.addEventListener('click', () => {
+    walletConnected = !walletConnected;
+    connectBtn.textContent = walletConnected ? '0x3f7A...c9F2 ✅' : 'Connect Wallet';
+    alert(walletConnected ? 'Wallet connected. No KYC required.' : 'Disconnected.');
+  });
 
-    // Mobile menu
-    function toggleMenu() {
-      const menu = document.getElementById('mobileMenu');
-      const btn = document.getElementById('hamburger');
-      menu.classList.toggle('open');
-      btn.setAttribute('aria-expanded', menu.classList.contains('open'));
-    }
-    function closeMenu() {
-      document.getElementById('mobileMenu').classList.remove('open');
-      document.getElementById('hamburger').setAttribute('aria-expanded', 'false');
-    }
-
-    // Vault tabs
-    function switchTab(tab, btn) {
-      document.querySelectorAll('.vault-tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.vault-panel').forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('panel-' + tab).classList.add('active');
-    }
-
-    // FAQ accordion
-    function toggleFaq(el) {
-      const item = el.parentElement;
-      const isOpen = item.classList.contains('open');
-      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
-      if (!isOpen) item.classList.add('open');
-    }
-
-    // TVL counter animation
-    function animateCounter(el, target, duration) {
-      let start = 0;
-      const step = target / (duration / 16);
-      const timer = setInterval(() => {
-        start += step;
-        if (start >= target) { start = target; clearInterval(timer); }
-        el.textContent = '$' + Math.floor(start).toLocaleString();
-      }, 16);
-    }
-    setTimeout(() => animateCounter(document.getElementById('tvlCounter'), 512450, 1800), 600);
-
-    // Scroll reveal
-    const reveals = document.querySelectorAll('.reveal');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } });
-    }, { threshold: 0.08 });
-    reveals.forEach(el => observer.observe(el));
-
-    // Active nav link highlight
-    const sections = document.querySelectorAll('section[id], div[id]');
-    const navLinks = document.querySelectorAll('.nav-links a');
-    window.addEventListener('scroll', () => {
-      let current = '';
-      sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
-      navLinks.forEach(a => { a.style.color = a.getAttribute('href') === '#' + current ? 'var(--white)' : ''; });
+  // Deposit button for live vault
+  document.querySelectorAll('.live-deposit').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (!walletConnected) { alert('Connect wallet first.'); return; }
+      alert('Deposit flow (mock): USDC → Nigeria vault → 90% deployed to bonds, 10% reserve. Yield accrues automatically. Points will be tracked for airdrop.');
     });
+  });
 
-    // Whitepaper TOC active highlight
-    document.addEventListener('DOMContentLoaded', function() {
-      const tocLinks = document.querySelectorAll('.toc-link');
-      const wpSections = [...document.querySelectorAll('.wp-section')];
-      function updateActiveToc() {
-        let current = '';
-        wpSections.forEach(section => {
-          const sectionTop = section.offsetTop - 120;
-          if (scrollY >= sectionTop) current = section.getAttribute('id');
-        });
-        tocLinks.forEach(link => {
-          link.classList.remove('active');
-          if (link.getAttribute('href') === '#' + current) link.classList.add('active');
-        });
-      }
-      window.addEventListener('scroll', updateActiveToc);
-    });
-  </script>
+  // Waitlist mock
+  document.getElementById('waitlistBtn')?.addEventListener('click', () => {
+    const email = document.getElementById('waitlistEmail').value.trim();
+    if (!email || !email.includes('@')) { alert('Please enter a valid email.'); return; }
+    alert(`✅ ${email} added to waitlist. We'll notify you when new vaults launch.`);
+    document.getElementById('waitlistEmail').value = '';
+  });
+
+  // Yield simulation
+  const depositInput = document.getElementById('depositAmount');
+  const vaultSelect = document.getElementById('vaultSelect');
+  const payoutSelect = document.getElementById('payoutFreq');
+
+  function updateSimulation() {
+    let deposit = parseFloat(depositInput.value);
+    if (isNaN(deposit) || deposit <= 0) deposit = 0;
+    const netApy = parseFloat(vaultSelect.value);
+    const depositFee = deposit * 0.001;
+    const netDeposit = deposit - depositFee;
+    const reserve = netDeposit * 0.1;
+    const annualNetYield = netDeposit * (netApy / 100);
+    
+    document.getElementById('depositFee').innerText = `$${depositFee.toFixed(2)}`;
+    document.getElementById('reserveAmount').innerHTML = `$${reserve.toFixed(2)}`;
+    document.getElementById('netAprDisplay').innerHTML = `${netApy.toFixed(2)}% APY`;
+    
+    const freq = payoutSelect.value;
+    let periodYield = 0, periodLabel = '';
+    switch (freq) {
+      case 'monthly': periodYield = annualNetYield / 12; periodLabel = 'per month'; break;
+      case 'quarterly': periodYield = annualNetYield / 4; periodLabel = 'per quarter'; break;
+      case 'halfyearly': periodYield = annualNetYield / 2; periodLabel = 'per half‑year'; break;
+      default: periodYield = annualNetYield; periodLabel = 'per year'; break;
+    }
+    document.getElementById('netYieldAmount').innerHTML = `$${periodYield.toFixed(2)}`;
+    document.getElementById('periodLabel').innerHTML = periodLabel;
+  }
+
+  depositInput?.addEventListener('input', updateSimulation);
+  vaultSelect?.addEventListener('change', updateSimulation);
+  payoutSelect?.addEventListener('change', updateSimulation);
+  updateSimulation();
+
+  // TVL random walk
+  const tvlEl = document.getElementById('tvlDisplay');
+  let tvl = 4.8;
+  setInterval(() => {
+    tvl += (Math.random() - 0.5) * 0.1;
+    tvl = Math.min(7.2, Math.max(3.5, tvl));
+    tvlEl.innerText = `$${tvl.toFixed(1)}M`;
+  }, 8000);
+</script>
 </body>
 </html>
