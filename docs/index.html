@@ -1,12 +1,119 @@
 <!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><title>Sovra Docs</title>
-<style>body{background:#090e1a;color:#f0f4ff;font-family:Inter,sans-serif;padding:2rem;max-width:800px;margin:0 auto;}a{color:#e8c878;}</style>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sovra Protocol – Documentation</title>
+  <meta name="description" content="How Sovra gives you permissionless access to high‑yield USD sovereign bonds. Real yield, no KYC, full transparency.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:#090e1a;color:#f0f4ff;font-family:'Inter',sans-serif;line-height:1.6;}
+    .container{max-width:1000px;margin:0 auto;padding:0 24px;}
+    a{color:#e8c878;text-decoration:none;}
+    a:hover{color:#fff;}
+    .header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;padding:24px 0;border-bottom:1px solid rgba(201,168,76,0.2);margin-bottom:40px;}
+    .logo{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;letter-spacing:0.08em;color:#f0f4ff;}
+    .logo span{background:linear-gradient(135deg,#c9a84c,#e8c878);-webkit-background-clip:text;background-clip:text;color:transparent;}
+    .nav-links{display:flex;gap:24px;}
+    .nav-links a{color:#9aabcf;font-size:14px;transition:color 0.2s;}
+    .nav-links a:hover{color:#e8c878;}
+    h1{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:600;margin-bottom:16px;}
+    h2{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:600;margin:48px 0 20px;border-left:4px solid #e8c878;padding-left:20px;}
+    h3{font-size:20px;font-weight:600;margin:24px 0 12px;color:#e8c878;}
+    p{margin-bottom:16px;color:#cbd5f0;}
+    .highlight-box{background:#0c1424;border-left:3px solid #e8c878;padding:20px 24px;border-radius:12px;margin:24px 0;}
+    .stats{display:flex;gap:32px;flex-wrap:wrap;margin:32px 0;justify-content:space-between;}
+    .stat{background:#0c1424;padding:20px;border-radius:16px;flex:1;text-align:center;border:1px solid rgba(201,168,76,0.2);}
+    .stat-number{font-size:32px;font-weight:700;color:#e8c878;font-family:'Cormorant Garamond',serif;}
+    .step-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;margin:32px 0;}
+    .step-card{background:#0c1424;border-radius:20px;padding:24px;border:1px solid rgba(201,168,76,0.15);}
+    .step-number{font-size:28px;font-weight:700;color:#e8c878;margin-bottom:12px;}
+    footer{margin-top:80px;padding:40px 0;border-top:1px solid rgba(201,168,76,0.2);text-align:center;font-size:13px;color:#6e7fa0;}
+    @media(max-width:700px){h1{font-size:32px;}h2{font-size:28px;}.stats{flex-direction:column;}}
+  </style>
 </head>
 <body>
-<h1>📘 Sovra Protocol – Documentation</h1>
-<p><strong>How it works:</strong> Deposit USDC → 90% buys real sovereign Eurobonds (regulated custodian), 10% onchain reserve. Yield from bond coupons distributed in USDC after 0.1% deposit/withdrawal fees and a protocol fee (6.57% of gross yield). Net APY: ~8.41% (Nigeria vault).</p>
-<p><strong>Risks:</strong> Sovereign default, custodian risk, smart contract risk. See FAQ on main site.</p>
-<p><a href="/">← Back to Sovra</a> | <a href="/twitter">Twitter</a> | <a href="/audit">Audit</a></p>
+<div class="container">
+  <div class="header">
+    <div class="logo">S<span>O</span>VRA</div>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/app">App</a>
+      <a href="/audit">Audit</a>
+      <a href="/twitter">Twitter</a>
+    </div>
+  </div>
+
+  <h1>Documentation</h1>
+  <p>Permissionless access to high yield USD sovereign bonds from emerging markets. No KYC, no lock ups, real yield from real assets.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-number">7–10%</div><div>Average net APY</div></div>
+    <div class="stat"><div class="stat-number">6+</div><div>Countries (Nigeria, Angola, Turkey, Egypt, Pakistan, Brazil)</div></div>
+    <div class="stat"><div class="stat-number">$0</div><div>Minimum deposit</div></div>
+    <div class="stat"><div class="stat-number">10%</div><div>Onchain reserve for instant redemptions</div></div>
+  </div>
+
+  <h2>The Problem</h2>
+  <p>Emerging market sovereign bonds offer yields of 8 to 10% in US dollars, far above US Treasuries (4%). Yet these yields are locked behind high walls: minimum investments of $100k or more, complex broker accounts, physical presence requirements, KYC and tax paperwork, and illiquid secondary markets. Crypto users and retail investors are completely excluded. At the same time, RWA protocols onchain focus almost exclusively on low yield US T bills (3–5%), leaving a massive gap in permissionless high yield fixed income.</p>
+
+  <h2>The Solution</h2>
+  <p>Sovra tokenizes real emerging market Eurobonds into svTokens, each representing a $1 claim on a diversified portfolio of sovereign bonds. Users deposit USDC, and 90% of the deposit is used by a regulated partner to purchase actual bonds. The remaining 10% stays onchain as a liquidity reserve. Bond coupons are collected, converted to USDC, and distributed to svToken holders after deducting transparent fees. No KYC, no lock up, full DeFi composability.</p>
+
+  <div class="highlight-box">
+    <p><strong>Key benefit</strong> – You earn real bond yield, not token inflation or risky lending interest. The yield exists regardless of market conditions.</p>
+  </div>
+
+  <h2>How It Works (Step by Step)</h2>
+  <div class="step-grid">
+    <div class="step-card"><div class="step-number">1</div><h3>Connect Wallet</h3><p>Any EVM wallet (MetaMask, Rabby, etc.). No sign up, no KYC, no email.</p></div>
+    <div class="step-card"><div class="step-number">2</div><h3>Deposit USDC</h3><p>Enter amount. A 0.1% deposit fee is deducted. 90% of the net deposit is deployed to buy real sovereign Eurobonds via a regulated custodian. 10% stays onchain as instant redemption reserve.</p></div>
+    <div class="step-card"><div class="step-number">3</div><h3>Receive svTokens</h3><p>You receive svNIGERIA (or other country tokens) at 1:1 rate with the net deposited USDC. These tokens represent your share of the bond portfolio.</p></div>
+    <div class="step-card"><div class="step-number">4</div><h3>Yield Accrual</h3><p>Bonds pay semi-annual coupons. The custodian forwards the USDC coupon to the Sovra smart contract, which distributes it pro rata to all svToken holders. You can choose monthly, quarterly, half yearly or annual payouts. No action required – yield is automatic.</p></div>
+    <div class="step-card"><div class="step-number">5</div><h3>Redeem Anytime</h3><p>Withdraw by burning your svTokens. Small redemptions come from the 10% onchain reserve instantly (0.1% withdrawal fee). Larger redemptions trigger a bond sale (1–2 days). No lock ups, no penalties for normal use.</p></div>
+  </div>
+
+  <h2>Why Sovra Is the Best</h2>
+  <p>Compared to DeFi lending (Aave, Compound) and other RWA protocols (Ondo, OpenEden), Sovra offers unique advantages:</p>
+  <ul style="margin-left:24px;color:#cbd5f0;margin-bottom:24px;">
+    <li><strong>Higher yield</strong> – 7–10% net APY vs 4–5% from US Treasuries or 4–7% from variable lending.</li>
+    <li><strong>Real sovereign backing</strong> – Your yield comes from government bonds, not unsecured loans or protocol incentives.</li>
+    <li><strong>No KYC, permissionless</strong> – Unlike Ondo or OpenEden, you only need a wallet. No whitelist, no accredited investor checks.</li>
+    <li><strong>Instant liquidity for small exits</strong> – 10% onchain reserve ensures you can withdraw without waiting for bond settlement.</li>
+    <li><strong>Global diversification</strong> – Six countries and growing, reducing single country default risk.</li>
+    <li><strong>Transparent proof of reserves</strong> – Daily custodian attestation and monthly independent audits. The bond ISINs are public.</li>
+  </ul>
+
+  <div class="highlight-box">
+    <p><strong>Competitive edge</strong> – Sovra is the first protocol to bring permissionless high yield EM sovereign bonds onchain. No competitor offers 7–10% USD yield from real government debt without KYC and lock ups.</p>
+  </div>
+
+  <h2>Fee Structure</h2>
+  <p>We keep fees minimal and transparent:</p>
+  <ul style="margin-left:24px;color:#cbd5f0;margin-bottom:24px;">
+    <li>Deposit fee: 0.1% of deposited USDC</li>
+    <li>Withdrawal fee: 0.1% of withdrawn USDC (when redeeming svTokens)</li>
+    <li>Yield fee: 6.57% of gross bond yield (this covers protocol operations, custodian fees, and development). Net APY to users is 8.41% for the Nigeria vault; other countries will have similar net yields around 7–10%.</li>
+  </ul>
+  <p>All fees are deducted from the yield or deposit amount before you receive your share. There are no hidden charges.</p>
+
+  <h2>Risks & Mitigations</h2>
+  <p>As with any investment, risks exist. We address them directly:</p>
+  <ul style="margin-left:24px;color:#cbd5f0;margin-bottom:24px;">
+    <li><strong>Sovereign default</strong> – we diversify across six countries and will add more. Historical recovery rates for Eurobond defaults average 50–80% after restructuring. Your risk is identical to holding the bond directly, but spread across multiple issuers.</li>
+    <li><strong>Smart contract vulnerability</strong> – only 10% of funds are onchain. Our contracts will be audited by CertiK or Trail of Bits. A bug bounty program and circuit breaker are planned.</li>
+    <li><strong>Regulatory changes</strong> – we use licensed third party custodians and stay within existing frameworks. Our entity structure is designed to be adaptable.</li>
+    <li><strong>Market liquidity</strong> – Eurobonds are traded on major exchanges. The 10% onchain reserve covers most redemptions. For larger exits, bond sales take 1–2 days – still far faster than traditional OTC markets.</li>
+  </ul>
+
+  <h2>More Information</h2>
+  <p>For detailed risk disclosure, the latest proof of reserves, and the smart contract audit report (once complete), please visit our <a href="/audit">Audit page</a>. For community updates, follow us on <a href="/twitter">X (Twitter)</a>. To start earning, go to the <a href="/app">App</a>.</p>
+
+  <footer>
+    <p>© 2026 Sovra Protocol. Real sovereign bonds, permissionless. No KYC.</p>
+  </footer>
+</div>
 </body>
 </html>
